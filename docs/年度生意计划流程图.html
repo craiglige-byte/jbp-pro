@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>年度生意计划 — 全流程图</title>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:"Microsoft YaHei","PingFang SC",sans-serif;background:#fff;padding:30px}
+  h1{text-align:center;font-size:22px;margin-bottom:30px}
+  h2{font-size:16px;margin:30px 0 12px;padding-bottom:6px;border-bottom:2px solid #eee}
+  .mermaid{display:flex;justify-content:center}
+  @media print{body{padding:16px}}
+</style>
+</head>
+<body>
+
+<h1>年度生意计划 — 全流程图</h1>
+
+<h2>一、泳道图</h2>
+<div class="mermaid">
+sequenceDiagram
+    actor 城市经理
+    participant H5
+    participant 系统
+    participant 地图
+    participant 审批
+
+    系统->>系统: 生成未闭户经销商计划列表
+
+    城市经理->>H5: 选择经销商→选分档(≥500/＜500万)
+    H5->>系统: 获取授权区域ID展示地图
+    opt 编辑地图
+        城市经理->>地图: 新页签编辑保存
+        城市经理->>H5: 刷新校验最新区域
+    end
+    城市经理->>H5: 开始规划
+
+    城市经理->>H5: 经营回顾→设定目标→拆解策略
+    opt ≥500万
+        城市经理->>H5: 落实行动
+    end
+    城市经理->>H5: 规划预算→预览计划(生成HTML)
+
+    城市经理->>H5: 归档
+    H5->>系统: 抓取该城市经理所有经销商状态
+    alt 授权区域变更
+        H5->>城市经理: 不可归档
+    else 无变更
+        城市经理->>审批: 发起审批
+        alt 通过
+            审批->>系统: 已提交的→审批通过
+        else 驳回
+            审批->>系统: 已提交的→审批驳回
+        end
+    end
+</div>
+
+<h2>二、流程图</h2>
+<div class="mermaid">
+flowchart TD
+    A[未闭户经销商生成列表] --> B[城市经理选择→选分档]
+    B --> C{≥500万?}
+    C -->|是| D[大版7步]
+    C -->|否| E[小版5步]
+    D --> F[获取授权区域]
+    E --> F
+    F --> G{编辑地图?}
+    G -->|是| H[新页签编辑后刷新]
+    H --> F
+    G -->|否| I[开始规划]
+
+    I --> J[经营回顾→设定目标→拆解策略]
+    J --> K{≥500万?}
+    K -->|是| L[落实行动→规划预算]
+    K -->|否| M[规划预算]
+    L --> N[预览计划生成HTML]
+    M --> N
+
+    N --> O[归档审批]
+    O --> P{授权区域变更?}
+    P -->|是| Q[不可归档]
+    P -->|否| R[发起审批]
+    R --> S{结果}
+    S -->|通过| T[审批通过]
+    S -->|驳回| U[审批驳回]
+</div>
+
+<h2>三、审批状态图</h2>
+<div class="mermaid">
+stateDiagram-v2
+    [*] --> 未提交
+    未提交 --> 审批中: 发起审批
+    审批中 --> 审批通过: 审批通过
+    审批中 --> 审批驳回: 审批驳回
+    审批中 --> 已撤回: 撤回
+    审批通过 --> 审批中: 重新发起审批
+    审批驳回 --> 审批中: 重新发起审批
+    已撤回 --> 审批中: 重新发起审批
+</div>
+
+<h2>四、草稿状态图</h2>
+<div class="mermaid">
+stateDiagram-v2
+    [*] --> 未生成草稿: 系统初始化列表数据
+    未生成草稿 --> 未生成草稿: 编辑中(未到预览计划)
+    未生成草稿 --> 正常: 到达预览计划<br/>生成HTML
+    正常 --> 正常: 审批中/审批通过/审批驳回/已撤回
+    正常 --> 授权区域发生变更请重新编辑: 授权区域变更
+    授权区域发生变更请重新编辑 --> 未生成草稿: 重新编辑确认
+</div>
+
+<script>mermaid.initialize({startOnLoad:true,theme:'default',securityLevel:'loose'});</script>
+</body>
+</html>
