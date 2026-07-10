@@ -16,10 +16,10 @@ body{font-family:'Inter',sans-serif;margin:0;padding:0;padding-bottom:40px}
 #comment-panel .input-area{border-top:1px solid #e2e8f0;padding:12px}
 #comment-panel textarea{width:100%;height:60px;border:1px solid #e2e8f0;border-radius:8px;padding:8px;font-size:13px;resize:none;box-sizing:border-box}
 #comment-panel .input-area button{margin-top:8px;padding:6px 16px;background:#3b82f6;color:#fff;border:none;border-radius:6px;font-size:13px;cursor:pointer}
-#approval-section{padding:32px 24px 40px;text-align:center;border-top:1px solid #e2e8f0;margin-top:40px}
-#approval-section p{font-size:13px;color:#94a3b8;margin-bottom:16px}
-#approval-section .btns{display:flex;justify-content:center;gap:24px}
-#approval-section button{padding:10px 40px;border-radius:10px;font-size:15px;font-weight:600;cursor:pointer;border:none;min-width:130px}
+#approval-card{max-width:520px;margin:40px auto;background:#fff;border:1px solid #e2e8f0;border-radius:16px;padding:28px 32px;text-align:center;box-shadow:0 1px 3px rgba(0,0,0,.04)}
+#approval-card p{font-size:14px;color:#475569;margin:0 0 20px}
+#approval-card .btns{display:flex;justify-content:center;gap:20px}
+#approval-card button{padding:10px 44px;border-radius:10px;font-size:15px;font-weight:600;cursor:pointer;border:none;min-width:120px}
 .btn-approve{background:#10b981;color:#fff}.btn-approve:hover{background:#059669}
 .btn-reject{background:#ef4444;color:#fff}.btn-reject:hover{background:#dc2626}
 #reject-modal{display:none;position:fixed;inset:0;z-index:99999;background:rgba(15,23,42,.6);align-items:center;justify-content:center}
@@ -34,11 +34,14 @@ body{font-family:'Inter',sans-serif;margin:0;padding:0;padding-bottom:40px}
 .cancel{background:#f1f5f9;color:#475569}.confirm{background:#ef4444;color:#fff}
 #toast{display:none;position:fixed;top:20px;left:50%;transform:translateX(-50%);z-index:99999;background:#fef3c7;color:#92400e;padding:10px 24px;border-radius:8px;font-size:14px;box-shadow:0 4px 16px rgba(0,0,0,.1);align-items:center;gap:8px}
 #toast.show{display:flex}
+.result-card{max-width:520px;margin:40px auto;border-radius:16px;padding:28px 32px;text-align:center;font-size:15px;font-weight:600}
+.result-card.approved{background:#d1fae5;color:#065f46;border:1px solid #a7f3d0}
+.result-card.rejected{background:#fee2e2;color:#991b1b;border:1px solid #fecaca}
 @media print{#comment-sidebar,#comment-panel{display:none!important}}
 </style>
 <script type="importmap">{"imports":{"@google/genai":"https://esm.sh/@google/genai@^1.38.0","react":"https://esm.sh/react@18.2.0","react/":"https://esm.sh/react@18.2.0/","react-dom":"https://esm.sh/react-dom@18.2.0","react-dom/":"https://esm.sh/react-dom@18.2.0/","lucide-react":"https://esm.sh/lucide-react@0.300.0?external=react","@googlemaps/js-api-loader":"https://esm.sh/@googlemaps/js-api-loader@^1.16.2","xlsx":"https://esm.sh/xlsx@0.18.5","recharts":"https://esm.sh/recharts@2.12.7?external=react,react-dom"}}</script>
 <script>window.JBP_PLAN_VERSION="small";window.JBP_READONLY=true</script>
-<script type="module" crossorigin src="./assets/index-BTtzoHk2.js"></script><link rel="stylesheet" crossorigin href="./assets/index-BqV11jJp.css"></head>
+<script type="module" crossorigin src="./assets/index-D3ZszDlJ.js"></script><link rel="stylesheet" crossorigin href="./assets/index-BqV11jJp.css"></head>
 <body class="bg-slate-50 text-slate-900">
 <div id="root"></div>
 <div id="comment-sidebar">
@@ -46,18 +49,12 @@ body{font-family:'Inter',sans-serif;margin:0;padding:0;padding-bottom:40px}
   <div id="comment-badge" style="display:none">0</div>
 </div>
 <div id="comment-panel">
-  <div class="header">
-    <span style="font-weight:600;font-size:15px">审批评论</span>
-    <button onclick="toggleComments()" style="border:none;background:none;font-size:20px;cursor:pointer;color:#94a3b8">&times;</button>
-  </div>
+  <div class="header"><span style="font-weight:600;font-size:15px">审批评论</span><button onclick="toggleComments()" style="border:none;background:none;font-size:20px;cursor:pointer;color:#94a3b8">&times;</button></div>
   <div class="list" id="comment-list"><p style="color:#94a3b8;text-align:center;margin-top:40px">暂无评论</p></div>
-  <div class="input-area">
-    <textarea id="comment-input" placeholder="输入评论..." maxlength="200"></textarea>
-    <button onclick="addComment()">发表评论</button>
-  </div>
+  <div class="input-area"><textarea id="comment-input" placeholder="输入评论..." maxlength="200"></textarea><button onclick="addComment()">发表评论</button></div>
 </div>
-<div id="approval-section">
-  <p>— 请仔细审阅以上年度计划内容 —</p>
+<div id="approval-card">
+  <p>请仔细审阅以上年度计划内容，完成审批。</p>
   <div class="btns">
     <button class="btn-approve" onclick="handleApprove()">通过</button>
     <button class="btn-reject" onclick="handleReject()">驳回</button>
@@ -65,14 +62,10 @@ body{font-family:'Inter',sans-serif;margin:0;padding:0;padding-bottom:40px}
 </div>
 <div id="reject-modal">
   <div class="modal">
-    <h3>驳回审批</h3>
-    <p>请填写审批备注（必填，200字以内）</p>
+    <h3>驳回审批</h3><p>请填写审批备注（必填，200字以内）</p>
     <textarea id="reject-reason" placeholder="请输入驳回原因..." maxlength="200" oninput="document.getElementById('char-count').textContent=this.value.length+'/200'"></textarea>
     <div class="char-count" id="char-count">0/200</div>
-    <div class="actions">
-      <button class="cancel" onclick="closeReject()">取消</button>
-      <button class="confirm" onclick="confirmReject()">确认驳回</button>
-    </div>
+    <div class="actions"><button class="cancel" onclick="closeReject()">取消</button><button class="confirm" onclick="confirmReject()">确认驳回</button></div>
   </div>
 </div>
 <div id="toast"><span>⏱</span><span id="toast-msg"></span></div>
@@ -84,9 +77,9 @@ var comments=[];
 function toggleComments(){document.getElementById('comment-panel').classList.toggle('show')}
 function addComment(){var t=document.getElementById('comment-input').value.trim();if(!t)return;comments.push({text:t,time:new Date().toLocaleString()});document.getElementById('comment-input').value='';renderComments()}
 function renderComments(){var l=document.getElementById('comment-list');if(comments.length===0){l.innerHTML='<p style="color:#94a3b8;text-align:center;margin-top:40px">暂无评论</p>';document.getElementById('comment-badge').style.display='none';return}document.getElementById('comment-badge').style.display='flex';document.getElementById('comment-badge').textContent=comments.length;l.innerHTML=comments.map(function(c){return '<div class="item"><div>'+c.text+'</div><div class="meta">'+c.time+'</div></div>'}).join('')}
-function handleApprove(){if(!checkCountdown())return;if(!confirm('确认批准该年度生意计划？'))return;document.getElementById('approval-section').innerHTML='<div style="padding:20px;background:#d1fae5;color:#065f46;border-radius:8px;font-size:15px;font-weight:600">✓ 审批结果：已通过</div>'}
+function handleApprove(){if(!checkCountdown())return;if(!confirm('确认批准该年度生意计划？'))return;document.getElementById('approval-card').className='result-card approved';document.getElementById('approval-card').innerHTML='<div>✓ 审批结果：已通过</div>'}
 function handleReject(){if(!checkCountdown())return;document.getElementById('reject-modal').classList.add('show')}
 function closeReject(){document.getElementById('reject-modal').classList.remove('show')}
-function confirmReject(){var r=document.getElementById('reject-reason').value.trim();if(!r){alert('请填写驳回原因');return}document.getElementById('approval-section').innerHTML='<div style="padding:20px;background:#fee2e2;color:#991b1b;border-radius:8px;font-size:15px;font-weight:600">✗ 审批结果：已驳回 · '+r+'</div>';closeReject()}
+function confirmReject(){var r=document.getElementById('reject-reason').value.trim();if(!r){alert('请填写驳回原因');return}document.getElementById('approval-card').className='result-card rejected';document.getElementById('approval-card').innerHTML='<div>✗ 审批结果：已驳回</div><div style="font-size:13px;font-weight:400;margin-top:8px">'+r+'</div>';closeReject()}
 </script>
 </body></html>
