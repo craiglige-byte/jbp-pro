@@ -1,8 +1,92 @@
-<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>审批 (＜500万)</title>
-<style>@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');body{font-family:'Inter',sans-serif;margin:0;padding:0;padding-bottom:80px}#approval-bar{position:fixed;bottom:0;left:0;right:0;z-index:9999;background:#fff;border-top:2px solid #e2e8f0;padding:12px 20px;display:flex;align-items:center;justify-content:center;gap:20px;box-shadow:0 -4px 24px rgba(0,0,0,.08)}.countdown{display:flex;align-items:center;gap:6px;font-size:13px;color:#64748b}.countdown .time{font-size:24px;font-weight:700;color:#1e293b;min-width:40px;text-align:center}.time.warn{color:#f59e0b}.time.ready{color:#10b981}#approval-bar button{padding:8px 28px;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;border:none;min-width:100px}#approval-bar button:disabled{opacity:.4;cursor:not-allowed}.btn-approve{background:#10b981;color:#fff}.btn-reject{background:#ef4444;color:#fff}.result{font-size:14px;font-weight:600;padding:6px 16px;border-radius:6px}.approved{background:#d1fae5;color:#065f46}.rejected{background:#fee2e2;color:#991b1b}#reject-modal{display:none;position:fixed;inset:0;z-index:99999;background:rgba(15,23,42,.6);align-items:center;justify-content:center}#reject-modal.show{display:flex}#reject-modal .modal{background:#fff;border-radius:12px;padding:20px;max-width:380px;width:90%}#reject-modal h3{font-size:16px;margin:0 0 6px}#reject-modal p{font-size:13px;color:#64748b;margin:0 0 12px}#reject-modal textarea{width:100%;height:70px;border:1px solid #e2e8f0;border-radius:6px;padding:8px;font-size:13px;resize:none;box-sizing:border-box}#reject-modal .actions{display:flex;gap:10px;justify-content:flex-end;margin-top:12px}#reject-modal .actions button{padding:6px 20px;border-radius:6px;font-size:13px;font-weight:600;cursor:pointer;border:none}.cancel{background:#f1f5f9;color:#475569}.confirm{background:#ef4444;color:#fff}</style>
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>年度生意计划审批 (＜500万)</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+body{font-family:'Inter',sans-serif;margin:0;padding:0;padding-bottom:40px}
+.hide-scrollbar::-webkit-scrollbar{display:none}.hide-scrollbar{-ms-overflow-style:none;scrollbar-width:none}
+#comment-sidebar{position:fixed;right:0;top:50%;transform:translateY(-50%);z-index:9999;display:flex;flex-direction:column;align-items:center}
+#comment-btn{width:36px;height:120px;background:#3b82f6;color:#fff;border:none;border-radius:8px 0 0 8px;cursor:pointer;font-size:12px;writing-mode:vertical-rl;letter-spacing:2px;display:flex;align-items:center;justify-content:center;box-shadow:-2px 0 8px rgba(0,0,0,.1);transition:all .2s}
+#comment-btn:hover{background:#2563eb;width:40px}
+#comment-badge{background:#ef4444;color:#fff;font-size:10px;min-width:16px;height:16px;border-radius:8px;display:flex;align-items:center;justify-content:center;margin-top:4px}
+#comment-panel{display:none;position:fixed;right:40px;top:20px;bottom:20px;width:320px;background:#fff;box-shadow:-4px 0 20px rgba(0,0,0,.1);z-index:9998;border-radius:12px 0 0 12px;flex-direction:column}
+#comment-panel.show{display:flex}
+#comment-panel .header{padding:16px;border-bottom:1px solid #e2e8f0;display:flex;justify-content:space-between;align-items:center}
+#comment-panel .list{flex:1;overflow-y:auto;padding:12px}
+#comment-panel .list .item{background:#f8fafc;padding:10px 12px;border-radius:8px;margin-bottom:8px;font-size:13px}
+#comment-panel .list .item .meta{font-size:11px;color:#94a3b8;margin-top:4px}
+#comment-panel .input-area{border-top:1px solid #e2e8f0;padding:12px}
+#comment-panel textarea{width:100%;height:60px;border:1px solid #e2e8f0;border-radius:8px;padding:8px;font-size:13px;resize:none;box-sizing:border-box}
+#comment-panel .input-area button{margin-top:8px;padding:6px 16px;background:#3b82f6;color:#fff;border:none;border-radius:6px;font-size:13px;cursor:pointer}
+#approval-section{padding:32px 24px 40px;text-align:center;border-top:1px solid #e2e8f0;margin-top:40px}
+#approval-section p{font-size:13px;color:#94a3b8;margin-bottom:16px}
+#approval-section .btns{display:flex;justify-content:center;gap:24px}
+#approval-section button{padding:10px 40px;border-radius:10px;font-size:15px;font-weight:600;cursor:pointer;border:none;min-width:130px}
+.btn-approve{background:#10b981;color:#fff}.btn-approve:hover{background:#059669}
+.btn-reject{background:#ef4444;color:#fff}.btn-reject:hover{background:#dc2626}
+#reject-modal{display:none;position:fixed;inset:0;z-index:99999;background:rgba(15,23,42,.6);align-items:center;justify-content:center}
+#reject-modal.show{display:flex}
+#reject-modal .modal{background:#fff;border-radius:16px;padding:24px;max-width:440px;width:90%}
+#reject-modal h3{font-size:17px;margin:0 0 4px}
+#reject-modal p{font-size:13px;color:#64748b;margin:0 0 12px}
+#reject-modal textarea{width:100%;height:90px;border:1px solid #e2e8f0;border-radius:8px;padding:10px;font-size:13px;resize:none;box-sizing:border-box}
+#reject-modal .char-count{text-align:right;font-size:11px;color:#94a3b8;margin-top:4px}
+#reject-modal .actions{display:flex;gap:10px;justify-content:flex-end;margin-top:16px}
+#reject-modal .actions button{padding:8px 24px;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;border:none}
+.cancel{background:#f1f5f9;color:#475569}.confirm{background:#ef4444;color:#fff}
+#toast{display:none;position:fixed;top:20px;left:50%;transform:translateX(-50%);z-index:99999;background:#fef3c7;color:#92400e;padding:10px 24px;border-radius:8px;font-size:14px;box-shadow:0 4px 16px rgba(0,0,0,.1);align-items:center;gap:8px}
+#toast.show{display:flex}
+@media print{#comment-sidebar,#comment-panel{display:none!important}}
+</style>
 <script type="importmap">{"imports":{"@google/genai":"https://esm.sh/@google/genai@^1.38.0","react":"https://esm.sh/react@18.2.0","react/":"https://esm.sh/react@18.2.0/","react-dom":"https://esm.sh/react-dom@18.2.0","react-dom/":"https://esm.sh/react-dom@18.2.0/","lucide-react":"https://esm.sh/lucide-react@0.300.0?external=react","@googlemaps/js-api-loader":"https://esm.sh/@googlemaps/js-api-loader@^1.16.2","xlsx":"https://esm.sh/xlsx@0.18.5","recharts":"https://esm.sh/recharts@2.12.7?external=react,react-dom"}}</script>
 <script>window.JBP_PLAN_VERSION="small";window.JBP_READONLY=true</script>
 <script type="module" crossorigin src="./assets/index-BTtzoHk2.js"></script><link rel="stylesheet" crossorigin href="./assets/index-BqV11jJp.css"></head>
-<body class="bg-slate-50 text-slate-900"><div id="root"></div><div id="approval-bar"><div class="countdown"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg><span>阅读确认</span><span class="time" id="countdown">60</span><span>秒</span></div><button class="btn-approve" id="btn-approve" disabled onclick="handleApprove()">通过</button><button class="btn-reject" id="btn-reject" disabled onclick="handleReject()">驳回</button></div><div id="reject-modal"><div class="modal"><h3>确认驳回</h3><p>请填写驳回原因（选填）</p><textarea id="reject-reason" placeholder="请输入驳回原因..."></textarea><div class="actions"><button class="cancel" onclick="closeReject()">取消</button><button class="confirm" onclick="confirmReject()">确认驳回</button></div></div></div>
-<script>(function(){var s=60;var e=document.getElementById('countdown');var a=document.getElementById('btn-approve');var r=document.getElementById('btn-reject');var t=setInterval(function(){s--;e.textContent=s;if(s<=30)e.className='time warn';if(s<=0){clearInterval(t);e.textContent='0';e.className='time ready';a.disabled=false;r.disabled=false}},1000)})();function handleApprove(){if(!confirm('确认批准该年度生意计划？'))return;document.getElementById('approval-bar').innerHTML='<div class="result approved">审批结果：已通过</div>'}function handleReject(){document.getElementById('reject-modal').classList.add('show')}function closeReject(){document.getElementById('reject-modal').classList.remove('show')}function confirmReject(){var r=document.getElementById('reject-reason').value||'（无）';document.getElementById('approval-bar').innerHTML='<div class="result rejected">审批结果：已驳回 · '+r+'</div>';closeReject()}</script>
+<body class="bg-slate-50 text-slate-900">
+<div id="root"></div>
+<div id="comment-sidebar">
+  <button id="comment-btn" onclick="toggleComments()">审 批 评 论</button>
+  <div id="comment-badge" style="display:none">0</div>
+</div>
+<div id="comment-panel">
+  <div class="header">
+    <span style="font-weight:600;font-size:15px">审批评论</span>
+    <button onclick="toggleComments()" style="border:none;background:none;font-size:20px;cursor:pointer;color:#94a3b8">&times;</button>
+  </div>
+  <div class="list" id="comment-list"><p style="color:#94a3b8;text-align:center;margin-top:40px">暂无评论</p></div>
+  <div class="input-area">
+    <textarea id="comment-input" placeholder="输入评论..." maxlength="200"></textarea>
+    <button onclick="addComment()">发表评论</button>
+  </div>
+</div>
+<div id="approval-section">
+  <p>— 请仔细审阅以上年度计划内容 —</p>
+  <div class="btns">
+    <button class="btn-approve" onclick="handleApprove()">通过</button>
+    <button class="btn-reject" onclick="handleReject()">驳回</button>
+  </div>
+</div>
+<div id="reject-modal">
+  <div class="modal">
+    <h3>驳回审批</h3>
+    <p>请填写审批备注（必填，200字以内）</p>
+    <textarea id="reject-reason" placeholder="请输入驳回原因..." maxlength="200" oninput="document.getElementById('char-count').textContent=this.value.length+'/200'"></textarea>
+    <div class="char-count" id="char-count">0/200</div>
+    <div class="actions">
+      <button class="cancel" onclick="closeReject()">取消</button>
+      <button class="confirm" onclick="confirmReject()">确认驳回</button>
+    </div>
+  </div>
+</div>
+<div id="toast"><span>⏱</span><span id="toast-msg"></span></div>
+<script>
+var countdownEnd=Date.now()+60000;
+function checkCountdown(){if(Date.now()<countdownEnd){showToast('请仔细研读年度计划，阅读时长建议不少于一分钟。');return false}return true}
+function showToast(msg){document.getElementById('toast-msg').textContent=msg;document.getElementById('toast').classList.add('show');setTimeout(function(){document.getElementById('toast').classList.remove('show')},3000)}
+var comments=[];
+function toggleComments(){document.getElementById('comment-panel').classList.toggle('show')}
+function addComment(){var t=document.getElementById('comment-input').value.trim();if(!t)return;comments.push({text:t,time:new Date().toLocaleString()});document.getElementById('comment-input').value='';renderComments()}
+function renderComments(){var l=document.getElementById('comment-list');if(comments.length===0){l.innerHTML='<p style="color:#94a3b8;text-align:center;margin-top:40px">暂无评论</p>';document.getElementById('comment-badge').style.display='none';return}document.getElementById('comment-badge').style.display='flex';document.getElementById('comment-badge').textContent=comments.length;l.innerHTML=comments.map(function(c){return '<div class="item"><div>'+c.text+'</div><div class="meta">'+c.time+'</div></div>'}).join('')}
+function handleApprove(){if(!checkCountdown())return;if(!confirm('确认批准该年度生意计划？'))return;document.getElementById('approval-section').innerHTML='<div style="padding:20px;background:#d1fae5;color:#065f46;border-radius:8px;font-size:15px;font-weight:600">✓ 审批结果：已通过</div>'}
+function handleReject(){if(!checkCountdown())return;document.getElementById('reject-modal').classList.add('show')}
+function closeReject(){document.getElementById('reject-modal').classList.remove('show')}
+function confirmReject(){var r=document.getElementById('reject-reason').value.trim();if(!r){alert('请填写驳回原因');return}document.getElementById('approval-section').innerHTML='<div style="padding:20px;background:#fee2e2;color:#991b1b;border-radius:8px;font-size:15px;font-weight:600">✗ 审批结果：已驳回 · '+r+'</div>';closeReject()}
+</script>
 </body></html>
