@@ -80,7 +80,7 @@ body{font-family:'Inter',sans-serif;margin:0;padding:0}
   <div class="header"><span style="font-weight:600;font-size:15px">评论</span><button onclick="toggleComments()" style="border:none;background:none;font-size:20px;cursor:pointer;color:#94a3b8">&times;</button></div>
   <div class="list" id="comment-list"><p style="color:#94a3b8;text-align:center;margin-top:40px">暂无评论</p></div>
   <div class="input-area">
-    <div class="user-info"><div class="avatar-sm">审</div><span class="name">审批人</span></div>
+    <div class="user-info"><div class="avatar-sm">审</div><span class="name">黄冰玉</span></div>
     <textarea id="comment-input" placeholder="输入评论..." maxlength="200"></textarea>
     <div class="submit-row"><button onclick="addComment()">发表</button></div>
   </div>
@@ -102,7 +102,7 @@ function toggleComments(){document.getElementById('comment-panel').classList.tog
 function addComment(){
   var t=document.getElementById('comment-input').value.trim();
   if(!t)return;
-  comments.push({id:Date.now(),text:t,name:'审批人',avatar:'审',time:new Date().toLocaleString(),replies:[]});
+  comments.push({id:Date.now(),text:t,name:'黄冰玉',avatar:'黄',time:new Date().toLocaleString(),replies:[]});
   document.getElementById('comment-input').value='';
   renderComments();
 }
@@ -113,7 +113,7 @@ function addReply(commentId){
   if(!t)return;
   var c=comments.find(function(x){return x.id===commentId});
   if(!c)return;
-  c.replies.push({id:Date.now(),text:t,name:'审批人',avatar:'审',time:new Date().toLocaleString()});
+  c.replies.push({id:Date.now(),text:t,name:'黄冰玉',avatar:'黄',time:new Date().toLocaleString()});
   el.value='';
   renderComments();
 }

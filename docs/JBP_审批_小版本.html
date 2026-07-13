@@ -79,7 +79,7 @@ body{font-family:'Inter',sans-serif;margin:0;padding:0}
   <div class="header"><span style="font-weight:600;font-size:15px">评论</span><button onclick="toggleComments()" style="border:none;background:none;font-size:20px;cursor:pointer;color:#94a3b8">&times;</button></div>
   <div class="list" id="comment-list"><p style="color:#94a3b8;text-align:center;margin-top:40px">暂无评论</p></div>
   <div class="input-area">
-    <div class="user-info"><div class="avatar-sm">审</div><span class="name">审批人</span></div>
+    <div class="user-info"><div class="avatar-sm">审</div><span class="name">黄冰玉</span></div>
     <textarea id="comment-input" placeholder="输入评论..." maxlength="200"></textarea>
     <div class="submit-row"><button onclick="addComment()">发表</button></div>
   </div>
@@ -96,8 +96,8 @@ function checkCountdown(){if(Date.now()<countdownEnd){showToast('请仔细研读
 function showToast(msg){document.getElementById('toast-msg').textContent=msg;document.getElementById('toast').classList.add('show');setTimeout(function(){document.getElementById('toast').classList.remove('show')},3000)}
 var comments=[];
 function toggleComments(){document.getElementById('comment-panel').classList.toggle('show')}
-function addComment(){var t=document.getElementById('comment-input').value.trim();if(!t)return;comments.push({id:Date.now(),text:t,name:'审批人',avatar:'审',time:new Date().toLocaleString(),replies:[]});document.getElementById('comment-input').value='';renderComments()}
-function addReply(cid){var e=document.getElementById('reply-input-'+cid);var t=e.value.trim();if(!t)return;var c=comments.find(function(x){return x.id===cid});if(!c)return;c.replies.push({id:Date.now(),text:t,name:'审批人',avatar:'审',time:new Date().toLocaleString()});e.value='';renderComments()}
+function addComment(){var t=document.getElementById('comment-input').value.trim();if(!t)return;comments.push({id:Date.now(),text:t,name:'黄冰玉',avatar:'审',time:new Date().toLocaleString(),replies:[]});document.getElementById('comment-input').value='';renderComments()}
+function addReply(cid){var e=document.getElementById('reply-input-'+cid);var t=e.value.trim();if(!t)return;var c=comments.find(function(x){return x.id===cid});if(!c)return;c.replies.push({id:Date.now(),text:t,name:'黄冰玉',avatar:'审',time:new Date().toLocaleString()});e.value='';renderComments()}
 function deleteComment(id){if(!confirm('确定删除这条评论？'))return;comments=comments.filter(function(x){return x.id!==id});renderComments()}
 function deleteReply(cid,rid){if(!confirm('确定删除这条回复？'))return;var c=comments.find(function(x){return x.id===cid});if(!c)return;c.replies=c.replies.filter(function(x){return x.id!==rid});renderComments()}
 function renderComments(){
