@@ -66,10 +66,10 @@ const ProfitabilityBreakdown: React.FC<ProfitabilityBreakdownProps> = ({
               <thead className="bg-slate-50 text-slate-600 font-medium border-b border-slate-200">
                 <tr>
                   <th className="px-4 py-3">项目</th>
-                  <th className="px-4 py-3 text-right">2026年实际</th>
-                  <th className="px-4 py-3 text-right">2026年占比</th>
-                  <th className="px-4 py-3 text-right bg-emerald-50 text-emerald-800">2027年目标</th>
-                  <th className="px-4 py-3 text-right">2027年占比</th>
+                  <th className="px-4 py-3 text-right">今年实际</th>
+                  <th className="px-4 py-3 text-right">今年占比</th>
+                  <th className="px-4 py-3 text-right bg-emerald-50 text-emerald-800">明年目标</th>
+                  <th className="px-4 py-3 text-right">明年占比</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
