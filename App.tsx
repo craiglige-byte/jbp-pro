@@ -282,7 +282,14 @@ const App: React.FC = () => {
       if (savedData) {
         const parsed = JSON.parse(savedData);
         console.log('✅ 已从本地存储恢复数据');
-        return { ...INITIAL_DATA, ...parsed };
+        const merged = { ...INITIAL_DATA, ...parsed };
+        // 强制覆盖运营资源细项结构，确保使用最新字段定义
+        merged.operations = {
+          ...merged.operations,
+          vehicles: INITIAL_DATA.operations.vehicles,
+          personnel: INITIAL_DATA.operations.personnel,
+        };
+        return merged;
       }
     } catch (error) {
       console.error('❌ 从本地存储恢复数据失败:', error);
