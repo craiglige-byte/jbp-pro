@@ -73,7 +73,7 @@ export const INITIAL_DATA: JBPData = {
   operations: {
     warehouse: 1200,
     vehicles: [
-      { id: 'v1', name: '元气车辆', count: 25 }
+      { id: 'v1', name: '元气车辆数量', count: 25 }
     ],
     personnel: [
       { id: 'p1', name: '客户团队人数', count: 8 },

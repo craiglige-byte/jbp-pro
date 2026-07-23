@@ -970,22 +970,46 @@ const BusinessReviewStep: React.FC<BusinessReviewStepProps> = ({ data, updateDat
 
                 {/* Vehicles */}
                 <div className="p-4 bg-slate-50 rounded-xl border border-slate-100">
-                    <div className="text-sm text-slate-500 font-medium mb-2">元气车辆数量</div>
+                    <div className="text-sm text-slate-500 font-medium mb-2">车辆数量</div>
                     {isEditingOperations ? (
-                        <div>
-                            <input
-                                value={data.operations.vehicles.reduce((acc, v) => acc + (Number(v.count) || 0), 0)}
-                                onChange={(e) => {
-                                    const total = Number(e.target.value) || 0;
-                                    updateOperationsData('vehicles', [{ id: 'v_total', name: '元气车辆', count: total }]);
-                                }}
-                                className="w-full text-lg font-bold text-slate-800 bg-white border border-brand-300 rounded px-2 py-1 outline-none focus:ring-2 focus:ring-brand-100"
-                            />
+                        <div className="space-y-2">
+                            {data.operations.vehicles.map((v, idx) => (
+                                <div key={idx} className="flex gap-2">
+                                    <input
+                                        value={v.name}
+                                        onChange={(e) => {
+                                            const newVehicles = [...data.operations.vehicles];
+                                            newVehicles[idx] = { ...v, name: e.target.value };
+                                            updateOperationsData('vehicles', newVehicles);
+                                        }}
+                                        className="w-2/3 text-sm border rounded px-1"
+                                        placeholder="名称"
+                                    />
+                                    <input
+                                        value={v.count}
+                                        onChange={(e) => {
+                                            const newVehicles = [...data.operations.vehicles];
+                                            newVehicles[idx] = { ...v, count: e.target.value };
+                                            updateOperationsData('vehicles', newVehicles);
+                                        }}
+                                        className="w-1/3 text-sm border rounded px-1"
+                                        placeholder="数量"
+                                    />
+                                </div>
+                            ))}
                         </div>
                     ) : (
                         <div>
                             <div className="text-2xl font-bold text-slate-800 mb-2">
                                 {data.operations.vehicles.reduce((acc, v) => acc + (Number(v.count) || 0), 0)} <span className="text-sm font-normal text-slate-400">辆</span>
+                            </div>
+                            <div className="space-y-1">
+                                {data.operations.vehicles.map((v, idx) => (
+                                    <div key={idx} className="flex justify-between text-xs text-slate-500">
+                                        <span>{v.name}</span>
+                                        <span className="font-medium text-slate-700">{v.count} 辆</span>
+                                    </div>
+                                ))}
                             </div>
                         </div>
                     )}
