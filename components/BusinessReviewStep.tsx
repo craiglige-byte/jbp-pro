@@ -1072,50 +1072,20 @@ const BusinessReviewStep: React.FC<BusinessReviewStepProps> = ({ data, updateDat
                 <div className="p-4 bg-slate-50 rounded-xl border border-slate-100">
                     <div className="text-sm text-slate-500 font-medium mb-2">资金投入 (Capital)</div>
                     {isEditingOperations ? (
-                        <div className="space-y-2">
-                            {data.operations.capital.map((c, idx) => (
-                                <div key={idx} className="flex gap-2">
-                                    <input 
-                                        value={c.name} 
-                                        onChange={(e) => {
-                                            const newCapital = [...data.operations.capital];
-                                            newCapital[idx] = { ...c, name: e.target.value };
-                                            updateOperationsData('capital', newCapital);
-                                        }}
-                                        className="w-2/3 text-sm border rounded px-1"
-                                        placeholder="项目"
-                                    />
-                                    <input 
-                                        value={c.amount} 
-                                        onChange={(e) => {
-                                            const newCapital = [...data.operations.capital];
-                                            newCapital[idx] = { ...c, amount: e.target.value };
-                                            updateOperationsData('capital', newCapital);
-                                        }}
-                                        className="w-1/3 text-sm border rounded px-1"
-                                        placeholder="金额"
-                                    />
-                                </div>
-                            ))}
-                            <button 
-                                onClick={() => updateOperationsData('capital', [...data.operations.capital, { id: Date.now().toString(), name: '', amount: '' }])}
-                                className="text-xs text-brand-600 flex items-center mt-1"
-                            >
-                                <Plus size={12} className="mr-1"/> 添加资金
-                            </button>
+                        <div>
+                            <input
+                                value={data.operations.capital.reduce((acc, c) => acc + (Number(c.amount) || 0), 0)}
+                                onChange={(e) => {
+                                    const total = Number(e.target.value) || 0;
+                                    updateOperationsData('capital', [{ id: 'c_total', name: '资金投入', amount: total }]);
+                                }}
+                                className="w-full text-lg font-bold text-slate-800 bg-white border border-brand-300 rounded px-2 py-1 outline-none focus:ring-2 focus:ring-brand-100"
+                            />
                         </div>
                     ) : (
                         <div>
                             <div className="text-2xl font-bold text-slate-800 mb-2">
                                 {data.operations.capital.reduce((acc, c) => acc + (Number(c.amount) || 0), 0)} <span className="text-sm font-normal text-slate-400">万</span>
-                            </div>
-                            <div className="space-y-1">
-                                {data.operations.capital.map((c, idx) => (
-                                    <div key={idx} className="flex justify-between text-xs text-slate-500">
-                                        <span>{c.name}</span>
-                                        <span className="font-medium text-slate-700">{c.amount} 万</span>
-                                    </div>
-                                ))}
                             </div>
                         </div>
                     )}

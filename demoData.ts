@@ -40,9 +40,7 @@ const DEMO_DATA: JBPData = {
       { "id": "p5", "name": "后勤人员", "count": 5 }
     ],
     "capital": [
-      { "id": "c1", "name": "常态库存资金", "amount": 200 },
-      { "id": "c2", "name": "市场垫资", "amount": 50 },
-      { "id": "c3", "name": "信贷保证金", "amount": 20 }
+      { "id": "c1", "name": "资金投入", "amount": 270 }
     ]
   },
   "trends": [
