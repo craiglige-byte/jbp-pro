@@ -1893,7 +1893,6 @@ const BusinessReviewStep: React.FC<BusinessReviewStepProps> = ({ data, updateDat
                                 <th className="px-4 py-3 border-b border-slate-200">姓名</th>
                                 <th className="px-4 py-3 border-b border-slate-200">状态</th>
                                 <th className="px-4 py-3 border-b border-slate-200 text-right">销售额</th>
-                                <th className="px-4 py-3 border-b border-slate-200 text-right">利润率 (%)</th>
                                 <th className="px-4 py-3 border-b border-slate-200 text-right">贡献度 (%)</th>
                             </tr>
                         </thead>
@@ -1934,16 +1933,6 @@ const BusinessReviewStep: React.FC<BusinessReviewStepProps> = ({ data, updateDat
                                                 className="w-20 text-right bg-transparent border-b border-dashed border-slate-300 focus:border-brand-500 outline-none"
                                             />
                                         ) : <>{item.sales.toLocaleString()}{teamScopeTab === 1 && (() => { const old = (data.teamAnalysis || [])[index]; const d = old && old.sales ? parseFloat(((item.sales - old.sales) / old.sales * 100).toFixed(1)) : 0; return <span className={`text-xs font-bold ml-1.5 ${d >= 0 ? 'text-red-500' : 'text-green-500'}`}>{d >= 0 ? '+' : ''}{d}%</span>; })()}</>}
-                                    </td>
-                                    <td className="px-4 py-3 text-right">
-                                        {isEditingTeamAnalysis ? (
-                                            <input
-                                                type="number"
-                                                value={item.profitMargin}
-                                                onChange={(e) => updateTeamData(index, 'profitMargin', e.target.value)}
-                                                className="w-16 text-right bg-transparent border-b border-dashed border-slate-300 focus:border-brand-500 outline-none"
-                                            />
-                                        ) : <>{item.profitMargin}%{teamScopeTab === 1 && (() => { const old = (data.teamAnalysis || [])[index]; const d = old && old.profitMargin ? parseFloat(((item.profitMargin - old.profitMargin) / old.profitMargin * 100).toFixed(1)) : 0; return <span className={`text-xs font-bold ml-1.5 ${d >= 0 ? 'text-red-500' : 'text-green-500'}`}>{d >= 0 ? '+' : ''}{d}%</span>; })()}</>}
                                     </td>
                                     <td className="px-4 py-3 text-right">
                                         {isEditingTeamAnalysis ? (
