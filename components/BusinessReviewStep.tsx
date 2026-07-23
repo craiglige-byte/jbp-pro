@@ -1709,7 +1709,6 @@ const BusinessReviewStep: React.FC<BusinessReviewStepProps> = ({ data, updateDat
                                     <tr>
                                         <th className="px-4 py-3 font-semibold">客户名称</th>
                                         <th className="px-4 py-3 font-semibold text-right">销售额</th>
-                                        <th className="px-4 py-3 font-semibold text-right">利润</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -1717,12 +1716,11 @@ const BusinessReviewStep: React.FC<BusinessReviewStepProps> = ({ data, updateDat
                                         <tr key={customer.id} className="border-b border-slate-200 last:border-0 hover:bg-white transition-colors">
                                             <td className="px-4 py-3 font-medium text-slate-800">{customer.name}</td>
                                             <td className="px-4 py-3 text-right font-mono">{customer.sales.toLocaleString()}</td>
-                                            <td className="px-4 py-3 text-right font-mono">{customer.profit.toLocaleString()}</td>
                                         </tr>
                                     ))}
                                     {(!data.customerAnalysis.segments.find(s => s.type === selectedSegment)?.customers || data.customerAnalysis.segments.find(s => s.type === selectedSegment)?.customers?.length === 0) && (
                                         <tr>
-                                            <td colSpan={3} className="px-4 py-8 text-center text-slate-400">
+                                            <td colSpan={2} className="px-4 py-8 text-center text-slate-400">
                                                 暂无该分类客户数据
                                             </td>
                                         </tr>
