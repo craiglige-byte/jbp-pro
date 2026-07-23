@@ -30,15 +30,14 @@ const DEMO_DATA: JBPData = {
   "operations": {
     "warehouse": 1300,
     "vehicles": [
-      { "id": "v1", "name": "4.2米厢货", "count": 5 },
-      { "id": "v2", "name": "金杯面包", "count": 8 },
-      { "id": "v3", "name": "电动三轮", "count": 12 }
+      { "id": "v1", "name": "元气车辆", "count": 25 }
     ],
     "personnel": [
-      { "id": "p1", "name": "销售主管", "count": 1 },
-      { "id": "p2", "name": "巡店业代", "count": 15 },
-      { "id": "p3", "name": "配送司机", "count": 8 },
-      { "id": "p4", "name": "财务/后勤", "count": 3 }
+      { "id": "p1", "name": "客户团队人数", "count": 8 },
+      { "id": "p2", "name": "业务人员", "count": 15 },
+      { "id": "p3", "name": "管理人员", "count": 3 },
+      { "id": "p4", "name": "文职人员", "count": 2 },
+      { "id": "p5", "name": "后勤人员", "count": 5 }
     ],
     "capital": [
       { "id": "c1", "name": "常态库存资金", "amount": 200 },

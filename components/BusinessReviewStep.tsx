@@ -970,52 +970,22 @@ const BusinessReviewStep: React.FC<BusinessReviewStepProps> = ({ data, updateDat
 
                 {/* Vehicles */}
                 <div className="p-4 bg-slate-50 rounded-xl border border-slate-100">
-                    <div className="text-sm text-slate-500 font-medium mb-2">车辆配置 (Vehicles)</div>
+                    <div className="text-sm text-slate-500 font-medium mb-2">元气车辆数量</div>
                     {isEditingOperations ? (
-                        <div className="space-y-2">
-                            {data.operations.vehicles.map((v, idx) => (
-                                <div key={idx} className="flex gap-2">
-                                    <input 
-                                        value={v.name} 
-                                        onChange={(e) => {
-                                            const newVehicles = [...data.operations.vehicles];
-                                            newVehicles[idx] = { ...v, name: e.target.value };
-                                            updateOperationsData('vehicles', newVehicles);
-                                        }}
-                                        className="w-2/3 text-sm border rounded px-1"
-                                        placeholder="车型"
-                                    />
-                                    <input 
-                                        value={v.count} 
-                                        onChange={(e) => {
-                                            const newVehicles = [...data.operations.vehicles];
-                                            newVehicles[idx] = { ...v, count: e.target.value };
-                                            updateOperationsData('vehicles', newVehicles);
-                                        }}
-                                        className="w-1/3 text-sm border rounded px-1"
-                                        placeholder="数量"
-                                    />
-                                </div>
-                            ))}
-                            <button 
-                                onClick={() => updateOperationsData('vehicles', [...data.operations.vehicles, { id: Date.now().toString(), name: '', count: '' }])}
-                                className="text-xs text-brand-600 flex items-center mt-1"
-                            >
-                                <Plus size={12} className="mr-1"/> 添加车辆
-                            </button>
+                        <div>
+                            <input
+                                value={data.operations.vehicles.reduce((acc, v) => acc + (Number(v.count) || 0), 0)}
+                                onChange={(e) => {
+                                    const total = Number(e.target.value) || 0;
+                                    updateOperationsData('vehicles', [{ id: 'v_total', name: '元气车辆', count: total }]);
+                                }}
+                                className="w-full text-lg font-bold text-slate-800 bg-white border border-brand-300 rounded px-2 py-1 outline-none focus:ring-2 focus:ring-brand-100"
+                            />
                         </div>
                     ) : (
                         <div>
                             <div className="text-2xl font-bold text-slate-800 mb-2">
                                 {data.operations.vehicles.reduce((acc, v) => acc + (Number(v.count) || 0), 0)} <span className="text-sm font-normal text-slate-400">辆</span>
-                            </div>
-                            <div className="space-y-1">
-                                {data.operations.vehicles.map((v, idx) => (
-                                    <div key={idx} className="flex justify-between text-xs text-slate-500">
-                                        <span>{v.name}</span>
-                                        <span className="font-medium text-slate-700">{v.count} 辆</span>
-                                    </div>
-                                ))}
                             </div>
                         </div>
                     )}
@@ -1223,11 +1193,11 @@ const BusinessReviewStep: React.FC<BusinessReviewStepProps> = ({ data, updateDat
                     <div className="text-xs text-slate-400 mt-2">冰柜渗透率: 50%</div>
                 </div>
                 <div className="p-4 bg-slate-50 rounded-xl border border-slate-100 group hover:border-indigo-200 transition-colors">
-                     <div className="flex justify-between items-start mb-2"><div className="text-sm text-slate-500 font-medium">人年均销售额</div></div>
+                     <div className="flex justify-between items-start mb-2"><div className="text-sm text-slate-500 font-medium">vpo</div></div>
                     {isEditingMetrics ? (
                         <input value={data.performance.efficiency} onChange={(e) => updatePerformance('efficiency', e.target.value)} className="w-full text-2xl font-bold text-slate-800 mb-1 bg-white border border-brand-300 rounded px-2 py-1 outline-none focus:ring-2 focus:ring-brand-100" />
                     ) : (
-                        <div className="text-2xl font-bold text-slate-800 mb-1">{data.performance.efficiency} <span className="text-sm text-slate-400 font-normal ml-1">万/人/年</span></div>
+                        <div className="text-2xl font-bold text-slate-800 mb-1">{data.performance.efficiency} <span className="text-sm text-slate-400 font-normal ml-1">元/店</span></div>
                     )}
                     <div className="text-xs text-slate-400 mt-2">高于区域平均水平</div>
                 </div>
@@ -1249,7 +1219,6 @@ const BusinessReviewStep: React.FC<BusinessReviewStepProps> = ({ data, updateDat
                                         <th className="px-4 py-3 border-b border-slate-200 bg-slate-50">周转天数</th>
                                         <th className="px-4 py-3 border-b border-slate-200 bg-slate-50">进货达成%</th>
                                         <th className="px-4 py-3 border-b border-slate-200 bg-slate-50">卖货达成%</th>
-                                        <th className="px-4 py-3 border-b border-slate-200 bg-slate-50">利润率%</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -1260,7 +1229,6 @@ const BusinessReviewStep: React.FC<BusinessReviewStepProps> = ({ data, updateDat
                                             <td className="px-4 py-2"><input type="number" value={row.days} onChange={(e) => updateTrendData(index, 'days', e.target.value)} className="w-full bg-transparent border-b border-dashed border-slate-300 focus:border-brand-500 outline-none"/></td>
                                             <td className="px-4 py-2"><input type="number" value={row.sellIn} onChange={(e) => updateTrendData(index, 'sellIn', e.target.value)} className="w-full bg-transparent border-b border-dashed border-slate-300 focus:border-brand-500 outline-none"/></td>
                                             <td className="px-4 py-2"><input type="number" value={row.sellOut} onChange={(e) => updateTrendData(index, 'sellOut', e.target.value)} className="w-full bg-transparent border-b border-dashed border-slate-300 focus:border-brand-500 outline-none"/></td>
-                                            <td className="px-4 py-2"><input type="number" value={row.profitMargin} onChange={(e) => updateTrendData(index, 'profitMargin', e.target.value)} className="w-full bg-transparent border-b border-dashed border-slate-300 focus:border-brand-500 outline-none"/></td>
                                         </tr>
                                     ))}
                                 </tbody>
@@ -1279,7 +1247,6 @@ const BusinessReviewStep: React.FC<BusinessReviewStepProps> = ({ data, updateDat
                                 <Line yAxisId="right" type="monotone" dataKey="days" name="周转天数" stroke="#f59e0b" strokeWidth={2} dot={{r: 4, strokeWidth: 0, fill: '#f59e0b'}} />
                                 <Line yAxisId="right" type="monotone" dataKey="sellIn" name="进货达成率(%)" stroke="#0ea5e9" strokeWidth={2} dot={{r: 4, strokeWidth: 0, fill: '#0ea5e9'}} />
                                 <Line yAxisId="right" type="monotone" dataKey="sellOut" name="卖货达成率(%)" stroke="#10b981" strokeWidth={2} dot={{r: 4, strokeWidth: 0, fill: '#10b981'}} />
-                                <Line yAxisId="right" type="monotone" dataKey="profitMargin" name="利润率(%)" stroke="#f43f5e" strokeWidth={3} dot={{r: 4, strokeWidth: 0, fill: '#f43f5e'}} />
                             </ComposedChart>
                         </ResponsiveContainer>
                     )}
@@ -1328,7 +1295,6 @@ const BusinessReviewStep: React.FC<BusinessReviewStepProps> = ({ data, updateDat
                             <tr>
                                 <th className="px-4 py-3 border-b border-slate-200">品类名称</th>
                                 <th className="px-4 py-3 border-b border-slate-200 text-right">销售额 (万)</th>
-                                <th className="px-4 py-3 border-b border-slate-200 text-right">利润率 (%)</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -1336,8 +1302,8 @@ const BusinessReviewStep: React.FC<BusinessReviewStepProps> = ({ data, updateDat
                                 <tr key={item.id} className="border-b border-slate-100 hover:bg-slate-50">
                                     <td className="px-4 py-3 font-medium text-slate-800">
                                         {isEditingCategories ? (
-                                            <input 
-                                                value={item.name} 
+                                            <input
+                                                value={item.name}
                                                 onChange={(e) => {
                                                     const newData = [...data.productCategories];
                                                     newData[index] = { ...newData[index], name: e.target.value };
@@ -1349,23 +1315,13 @@ const BusinessReviewStep: React.FC<BusinessReviewStepProps> = ({ data, updateDat
                                     </td>
                                     <td className="px-4 py-3 text-right">
                                         {isEditingCategories ? (
-                                            <input 
+                                            <input
                                                 type="number"
-                                                value={item.sales} 
+                                                value={item.sales}
                                                 onChange={(e) => updateCategoryData(index, 'sales', e.target.value)}
                                                 className="w-20 text-right bg-transparent border-b border-dashed border-slate-300 focus:border-brand-500 outline-none"
                                             />
                                         ) : item.sales}
-                                    </td>
-                                    <td className="px-4 py-3 text-right">
-                                        {isEditingCategories ? (
-                                            <input 
-                                                type="number"
-                                                value={item.profitMargin} 
-                                                onChange={(e) => updateCategoryData(index, 'profitMargin', e.target.value)}
-                                                className="w-16 text-right bg-transparent border-b border-dashed border-slate-300 focus:border-brand-500 outline-none"
-                                            />
-                                        ) : `${item.profitMargin}%`}
                                     </td>
                                 </tr>
                             ))}
@@ -1617,32 +1573,11 @@ const BusinessReviewStep: React.FC<BusinessReviewStepProps> = ({ data, updateDat
 
             <div className="space-y-6">
                 <div>
-                    <div className="flex items-center gap-1 mb-4 p-1 bg-slate-100 rounded-lg w-fit">
-                        {['今年地图范围', '新地图范围'].map((label, idx) => (
-                            <button
-                                key={idx}
-                                onClick={() => setCustomerScopeTab(idx)}
-                                className={`px-3 py-1.5 text-xs font-medium rounded-md transition-all ${customerScopeTab === idx ? 'bg-white text-brand-600 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
-                            >
-                                {label}
-                            </button>
-                        ))}
-                    </div>
                     <h4 className="text-sm font-bold text-slate-700 flex items-center mb-4">
                         <Layers size={16} className="mr-2 text-brand-500"/> 客户分级金字塔 (点击查看明细)
                     </h4>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-                        {(customerScopeTab === 0
-                          ? data.customerAnalysis.segments
-                          : data.customerAnalysis.segments.map((seg, i) => ({
-                              ...seg,
-                              count: Math.round(seg.count * (0.8 + i * 0.1)),
-                              salesShare: parseFloat((seg.salesShare * (0.85 + i * 0.05)).toFixed(1)),
-                              profitShare: parseFloat((seg.profitShare * (0.85 + i * 0.05)).toFixed(1)),
-                            }))
-                        ).map((segment, index) => {
-                            const oldSeg = data.customerAnalysis.segments[index];
-                            const countDelta = oldSeg ? parseFloat(((segment.count - oldSeg.count) / oldSeg.count * 100).toFixed(1)) : 0;
+                        {data.customerAnalysis.segments.map((segment, index) => {
                             return (
                             <div
                                 key={segment.type}
@@ -1651,45 +1586,17 @@ const BusinessReviewStep: React.FC<BusinessReviewStepProps> = ({ data, updateDat
                             >
                                 <div className={`p-4 rounded-xl border h-full flex flex-col justify-between ${segment.type === 'S' ? 'bg-rose-50 border-rose-200' : segment.type === 'A' ? 'bg-indigo-50 border-indigo-200' : segment.type === 'B' ? 'bg-blue-50 border-blue-200' : segment.type === 'C' ? 'bg-slate-50 border-slate-200' : segment.type === 'other' ? 'bg-amber-50 border-amber-200' : 'bg-gray-50 border-gray-200'}`}>
                                     <div className="flex justify-between items-start mb-2">
-                                        <div className="flex flex-col">
-                                            <div className="flex items-center">
-                                                <span className={`text-xs font-bold px-2 py-0.5 rounded mr-2 ${segment.type === 'S' ? 'bg-rose-600 text-white' : segment.type === 'A' ? 'bg-indigo-600 text-white' : segment.type === 'B' ? 'bg-blue-500 text-white' : segment.type === 'C' ? 'bg-slate-500 text-white' : segment.type === 'other' ? 'bg-amber-500 text-white' : 'bg-gray-400 text-white'}`}>
-                                                    {segment.type === 'other' ? '其他' : segment.type === 'empty' ? '空' : `Class ${segment.type}`}
-                                                </span>
-                                                {isEditingCustomerAnalysis ? (
-                                                    <input 
-                                                        value={segment.label} 
-                                                        onChange={(e) => {
-                                                            e.stopPropagation();
-                                                            updateCustomerSegment(index, 'label', e.target.value);
-                                                        }}
-                                                        onClick={(e) => e.stopPropagation()}
-                                                        className="text-sm font-bold bg-white border border-slate-300 rounded px-1 w-24"
-                                                    />
-                                                ) : (
-                                                    <span className="text-sm font-bold text-slate-800">{segment.label}</span>
-                                                )}
-                                            </div>
-                                            {isEditingCustomerAnalysis ? (
-                                                <input 
-                                                    value={segment.criteria} 
-                                                    onChange={(e) => {
-                                                        e.stopPropagation();
-                                                        updateCustomerSegment(index, 'criteria', e.target.value);
-                                                    }}
-                                                    onClick={(e) => e.stopPropagation()}
-                                                    className="text-xs text-slate-500 mt-1 bg-white border border-slate-300 rounded px-1 w-full"
-                                                />
-                                            ) : (
-                                                <span className="text-xs text-slate-500 mt-1">{segment.criteria}</span>
-                                            )}
+                                        <div className="flex items-center">
+                                            <span className={`text-xs font-bold px-2 py-0.5 rounded mr-2 ${segment.type === 'S' ? 'bg-rose-600 text-white' : segment.type === 'A' ? 'bg-indigo-600 text-white' : segment.type === 'B' ? 'bg-blue-500 text-white' : segment.type === 'C' ? 'bg-slate-500 text-white' : segment.type === 'other' ? 'bg-amber-500 text-white' : 'bg-gray-400 text-white'}`}>
+                                                {segment.type === 'other' ? '其他' : segment.type === 'empty' ? '空' : `Class ${segment.type}`}
+                                            </span>
                                         </div>
                                         <div className="text-right">
                                             {isEditingCustomerAnalysis ? (
                                                 <div className="flex items-center justify-end">
-                                                    <input 
+                                                    <input
                                                         type="number"
-                                                        value={segment.count} 
+                                                        value={segment.count}
                                                         onChange={(e) => {
                                                             e.stopPropagation();
                                                             updateCustomerSegment(index, 'count', e.target.value);
@@ -1702,22 +1609,17 @@ const BusinessReviewStep: React.FC<BusinessReviewStepProps> = ({ data, updateDat
                                             ) : (
                                                 <div className="text-xl font-bold text-slate-800">{segment.count} <span className="text-xs font-normal text-slate-400">家</span></div>
                                             )}
-                                            {customerScopeTab === 1 && countDelta !== 0 && (
-                                                <div className={`text-xs font-medium mt-0.5 ${countDelta >= 0 ? 'text-red-500' : 'text-green-500'}`}>
-                                                    {countDelta >= 0 ? '+' : ''}{countDelta}%
-                                                </div>
-                                            )}
                                         </div>
                                     </div>
-                                    
-                                    <div className="grid grid-cols-2 gap-4 mt-3 pt-3 border-t border-slate-200/50">
+
+                                    <div className="mt-3 pt-3 border-t border-slate-200/50">
                                         <div>
                                             <span className="text-[10px] text-slate-400 uppercase font-bold block mb-1">销量贡献</span>
                                             {isEditingCustomerAnalysis ? (
                                                 <div className="flex items-center">
-                                                    <input 
+                                                    <input
                                                         type="number"
-                                                        value={segment.salesShare} 
+                                                        value={segment.salesShare}
                                                         onChange={(e) => {
                                                             e.stopPropagation();
                                                             updateCustomerSegment(index, 'salesShare', e.target.value);
@@ -1736,31 +1638,6 @@ const BusinessReviewStep: React.FC<BusinessReviewStepProps> = ({ data, updateDat
                                                 </div>
                                             )}
                                         </div>
-                                        <div>
-                                            <span className="text-[10px] text-slate-400 uppercase font-bold block mb-1">利润贡献</span>
-                                            {isEditingCustomerAnalysis ? (
-                                                <div className="flex items-center">
-                                                    <input 
-                                                        type="number"
-                                                        value={segment.profitShare} 
-                                                        onChange={(e) => {
-                                                            e.stopPropagation();
-                                                            updateCustomerSegment(index, 'profitShare', e.target.value);
-                                                        }}
-                                                        onClick={(e) => e.stopPropagation()}
-                                                        className="text-sm font-bold text-slate-700 bg-white border border-slate-300 rounded px-1 w-12"
-                                                    />
-                                                    <span className="text-xs text-slate-500 ml-1">%</span>
-                                                </div>
-                                            ) : (
-                                                <div className="flex items-center">
-                                                    <div className="flex-grow h-1.5 bg-slate-200 rounded-full mr-2 overflow-hidden">
-                                                        <div className={`h-full rounded-full ${segment.type === 'S' ? 'bg-rose-500' : segment.type === 'A' ? 'bg-indigo-500' : segment.type === 'B' ? 'bg-blue-500' : segment.type === 'C' ? 'bg-slate-400' : segment.type === 'other' ? 'bg-amber-400' : 'bg-gray-300'}`} style={{width: `${segment.profitShare}%`}}></div>
-                                                    </div>
-                                                    <span className="text-xs font-bold text-slate-700">{segment.profitShare}%</span>
-                                                </div>
-                                            )}
-                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -1773,8 +1650,8 @@ const BusinessReviewStep: React.FC<BusinessReviewStepProps> = ({ data, updateDat
                 {selectedSegment && (
                     <div className="mt-6 border-t border-slate-100 pt-6 animate-fade-in">
                         <h4 className="text-sm font-bold text-slate-700 flex items-center mb-4">
-                            <Users size={16} className="mr-2 text-brand-500"/> 
-                            {data.customerAnalysis.segments.find(s => s.type === selectedSegment)?.label} - 客户明细
+                            <Users size={16} className="mr-2 text-brand-500"/>
+                            Class {selectedSegment} - 客户明细
                         </h4>
                         <div className="overflow-x-auto bg-slate-50 rounded-xl border border-slate-200">
                             <table className="w-full text-sm text-left text-slate-600">
@@ -1816,23 +1693,11 @@ const BusinessReviewStep: React.FC<BusinessReviewStepProps> = ({ data, updateDat
                 </h3>
             </div>
 
-                <div className="flex items-center gap-1 mb-4 p-1 bg-slate-100 rounded-lg w-fit">
-                    {['今年地图范围', '新地图范围'].map((label, idx) => (
-                        <button
-                            key={idx}
-                            onClick={() => setChannelScopeTab(idx)}
-                            className={`px-3 py-1.5 text-xs font-medium rounded-md transition-all ${channelScopeTab === idx ? 'bg-white text-brand-600 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
-                        >
-                            {label}
-                        </button>
-                    ))}
-                </div>
-
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 {/* Chart Section */}
                 <div className="h-[300px] flex items-center justify-center">
                     <ResponsiveContainer width="100%" height="100%">
-                        <ComposedChart data={channelScopeTab === 0 ? (data.channelAnalysis || []) : (data.channelAnalysis || []).map((ch, i) => ({...ch, sales: Math.round(ch.sales * (0.85 + i * 0.1)), profitMargin: parseFloat((ch.profitMargin * (0.9 + i * 0.07)).toFixed(1)), contribution: parseFloat((ch.contribution * (0.9 + i * 0.07)).toFixed(1))}))} margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
+                        <ComposedChart data={(data.channelAnalysis || [])} margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
                             <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
                             <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#64748b' }} dy={10} />
                             <YAxis yAxisId="left" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#64748b' }} />
@@ -1880,7 +1745,7 @@ const BusinessReviewStep: React.FC<BusinessReviewStepProps> = ({ data, updateDat
                                                 onChange={(e) => updateChannelData(index, 'sales', e.target.value)}
                                                 className="w-20 text-right bg-transparent border-b border-dashed border-slate-300 focus:border-brand-500 outline-none"
                                             />
-                                        ) : <>{item.sales.toLocaleString()}{channelScopeTab === 1 && (() => { const old = (data.channelAnalysis || [])[index]; const d = old && old.sales ? parseFloat(((item.sales - old.sales) / old.sales * 100).toFixed(1)) : 0; return <span className={`text-xs font-bold ml-1.5 ${d >= 0 ? 'text-red-500' : 'text-green-500'}`}>{d >= 0 ? '+' : ''}{d}%</span>; })()}</>}
+                                        ) : <>{item.sales.toLocaleString()}</>}
                                     </td>
                                     <td className="px-4 py-3 text-right">
                                         {isEditingChannelAnalysis ? (
@@ -1890,7 +1755,7 @@ const BusinessReviewStep: React.FC<BusinessReviewStepProps> = ({ data, updateDat
                                                 onChange={(e) => updateChannelData(index, 'profitMargin', e.target.value)}
                                                 className="w-16 text-right bg-transparent border-b border-dashed border-slate-300 focus:border-brand-500 outline-none"
                                             />
-                                        ) : <>{item.profitMargin}%{channelScopeTab === 1 && (() => { const old = (data.channelAnalysis || [])[index]; const d = old && old.profitMargin ? parseFloat(((item.profitMargin - old.profitMargin) / old.profitMargin * 100).toFixed(1)) : 0; return <span className={`text-xs font-bold ml-1.5 ${d >= 0 ? 'text-red-500' : 'text-green-500'}`}>{d >= 0 ? '+' : ''}{d}%</span>; })()}</>}
+                                        ) : <>{item.profitMargin}%</>}
                                     </td>
                                     <td className="px-4 py-3 text-right">
                                         {isEditingChannelAnalysis ? (
@@ -1907,7 +1772,7 @@ const BusinessReviewStep: React.FC<BusinessReviewStepProps> = ({ data, updateDat
                                                 </div>
                                                 <span className="text-xs text-slate-500">{item.contribution}%</span>
                                             </div>
-                                        )}{channelScopeTab === 1 && (() => { const old = (data.channelAnalysis || [])[index]; const d = old && old.contribution ? parseFloat(((item.contribution - old.contribution) / old.contribution * 100).toFixed(1)) : 0; return <span className={`text-xs font-bold ml-1.5 ${d >= 0 ? 'text-red-500' : 'text-green-500'}`}>{d >= 0 ? '+' : ''}{d}%</span>; })()}
+                                        )}
                                     </td>
                                 </tr>
                             ))}
@@ -1925,23 +1790,11 @@ const BusinessReviewStep: React.FC<BusinessReviewStepProps> = ({ data, updateDat
                 </h3>
             </div>
 
-                <div className="flex items-center gap-1 mb-4 p-1 bg-slate-100 rounded-lg w-fit">
-                    {['今年地图范围', '新地图范围'].map((label, idx) => (
-                        <button
-                            key={idx}
-                            onClick={() => setTeamScopeTab(idx)}
-                            className={`px-3 py-1.5 text-xs font-medium rounded-md transition-all ${teamScopeTab === idx ? 'bg-white text-brand-600 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
-                        >
-                            {label}
-                        </button>
-                    ))}
-                </div>
-
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 {/* Chart Section */}
                 <div className="h-[300px] flex items-center justify-center">
                     <ResponsiveContainer width="100%" height="100%">
-                        <RBarChart data={teamScopeTab === 0 ? (data.teamAnalysis || []) : (data.teamAnalysis || []).map((tm, i) => ({...tm, sales: Math.round(tm.sales * (0.85 + i * 0.1)), profitMargin: parseFloat((tm.profitMargin * (0.9 + i * 0.07)).toFixed(1)), contribution: parseFloat((tm.contribution * (0.9 + i * 0.07)).toFixed(1))}))} layout="vertical" margin={{ top: 20, right: 20, bottom: 20, left: 40 }}>
+                        <RBarChart data={(data.teamAnalysis || [])} layout="vertical" margin={{ top: 20, right: 20, bottom: 20, left: 40 }}>
                             <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#e2e8f0" />
                             <XAxis type="number" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#64748b' }} />
                             <YAxis dataKey="name" type="category" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#64748b' }} width={60} />
@@ -2019,7 +1872,7 @@ const BusinessReviewStep: React.FC<BusinessReviewStepProps> = ({ data, updateDat
                                                 onChange={(e) => updateTeamData(index, 'sales', e.target.value)}
                                                 className="w-20 text-right bg-transparent border-b border-dashed border-slate-300 focus:border-brand-500 outline-none"
                                             />
-                                        ) : <>{item.sales.toLocaleString()}{teamScopeTab === 1 && (() => { const old = (data.teamAnalysis || [])[index]; const d = old && old.sales ? parseFloat(((item.sales - old.sales) / old.sales * 100).toFixed(1)) : 0; return <span className={`text-xs font-bold ml-1.5 ${d >= 0 ? 'text-red-500' : 'text-green-500'}`}>{d >= 0 ? '+' : ''}{d}%</span>; })()}</>}
+                                        ) : <>{item.sales.toLocaleString()}</>}
                                     </td>
                                     <td className="px-4 py-3 text-right">
                                         {isEditingTeamAnalysis ? (
@@ -2029,7 +1882,7 @@ const BusinessReviewStep: React.FC<BusinessReviewStepProps> = ({ data, updateDat
                                                 onChange={(e) => updateTeamData(index, 'profitMargin', e.target.value)}
                                                 className="w-16 text-right bg-transparent border-b border-dashed border-slate-300 focus:border-brand-500 outline-none"
                                             />
-                                        ) : <>{item.profitMargin}%{teamScopeTab === 1 && (() => { const old = (data.teamAnalysis || [])[index]; const d = old && old.profitMargin ? parseFloat(((item.profitMargin - old.profitMargin) / old.profitMargin * 100).toFixed(1)) : 0; return <span className={`text-xs font-bold ml-1.5 ${d >= 0 ? 'text-red-500' : 'text-green-500'}`}>{d >= 0 ? '+' : ''}{d}%</span>; })()}</>}
+                                        ) : <>{item.profitMargin}%</>}
                                     </td>
                                     <td className="px-4 py-3 text-right">
                                         {isEditingTeamAnalysis ? (
@@ -2046,7 +1899,7 @@ const BusinessReviewStep: React.FC<BusinessReviewStepProps> = ({ data, updateDat
                                                 </div>
                                                 <span className="text-xs text-slate-500">{item.contribution}%</span>
                                             </div>
-                                        )}{teamScopeTab === 1 && (() => { const old = (data.teamAnalysis || [])[index]; const d = old && old.contribution ? parseFloat(((item.contribution - old.contribution) / old.contribution * 100).toFixed(1)) : 0; return <span className={`text-xs font-bold ml-1.5 ${d >= 0 ? 'text-red-500' : 'text-green-500'}`}>{d >= 0 ? '+' : ''}{d}%</span>; })()}
+                                        )}
                                     </td>
                                 </tr>
                             ))}

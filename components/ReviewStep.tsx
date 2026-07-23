@@ -1185,9 +1185,8 @@ const ReviewStep: React.FC<ReviewStepProps> = ({ data, onBack, planVersion = 'la
                                     { label: '网点覆盖', value: data.performance.coverage, unit: '家' },
                                     { label: '核心分销', value: data.performance.distribution, unit: '%' },
                                     { label: '冰柜投放', value: data.performance.coolers, unit: '台' },
-                                    { label: '人效', value: data.performance.efficiency, unit: '万/人' },
+                                    { label: 'vpo', value: data.performance.efficiency, unit: '元/店' },
                                     { label: '经营利润', value: data.performance.profit, unit: '万', color: 'text-green-600' },
-                                    { label: '利润率', value: data.performance.profitMargin, unit: '%', color: 'text-green-600' },
                                 ].map((item, i) => (
                                     <div key={i} className="bg-slate-50 p-4 rounded-lg border border-slate-100">
                                         <div className="text-xs text-slate-500 mb-1">{item.label}</div>
@@ -1395,7 +1394,7 @@ const ReviewStep: React.FC<ReviewStepProps> = ({ data, onBack, planVersion = 'la
                                     <div className="w-12 h-12 mx-auto bg-indigo-50 text-indigo-600 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
                                         <Truck size={24} />
                                     </div>
-                                    <div className="text-xs font-medium text-slate-500 mb-1.5 uppercase tracking-wider">车辆配置</div>
+                                    <div className="text-xs font-medium text-slate-500 mb-1.5 uppercase tracking-wider">元气车辆数量</div>
                                     <div className="text-base font-bold text-slate-800">{budgetSummary.vehicleCount} <span className="text-xs font-normal text-slate-400">辆</span></div>
                                     <div className="mt-2 text-[10px] text-brand-600 font-semibold opacity-0 group-hover:opacity-100 transition-opacity">查看明细</div>
                                 </div>
