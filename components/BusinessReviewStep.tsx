@@ -1382,7 +1382,7 @@ const BusinessReviewStep: React.FC<BusinessReviewStepProps> = ({ data, updateDat
                                     <span className="col-span-3">竞品品牌</span>
                                     <span className="col-span-2">今年业绩</span>
                                     <span className="col-span-2">网点数</span>
-                                    <span className="col-span-2">达成率</span>
+                                    <span className="col-span-2">业绩达成率</span>
                                     <span className="col-span-1"></span>
                                 </div>
                                 <div className="space-y-2 max-h-[180px] overflow-y-auto pr-2 custom-scrollbar">
