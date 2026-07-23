@@ -1597,11 +1597,32 @@ const BusinessReviewStep: React.FC<BusinessReviewStepProps> = ({ data, updateDat
 
             <div className="space-y-6">
                 <div>
+                    <div className="flex items-center gap-1 mb-4 p-1 bg-slate-100 rounded-lg w-fit">
+                        {['今年地图范围', '新地图范围'].map((label, idx) => (
+                            <button
+                                key={idx}
+                                onClick={() => setCustomerScopeTab(idx)}
+                                className={`px-3 py-1.5 text-xs font-medium rounded-md transition-all ${customerScopeTab === idx ? 'bg-white text-brand-600 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
+                            >
+                                {label}
+                            </button>
+                        ))}
+                    </div>
                     <h4 className="text-sm font-bold text-slate-700 flex items-center mb-4">
                         <Layers size={16} className="mr-2 text-brand-500"/> 客户分级金字塔 (点击查看明细)
                     </h4>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-                        {data.customerAnalysis.segments.map((segment, index) => {
+                        {(customerScopeTab === 0
+                          ? data.customerAnalysis.segments
+                          : data.customerAnalysis.segments.map((seg, i) => ({
+                              ...seg,
+                              count: Math.round(seg.count * (0.8 + i * 0.1)),
+                              salesShare: parseFloat((seg.salesShare * (0.85 + i * 0.05)).toFixed(1)),
+                              profitShare: parseFloat((seg.profitShare * (0.85 + i * 0.05)).toFixed(1)),
+                            }))
+                        ).map((segment, index) => {
+                            const oldSeg = data.customerAnalysis.segments[index];
+                            const countDelta = oldSeg ? parseFloat(((segment.count - oldSeg.count) / oldSeg.count * 100).toFixed(1)) : 0;
                             return (
                             <div
                                 key={segment.type}
@@ -1632,6 +1653,11 @@ const BusinessReviewStep: React.FC<BusinessReviewStepProps> = ({ data, updateDat
                                                 </div>
                                             ) : (
                                                 <div className="text-xl font-bold text-slate-800">{segment.count} <span className="text-xs font-normal text-slate-400">家</span></div>
+                                            )}
+                                            {customerScopeTab === 1 && countDelta !== 0 && (
+                                                <div className={`text-xs font-medium mt-0.5 ${countDelta >= 0 ? 'text-red-500' : 'text-green-500'}`}>
+                                                    {countDelta >= 0 ? '+' : ''}{countDelta}%
+                                                </div>
                                             )}
                                         </div>
                                     </div>
@@ -1717,11 +1743,23 @@ const BusinessReviewStep: React.FC<BusinessReviewStepProps> = ({ data, updateDat
                 </h3>
             </div>
 
+                <div className="flex items-center gap-1 mb-4 p-1 bg-slate-100 rounded-lg w-fit">
+                    {['今年地图范围', '新地图范围'].map((label, idx) => (
+                        <button
+                            key={idx}
+                            onClick={() => setChannelScopeTab(idx)}
+                            className={`px-3 py-1.5 text-xs font-medium rounded-md transition-all ${channelScopeTab === idx ? 'bg-white text-brand-600 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
+                        >
+                            {label}
+                        </button>
+                    ))}
+                </div>
+
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 {/* Chart Section */}
                 <div className="h-[300px] flex items-center justify-center">
                     <ResponsiveContainer width="100%" height="100%">
-                        <ComposedChart data={(data.channelAnalysis || [])} margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
+                        <ComposedChart data={channelScopeTab === 0 ? (data.channelAnalysis || []) : (data.channelAnalysis || []).map((ch, i) => ({...ch, sales: Math.round(ch.sales * (0.85 + i * 0.1)), profitMargin: parseFloat((ch.profitMargin * (0.9 + i * 0.07)).toFixed(1)), contribution: parseFloat((ch.contribution * (0.9 + i * 0.07)).toFixed(1))}))} margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
                             <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
                             <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#64748b' }} dy={10} />
                             <YAxis yAxisId="left" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#64748b' }} />
@@ -1763,13 +1801,13 @@ const BusinessReviewStep: React.FC<BusinessReviewStepProps> = ({ data, updateDat
                                     </td>
                                     <td className="px-4 py-3 text-right">
                                         {isEditingChannelAnalysis ? (
-                                            <input 
+                                            <input
                                                 type="number"
-                                                value={item.sales} 
+                                                value={item.sales}
                                                 onChange={(e) => updateChannelData(index, 'sales', e.target.value)}
                                                 className="w-20 text-right bg-transparent border-b border-dashed border-slate-300 focus:border-brand-500 outline-none"
                                             />
-                                        ) : <>{item.sales.toLocaleString()}</>}
+                                        ) : <>{item.sales.toLocaleString()}{channelScopeTab === 1 && (() => { const old = (data.channelAnalysis || [])[index]; const d = old && old.sales ? parseFloat(((item.sales - old.sales) / old.sales * 100).toFixed(1)) : 0; return <span className={`text-xs font-bold ml-1.5 ${d >= 0 ? 'text-red-500' : 'text-green-500'}`}>{d >= 0 ? '+' : ''}{d}%</span>; })()}</>}
                                     </td>
                                     <td className="px-4 py-3 text-right">
                                         {isEditingChannelAnalysis ? (
@@ -1779,7 +1817,7 @@ const BusinessReviewStep: React.FC<BusinessReviewStepProps> = ({ data, updateDat
                                                 onChange={(e) => updateChannelData(index, 'profitMargin', e.target.value)}
                                                 className="w-16 text-right bg-transparent border-b border-dashed border-slate-300 focus:border-brand-500 outline-none"
                                             />
-                                        ) : <>{item.profitMargin}%</>}
+                                        ) : <>{item.profitMargin}%{channelScopeTab === 1 && (() => { const old = (data.channelAnalysis || [])[index]; const d = old && old.profitMargin ? parseFloat(((item.profitMargin - old.profitMargin) / old.profitMargin * 100).toFixed(1)) : 0; return <span className={`text-xs font-bold ml-1.5 ${d >= 0 ? 'text-red-500' : 'text-green-500'}`}>{d >= 0 ? '+' : ''}{d}%</span>; })()}</>}
                                     </td>
                                     <td className="px-4 py-3 text-right">
                                         {isEditingChannelAnalysis ? (
@@ -1796,7 +1834,7 @@ const BusinessReviewStep: React.FC<BusinessReviewStepProps> = ({ data, updateDat
                                                 </div>
                                                 <span className="text-xs text-slate-500">{item.contribution}%</span>
                                             </div>
-                                        )}
+                                        )}{channelScopeTab === 1 && (() => { const old = (data.channelAnalysis || [])[index]; const d = old && old.contribution ? parseFloat(((item.contribution - old.contribution) / old.contribution * 100).toFixed(1)) : 0; return <span className={`text-xs font-bold ml-1.5 ${d >= 0 ? 'text-red-500' : 'text-green-500'}`}>{d >= 0 ? '+' : ''}{d}%</span>; })()}
                                     </td>
                                 </tr>
                             ))}
@@ -1814,11 +1852,23 @@ const BusinessReviewStep: React.FC<BusinessReviewStepProps> = ({ data, updateDat
                 </h3>
             </div>
 
+                <div className="flex items-center gap-1 mb-4 p-1 bg-slate-100 rounded-lg w-fit">
+                    {['今年地图范围', '新地图范围'].map((label, idx) => (
+                        <button
+                            key={idx}
+                            onClick={() => setTeamScopeTab(idx)}
+                            className={`px-3 py-1.5 text-xs font-medium rounded-md transition-all ${teamScopeTab === idx ? 'bg-white text-brand-600 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
+                        >
+                            {label}
+                        </button>
+                    ))}
+                </div>
+
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 {/* Chart Section */}
                 <div className="h-[300px] flex items-center justify-center">
                     <ResponsiveContainer width="100%" height="100%">
-                        <RBarChart data={(data.teamAnalysis || [])} layout="vertical" margin={{ top: 20, right: 20, bottom: 20, left: 40 }}>
+                        <RBarChart data={teamScopeTab === 0 ? (data.teamAnalysis || []) : (data.teamAnalysis || []).map((tm, i) => ({...tm, sales: Math.round(tm.sales * (0.85 + i * 0.1)), profitMargin: parseFloat((tm.profitMargin * (0.9 + i * 0.07)).toFixed(1)), contribution: parseFloat((tm.contribution * (0.9 + i * 0.07)).toFixed(1))}))} layout="vertical" margin={{ top: 20, right: 20, bottom: 20, left: 40 }}>
                             <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#e2e8f0" />
                             <XAxis type="number" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#64748b' }} />
                             <YAxis dataKey="name" type="category" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#64748b' }} width={60} />
@@ -1890,13 +1940,13 @@ const BusinessReviewStep: React.FC<BusinessReviewStepProps> = ({ data, updateDat
                                     </td>
                                     <td className="px-4 py-3 text-right">
                                         {isEditingTeamAnalysis ? (
-                                            <input 
+                                            <input
                                                 type="number"
-                                                value={item.sales} 
+                                                value={item.sales}
                                                 onChange={(e) => updateTeamData(index, 'sales', e.target.value)}
                                                 className="w-20 text-right bg-transparent border-b border-dashed border-slate-300 focus:border-brand-500 outline-none"
                                             />
-                                        ) : <>{item.sales.toLocaleString()}</>}
+                                        ) : <>{item.sales.toLocaleString()}{teamScopeTab === 1 && (() => { const old = (data.teamAnalysis || [])[index]; const d = old && old.sales ? parseFloat(((item.sales - old.sales) / old.sales * 100).toFixed(1)) : 0; return <span className={`text-xs font-bold ml-1.5 ${d >= 0 ? 'text-red-500' : 'text-green-500'}`}>{d >= 0 ? '+' : ''}{d}%</span>; })()}</>}
                                     </td>
                                     <td className="px-4 py-3 text-right">
                                         {isEditingTeamAnalysis ? (
@@ -1906,7 +1956,7 @@ const BusinessReviewStep: React.FC<BusinessReviewStepProps> = ({ data, updateDat
                                                 onChange={(e) => updateTeamData(index, 'profitMargin', e.target.value)}
                                                 className="w-16 text-right bg-transparent border-b border-dashed border-slate-300 focus:border-brand-500 outline-none"
                                             />
-                                        ) : <>{item.profitMargin}%</>}
+                                        ) : <>{item.profitMargin}%{teamScopeTab === 1 && (() => { const old = (data.teamAnalysis || [])[index]; const d = old && old.profitMargin ? parseFloat(((item.profitMargin - old.profitMargin) / old.profitMargin * 100).toFixed(1)) : 0; return <span className={`text-xs font-bold ml-1.5 ${d >= 0 ? 'text-red-500' : 'text-green-500'}`}>{d >= 0 ? '+' : ''}{d}%</span>; })()}</>}
                                     </td>
                                     <td className="px-4 py-3 text-right">
                                         {isEditingTeamAnalysis ? (
@@ -1923,7 +1973,7 @@ const BusinessReviewStep: React.FC<BusinessReviewStepProps> = ({ data, updateDat
                                                 </div>
                                                 <span className="text-xs text-slate-500">{item.contribution}%</span>
                                             </div>
-                                        )}
+                                        )}{teamScopeTab === 1 && (() => { const old = (data.teamAnalysis || [])[index]; const d = old && old.contribution ? parseFloat(((item.contribution - old.contribution) / old.contribution * 100).toFixed(1)) : 0; return <span className={`text-xs font-bold ml-1.5 ${d >= 0 ? 'text-red-500' : 'text-green-500'}`}>{d >= 0 ? '+' : ''}{d}%</span>; })()}
                                     </td>
                                 </tr>
                             ))}
