@@ -403,14 +403,9 @@ export const SalesBreakdownWizard: React.FC<SalesBreakdownWizardProps> = ({ obje
               <td className="px-4 py-3">{row.label}</td>
               <td className="px-4 py-3 text-right">{row.lastYearActuals.toLocaleString()}</td>
               <td className="px-4 py-3 text-right">{row.lastYearRatio.toFixed(1)}%</td>
-              <td className="px-4 py-3">
+              <td className="px-4 py-3 text-slate-500">
                  {row.type === 'month' ? (
-                    <input 
-                        type="text" 
-                        value={row.scenario}
-                        onChange={(e) => handleTimeChange(row.id, 'scenario', e.target.value)}
-                        className="w-full bg-transparent border-b border-transparent focus:border-brand-300 outline-none text-slate-600"
-                    />
+                    <span className="text-slate-500">{row.scenario}</span>
                  ) : null}
               </td>
               <td className="px-4 py-3 text-right">
