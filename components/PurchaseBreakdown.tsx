@@ -80,16 +80,17 @@ const PurchaseBreakdown: React.FC<PurchaseBreakdownProps> = ({ objective, update
     
     let val = 0;
 
-    // 1. Priority: Look for explicit currency symbol ¥ followed by numbers
-    // Matches ¥6,500,000 or ¥ 6500000
-    const currencyMatch = valStr.match(/¥\s*([\d,]+(\.\d+)?)/);
-    
-    if (currencyMatch) {
-        val = parseFloat(currencyMatch[1].replace(/,/g, ''));
+    // 1. Priority: New万元 format — （xxx万元），转为元
+    const newWanMatch = valStr.match(/（([\d,.]+)万元）/);
+    if (newWanMatch) {
+        val = parseFloat(newWanMatch[1].replace(/,/g, '')) * 10000;
+    }
+    // 2. Old ¥ format (元)
+    else if (valStr.match(/¥\s*([\d,]+(\.\d+)?)/)) {
+        const currencyMatch = valStr.match(/¥\s*([\d,]+(\.\d+)?)/);
+        val = parseFloat(currencyMatch![1].replace(/,/g, ''));
     } else {
-        // 2. Fallback: Look for numbers with units
-        // Exclude years (2024-2030) if possible, but difficult without context.
-        // Instead, look for specific patterns like "X万" or "X亿"
+        // 3. Fallback: Look for numbers with units
         const wanMatch = valStr.match(/(\d+(\.\d+)?)\s*万/);
         const yiMatch = valStr.match(/(\d+(\.\d+)?)\s*亿/);
 
@@ -115,14 +116,7 @@ const PurchaseBreakdown: React.FC<PurchaseBreakdownProps> = ({ objective, update
             }
         }
     }
-    
-    // Final Unit Conversion to "Wan" (Ten Thousand) for display consistency
-    // If value is huge (likely Yuan), convert to Wan. 
-    // Threshold: if > 100,000, assume it's Yuan.
-    if (val >= 100000) {
-        val = val / 10000;
-    }
-    
+
     return parseFloat(val.toFixed(2));
   }, [objective.targetValue]);
 
@@ -178,7 +172,7 @@ const PurchaseBreakdown: React.FC<PurchaseBreakdownProps> = ({ objective, update
                 <div className="text-lg font-bold text-slate-800 flex items-center">
                     年度进货规划表
                     <span className="ml-3 text-xs font-normal text-slate-500 bg-slate-100 px-2 py-0.5 rounded-full">
-                        Total: ¥{totalTarget}
+                        {(totalTarget / 10000).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2 })}万元
                     </span>
                 </div>
               )}

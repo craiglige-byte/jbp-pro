@@ -516,7 +516,7 @@ export const PurchaseBreakdownWizard: React.FC<PurchaseBreakdownWizardProps> = (
                     <Calculator className="mr-2 text-brand-600" size={20} />
                     目标拆解向导
                 </h3>
-                <p className="text-xs text-slate-500 mt-1">Total Target: <span className="font-bold text-brand-600">¥{totalTarget}</span></p>
+                <p className="text-xs text-slate-500 mt-1">Total Target: <span className="font-bold text-brand-600">{(totalTarget / 10000).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2 })}万元</span></p>
             </div>
             <button onClick={onCancel} className="p-2 hover:bg-slate-200 rounded-full transition-colors">
                 <X size={20} className="text-slate-400" />
