@@ -739,23 +739,19 @@ export const PurchaseBreakdownWizard: React.FC<PurchaseBreakdownWizardProps> = (
                                                                 <input
                                                                     type="text" inputMode="decimal"
                                                                     className="w-full bg-transparent outline-none text-right font-mono text-slate-700"
-                                                                    value={cell.amount ? (cell.amount / 10000).toFixed(2) : ''}
-                                                                    placeholder="0"
-                                                                    onChange={(e) => handleStep2Change(c.id, q.id, 'amount', e.target.value)}
-                                                                />
-                                                                <span className="text-slate-400 ml-1 text-[10px]">万元</span>
-                                                            </div>
-                                                            <div className="flex items-center bg-slate-50 rounded border border-slate-200 px-2 py-1 focus-within:border-brand-300 focus-within:ring-1 focus-within:ring-brand-100">
-                                                                <input 
-                                                                    type="text" inputMode="decimal"
-                                                                    className="w-full bg-transparent outline-none text-right font-mono text-slate-700"
                                                                     value={cell.ratio || ''}
                                                                     placeholder="0"
                                                                     onChange={(e) => handleStep2Change(c.id, q.id, 'ratio', e.target.value)}
                                                                 />
                                                                 <span className="text-slate-400 ml-1">%</span>
                                                             </div>
-                                                            
+                                                            <div className="flex items-center bg-slate-50 rounded border border-slate-100 px-2 py-1">
+                                                                <span className="w-full text-right font-mono text-slate-500">
+                                                                    {cell.amount ? (cell.amount / 10000).toFixed(2) : '0.00'}
+                                                                </span>
+                                                                <span className="text-slate-400 ml-1 text-[10px]">万元</span>
+                                                            </div>
+
                                                             {/* Last Year Reference */}
                                                             <div className="text-[10px] text-slate-400 text-right mt-1">
                                                                 今年: {(lyAmount / 10000).toFixed(2)}万元 ({lyQuarterRatio}%)
