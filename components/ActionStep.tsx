@@ -368,7 +368,7 @@ const ActionStep: React.FC<ActionStepProps> = ({ data, updateData, onNext, onBac
           
           {/* Dropdown for adding owners */}
           {isDropdownOpen && (
-            <div className="absolute left-0 top-full mt-1 w-48 bg-white border border-slate-200 shadow-lg rounded-lg p-2 z-10 animate-in fade-in zoom-in-95 duration-200">
+            <div className="absolute left-0 top-full mt-1 w-56 bg-white border border-slate-200 shadow-lg rounded-lg p-2 z-10 animate-in fade-in zoom-in-95 duration-200">
               <div className="mb-2 flex justify-between items-center">
                 <span className="text-[10px] font-bold text-slate-400 uppercase">选择或输入</span>
                 <button onClick={() => setActiveOwnerDropdown(null)} className="text-slate-400 hover:text-slate-600"><X size={12}/></button>
