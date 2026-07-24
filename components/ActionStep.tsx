@@ -374,20 +374,34 @@ const ActionStep: React.FC<ActionStepProps> = ({ data, updateData, onNext, onBac
                 <button onClick={() => setActiveOwnerDropdown(null)} className="text-slate-400 hover:text-slate-600"><X size={12}/></button>
               </div>
               <div className="mb-2">
-                <input 
-                  type="text" 
-                  className="w-full text-xs border border-slate-200 rounded px-2 py-1 mb-1 focus:border-brand-300 focus:ring-1 focus:ring-brand-100 outline-none"
-                  placeholder="自定义角色..."
-                  value={inputValue}
-                  onChange={(e) => setCustomOwnerInputs(prev => ({ ...prev, [act.id]: e.target.value }))}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter' && inputValue.trim()) {
-                      toggleOwner(objId, stratId, act.id, inputValue.trim(), currentOwners);
-                      setCustomOwnerInputs(prev => ({ ...prev, [act.id]: '' }));
-                    }
-                  }}
-                  autoFocus
-                />
+                <div className="flex items-center gap-1">
+                  <input
+                    type="text"
+                    className="flex-1 text-xs border border-slate-200 rounded px-2 py-1 focus:border-brand-300 focus:ring-1 focus:ring-brand-100 outline-none"
+                    placeholder="自定义角色..."
+                    value={inputValue}
+                    onChange={(e) => setCustomOwnerInputs(prev => ({ ...prev, [act.id]: e.target.value }))}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' && inputValue.trim()) {
+                        toggleOwner(objId, stratId, act.id, inputValue.trim(), currentOwners);
+                        setCustomOwnerInputs(prev => ({ ...prev, [act.id]: '' }));
+                      }
+                    }}
+                    autoFocus
+                  />
+                  <button
+                    onClick={() => {
+                      if (inputValue.trim()) {
+                        toggleOwner(objId, stratId, act.id, inputValue.trim(), currentOwners);
+                        setCustomOwnerInputs(prev => ({ ...prev, [act.id]: '' }));
+                      }
+                    }}
+                    disabled={!inputValue.trim()}
+                    className="px-2 py-1 text-xs font-medium rounded bg-brand-600 text-white hover:bg-brand-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex-shrink-0"
+                  >
+                    添加
+                  </button>
+                </div>
               </div>
               <div className="max-h-32 overflow-y-auto space-y-1">
                 {ACTION_OWNERS.map(owner => (
