@@ -225,7 +225,7 @@ const PurchaseBreakdown: React.FC<PurchaseBreakdownProps> = ({ objective, update
                         {CATEGORIES.map(c => (
                             <td key={c.id} className="px-4 py-3 text-right">
                                 <div className="flex flex-col items-end">
-                                    <span>{(catTotals[c.id] / 10000).toFixed(2)}万元</span>
+                                    <span>{(catTotals[c.id] / 10000).toFixed(4)}万元</span>
                                     <span className="text-[10px] text-slate-400 font-normal">
                                         {totalAmount > 0 ? ((catTotals[c.id] / totalAmount) * 100).toFixed(1) : 0}%
                                     </span>
@@ -255,7 +255,7 @@ const PurchaseBreakdown: React.FC<PurchaseBreakdownProps> = ({ objective, update
                                 {CATEGORIES.map(c => (
                                     <td key={c.id} className="px-4 py-2 text-right">
                                         <div className="flex flex-col items-end">
-                                            <span className="text-slate-600">{((d.categoryValues[c.id] as number) / 10000).toFixed(2) || '0.00'}万元</span>
+                                            <span className="text-slate-600">{((d.categoryValues[c.id] as number) / 10000).toFixed(4) || '0.0000'}万元</span>
                                             <span className="text-[9px] text-slate-400">
                                                 {d.total > 0 ? (((d.categoryValues[c.id] as number) / d.total) * 100).toFixed(1) : 0}%
                                             </span>
@@ -283,7 +283,7 @@ const PurchaseBreakdown: React.FC<PurchaseBreakdownProps> = ({ objective, update
                         return (
                             <td key={c.id} className="px-4 py-4 text-right">
                                 <div className="flex flex-col items-end">
-                                    <span>{(catVal / 10000).toFixed(2)}万元</span>
+                                    <span>{(catVal / 10000).toFixed(4)}万元</span>
                                     <span className="text-[10px] text-emerald-600 font-normal">
                                         {currentCatTotal > 0 ? ((catVal / currentCatTotal) * 100).toFixed(1) : 0}%
                                     </span>
