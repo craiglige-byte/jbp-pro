@@ -1640,8 +1640,13 @@ const ObjectiveStep: React.FC<ObjectiveStepProps> = ({ data, updateData, onNext,
         <button
           onClick={handleNextClick}
           className={`px-8 py-2.5 rounded-xl text-white font-medium shadow-lg transition-all ${
-             checkAllObjectivesFilled() ? 'bg-brand-600 hover:bg-brand-700 shadow-brand-200' : 'bg-slate-400 hover:bg-slate-500 shadow-slate-200'
+            !data.authorizationConfirmed
+              ? 'bg-slate-300 text-slate-400 cursor-not-allowed shadow-none'
+              : checkAllObjectivesFilled()
+                ? 'bg-brand-600 hover:bg-brand-700 shadow-brand-200'
+                : 'bg-slate-400 hover:bg-slate-500 shadow-slate-200'
           }`}
+          title={!data.authorizationConfirmed ? '请先确认授权地图范围' : undefined}
         >
           下一步：策略与衡量 (S&M)
         </button>
