@@ -822,7 +822,7 @@ export const PurchaseBreakdownWizard: React.FC<PurchaseBreakdownWizardProps> = (
                                                     />
                                                     <span className="text-xs text-slate-400">%</span>
                                                     <span className="w-20 text-right text-xs text-slate-500 font-mono">
-                                                        {(monthAmount / 10000).toFixed(2)}万元
+                                                        {(monthAmount / 10000).toFixed(4)}万元
                                                     </span>
                                                 </div>
                                             );
@@ -864,7 +864,7 @@ export const PurchaseBreakdownWizard: React.FC<PurchaseBreakdownWizardProps> = (
                                                     <td className="px-4 py-3 text-right">{totalRatio.toFixed(1)}%</td>
                                                     <td className="px-4 py-3 text-right">
                                                         <div className="flex flex-col items-end">
-                                                            <span>{(totalAmount / 10000).toFixed(2)}万元</span>
+                                                            <span>{(totalAmount / 10000).toFixed(4)}万元</span>
                                                         </div>
                                                     </td>
                                                     {CATEGORIES.map(c => (
@@ -886,7 +886,7 @@ export const PurchaseBreakdownWizard: React.FC<PurchaseBreakdownWizardProps> = (
                                                     <td className="px-4 py-2"></td>
                                                     <td className="px-4 py-2 text-right">
                                                         <div className="flex flex-col items-end">
-                                                            <span>*{ ((totalAmount * 0.9) / 10000).toFixed(2) }万元*</span>
+                                                            <span>*{ ((totalAmount * 0.9) / 10000).toFixed(4) }万元*</span>
                                                         </div>
                                                     </td>
                                                     {CATEGORIES.map(c => (
@@ -932,7 +932,7 @@ export const PurchaseBreakdownWizard: React.FC<PurchaseBreakdownWizardProps> = (
                                                                         <input
                                                                             type="text" inputMode="decimal"
                                                                             className="w-20 bg-transparent text-right outline-none font-medium text-slate-800 border-b border-transparent focus:border-brand-300"
-                                                                            value={d.total ? (d.total / 10000).toFixed(2) : ''}
+                                                                            value={d.total ? (d.total / 10000).toFixed(4) : ''}
                                                                             placeholder="0"
                                                                             onChange={(e) => handleMonthChange(m.id, 'total', e.target.value)}
                                                                         />
@@ -965,7 +965,7 @@ export const PurchaseBreakdownWizard: React.FC<PurchaseBreakdownWizardProps> = (
                                                                 <td colSpan={2}></td>
                                                                 <td className="px-4 py-1 text-right">
                                                                     <div className="flex flex-col items-end">
-                                                                        <span>*{ ((d.total * 0.9) / 10000).toFixed(2) }万元*</span>
+                                                                        <span>*{ ((d.total * 0.9) / 10000).toFixed(4) }万元*</span>
                                                                     </div>
                                                                 </td>
                                                                 {CATEGORIES.map(c => (
@@ -990,7 +990,7 @@ export const PurchaseBreakdownWizard: React.FC<PurchaseBreakdownWizardProps> = (
                                         <td className="px-4 py-4 text-right">100%</td>
                                         <td className="px-4 py-4 text-right">
                                             <div className="flex flex-col items-end">
-                                                <span>{(plan.categorySplit.reduce((sum, c) => sum + c.amount, 0) / 10000).toFixed(2)}万元</span>
+                                                <span>{(plan.categorySplit.reduce((sum, c) => sum + c.amount, 0) / 10000).toFixed(4)}万元</span>
                                             </div>
                                         </td>
                                         {CATEGORIES.map(c => {
@@ -1015,7 +1015,7 @@ export const PurchaseBreakdownWizard: React.FC<PurchaseBreakdownWizardProps> = (
                                         <td className="px-4 py-4 text-right"></td>
                                         <td className="px-4 py-4 text-right">
                                             <div className="flex flex-col items-end">
-                                                <span>{((totalTarget * 0.9) / 10000).toFixed(2)}万元</span>
+                                                <span>{((totalTarget * 0.9) / 10000).toFixed(4)}万元</span>
                                             </div>
                                         </td>
                                         {CATEGORIES.map(c => {

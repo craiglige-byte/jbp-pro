@@ -220,7 +220,7 @@ const PurchaseBreakdown: React.FC<PurchaseBreakdownProps> = ({ objective, update
                         <td className="px-4 py-3"></td>
                         <td className="px-4 py-3 text-right">{totalRatio.toFixed(1)}%</td>
                         <td className="px-4 py-3 text-right bg-emerald-50 text-emerald-800">
-                            {(totalAmount / 10000).toFixed(2)}万元
+                            {(totalAmount / 10000).toFixed(4)}万元
                         </td>
                         {CATEGORIES.map(c => (
                             <td key={c.id} className="px-4 py-3 text-right">
@@ -250,7 +250,7 @@ const PurchaseBreakdown: React.FC<PurchaseBreakdownProps> = ({ objective, update
                                     {d.ratio.toFixed(1)}%
                                 </td>
                                 <td className="px-4 py-2 text-right font-medium bg-emerald-50 text-emerald-700">
-                                    {(d.total / 10000).toFixed(2)}万元
+                                    {(d.total / 10000).toFixed(4)}万元
                                 </td>
                                 {CATEGORIES.map(c => (
                                     <td key={c.id} className="px-4 py-2 text-right">
@@ -276,7 +276,7 @@ const PurchaseBreakdown: React.FC<PurchaseBreakdownProps> = ({ objective, update
                     <td className="px-4 py-4"></td>
                     <td className="px-4 py-4 text-right">100%</td>
                     <td className="px-4 py-4 text-right">
-                        {(currentCatTotal / 10000).toFixed(2)}万元
+                        {(currentCatTotal / 10000).toFixed(4)}万元
                     </td>
                     {CATEGORIES.map(c => {
                         const catVal = purchasePlan.categorySplit.find(cat => cat.id === c.id)?.amount || 0;
