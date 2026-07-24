@@ -1443,34 +1443,40 @@ const ObjectiveStep: React.FC<ObjectiveStepProps> = ({ data, updateData, onNext,
                               为保障市场供应并深化战略协作，我司承诺在 <span className="font-medium">元气森林2027财年（2026年12月1日至2027年11月30日）</span> 内，根据双方共同确认的滚动预测，完成总计 
                               <span className="font-bold mx-1 text-brand-700">
                                 {(() => {
-                                  const match = obj.targetValue.match(/¥([\d,.]+)/);
-                                  if (!match || !match[1]) return '零万元整';
-                                  const raw = match[1].replace(/[,]/g, '');
-                                  const storedNum = parseInt(raw, 10);
-                                  if (isNaN(storedNum)) return '零万元整';
-                                  // 新格式「）万元」→ 已是万元；旧格式→需÷10000转为万元
-                                  const isNewFormat = /）万元/.test(obj.targetValue);
-                                  const numInYuan = isNewFormat ? storedNum * 10000 : storedNum;
-                                  return digitToChinese(numInYuan).replace(/元整$/, '万元整');
+                                  // 提取括号内的数值和单位
+                                  const newMatch = obj.targetValue.match(/（([\d,.]+)万元）/);
+                                  const oldMatch = obj.targetValue.match(/¥([\d,.]+)/);
+                                  if (newMatch && newMatch[1]) {
+                                    const wanNum = parseInt(newMatch[1].replace(/[,]/g, ''), 10);
+                                    if (!isNaN(wanNum)) return digitToChinese(wanNum * 10000).replace(/元整$/, '万元整');
+                                  }
+                                  if (oldMatch && oldMatch[1]) {
+                                    const yuanNum = parseInt(oldMatch[1].replace(/[,]/g, ''), 10);
+                                    if (!isNaN(yuanNum)) return digitToChinese(yuanNum).replace(/元整$/, '万元整');
+                                  }
+                                  return '零万元整';
                                 })()}
                               </span>
-                              （¥
+                              （
                               <input
                                 type="text"
                                 value={(() => {
-                                  const match = obj.targetValue.match(/¥([\d,.]+)/);
-                                  if (!match || !match[1]) return '';
-                                  const raw = match[1].replace(/[,]/g, '');
-                                  const storedNum = parseInt(raw, 10);
-                                  if (isNaN(storedNum)) return '';
-                                  const isNewFormat = /）万元/.test(obj.targetValue);
-                                  const wanValue = isNewFormat ? storedNum : storedNum / 10000;
-                                  return wanValue.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2 });
+                                  const newMatch = obj.targetValue.match(/（([\d,.]+)万元）/);
+                                  if (newMatch && newMatch[1]) {
+                                    const wanNum = parseInt(newMatch[1].replace(/[,]/g, ''), 10);
+                                    if (!isNaN(wanNum)) return wanNum.toLocaleString();
+                                  }
+                                  const oldMatch = obj.targetValue.match(/¥([\d,.]+)/);
+                                  if (oldMatch && oldMatch[1]) {
+                                    const yuanNum = parseInt(oldMatch[1].replace(/[,]/g, ''), 10);
+                                    if (!isNaN(yuanNum)) return (yuanNum / 10000).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2 });
+                                  }
+                                  return '';
                                 })()}
                                 onFocus={(e) => {
                                     if (e.target.value === '0' || e.target.value === '') {
                                         e.target.value = '';
-                                        const newText = `为保障市场供应并深化战略协作，我司承诺在 元气森林2027财年（2026年12月1日至2027年11月30日） 内，根据双方共同确认的滚动预测，完成总计 人民币零万元整（¥）万元 的 Sell-in进货。该目标旨在确保核心产品对渠道的充足供应，为终端销售增长奠定基础。`;
+                                        const newText = `为保障市场供应并深化战略协作，我司承诺在 元气森林2027财年（2026年12月1日至2027年11月30日） 内，根据双方共同确认的滚动预测，完成总计 人民币零万元整（万元） 的 Sell-in进货。该目标旨在确保核心产品对渠道的充足供应，为终端销售增长奠定基础。`;
                                         updateObjectiveTarget(obj.id, newText);
                                     }
                                 }}
@@ -1482,7 +1488,7 @@ const ObjectiveStep: React.FC<ObjectiveStepProps> = ({ data, updateData, onNext,
                                   const chineseAmount = num === 0 ? '零万元整' : digitToChinese(num).replace(/元整$/, '万元整');
                                   const formattedWan = num === 0 ? '' : wan.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2 });
 
-                                  const newPurchaseText = `为保障市场供应并深化战略协作，我司承诺在 元气森林2027财年（2026年12月1日至2027年11月30日） 内，根据双方共同确认的滚动预测，完成总计 人民币${chineseAmount}（¥${formattedWan}）万元 的 Sell-in进货。该目标旨在确保核心产品对渠道的充足供应，为终端销售增长奠定基础。`;
+                                  const newPurchaseText = `为保障市场供应并深化战略协作，我司承诺在 元气森林2027财年（2026年12月1日至2027年11月30日） 内，根据双方共同确认的滚动预测，完成总计 人民币${chineseAmount}（${formattedWan}万元） 的 Sell-in进货。该目标旨在确保核心产品对渠道的充足供应，为终端销售增长奠定基础。`;
                                   
                                   // Update Purchase Target
                                   let newObjectives = data.objectives.map(o => o.id === obj.id ? { ...o, targetValue: newPurchaseText } : o);
@@ -1506,7 +1512,7 @@ const ObjectiveStep: React.FC<ObjectiveStepProps> = ({ data, updateData, onNext,
                                 className="w-24 text-center border-b border-slate-300 focus:border-brand-500 outline-none bg-transparent font-bold text-brand-600 px-1"
                                 placeholder="输入金额"
                               />
-                              ） 的 Sell-in进货。该目标旨在确保核心产品对渠道的充足供应，为终端销售增长奠定基础。
+                              万元） 的 Sell-in进货。该目标旨在确保核心产品对渠道的充足供应，为终端销售增长奠定基础。
                               </div>
                             </div>
                           ) : obj.title === '实现销售目标' ? (
