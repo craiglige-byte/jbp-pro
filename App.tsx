@@ -142,12 +142,12 @@ const INITIAL_DATA: JBPData = {
     { id: '12', name: '线上', sales: 150, growth: 30, profitMargin: 21, contribution: 12 },
   ],
   teamAnalysis: [
-    { id: '1', name: '张经理', status: 'active', sales: 350, growth: 20, profitMargin: 15, contribution: 30 },
-    { id: '2', name: '李主管', status: 'active', sales: 280, growth: 15, profitMargin: 13, contribution: 24 },
-    { id: '3', name: '王业代', status: 'active', sales: 210, growth: 10, profitMargin: 12, contribution: 18 },
-    { id: '4', name: '赵业代', status: 'active', sales: 180, growth: 5, profitMargin: 11, contribution: 15 },
-    { id: '5', name: '孙业代', status: 'active', sales: 130, growth: 2, profitMargin: 10, contribution: 11 },
-    { id: '6', name: '钱业代 (离职)', status: 'resigned', sales: 0, growth: 0, profitMargin: 0, contribution: 2 },
+    { id: '1', name: '张经理', role: '销售经理', status: 'active', sales: 350, growth: 20, profitMargin: 15, contribution: 30 },
+    { id: '2', name: '李主管', role: '业务主管', status: 'active', sales: 280, growth: 15, profitMargin: 13, contribution: 24 },
+    { id: '3', name: '王业代', role: '业务员', status: 'active', sales: 210, growth: 10, profitMargin: 12, contribution: 18 },
+    { id: '4', name: '赵业代', role: '业务员', status: 'active', sales: 180, growth: 5, profitMargin: 11, contribution: 15 },
+    { id: '5', name: '孙业代', role: '业务员', status: 'active', sales: 130, growth: 2, profitMargin: 10, contribution: 11 },
+    { id: '6', name: '钱业代 (离职)', role: '业务员', status: 'resigned', sales: 0, growth: 0, profitMargin: 0, contribution: 2 },
   ],
   trends: [
     { month: '12月', inventory: 12500, days: 40, sellIn: 92, sellOut: 85 },

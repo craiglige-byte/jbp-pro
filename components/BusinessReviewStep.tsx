@@ -142,8 +142,8 @@ const BusinessReviewStep: React.FC<BusinessReviewStepProps> = ({ data, updateDat
       const newData = [...(data.teamAnalysis || [])];
       if (field === 'status') {
           newData[index] = { ...newData[index], status: value as 'active' | 'resigned' };
-      } else if (field === 'name') {
-          newData[index] = { ...newData[index], name: value };
+      } else if (field === 'name' || field === 'role') {
+          newData[index] = { ...newData[index], [field]: value };
       } else {
           newData[index] = { ...newData[index], [field]: Number(value) || 0 };
       }
@@ -1861,6 +1861,7 @@ const BusinessReviewStep: React.FC<BusinessReviewStepProps> = ({ data, updateDat
                             <tr>
                                 <th className="px-4 py-3 border-b border-slate-200">姓名</th>
                                 <th className="px-4 py-3 border-b border-slate-200">状态</th>
+                                <th className="px-4 py-3 border-b border-slate-200">岗位</th>
                                 <th className="px-4 py-3 border-b border-slate-200 text-right">销售额</th>
                                 <th className="px-4 py-3 border-b border-slate-200 text-right">贡献度 (%)</th>
                             </tr>
@@ -1892,6 +1893,16 @@ const BusinessReviewStep: React.FC<BusinessReviewStepProps> = ({ data, updateDat
                                                 {item.status === 'active' ? '在职' : '离职'}
                                             </span>
                                         )}
+                                    </td>
+                                    <td className="px-4 py-3">
+                                        {isEditingTeamAnalysis ? (
+                                            <input
+                                                value={item.role || ''}
+                                                onChange={(e) => updateTeamData(index, 'role', e.target.value)}
+                                                className="w-20 bg-transparent border-b border-dashed border-slate-300 focus:border-brand-500 outline-none"
+                                                placeholder="岗位"
+                                            />
+                                        ) : <span className="text-xs text-slate-500">{item.role || '-'}</span>}
                                     </td>
                                     <td className="px-4 py-3 text-right">
                                         {isEditingTeamAnalysis ? (

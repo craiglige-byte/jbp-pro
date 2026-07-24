@@ -415,6 +415,7 @@ export interface JBPChannelAnalysis {
 export interface JBPTeamAnalysis {
   id: string;
   name: string;
+  role: string;
   status: 'active' | 'resigned';
   sales: number;
   growth: number;
