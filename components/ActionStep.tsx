@@ -75,7 +75,7 @@ const ActionStep: React.FC<ActionStepProps> = ({ data, updateData, onNext, onBac
   const [activeOwnerDropdown, setActiveOwnerDropdown] = useState<string | null>(null);
   const [draggedActionId, setDraggedActionId] = useState<string | null>(null);
   const [filterOwner, setFilterOwner] = useState<string>('all');
-  const [customDeadlineMode, setCustomDeadlineMode] = useState<Record<string, boolean>>({});
+  const [customDeadlineInputs, setCustomDeadlineInputs] = useState<Record<string, string>>({});
 
   // 验证状态
   const [validationError, setValidationError] = useState<string | null>(null);
@@ -789,77 +789,96 @@ const ActionStep: React.FC<ActionStepProps> = ({ data, updateData, onNext, onBac
 
                                                           {/* Deadline Selector */}
                                                           <div className={`w-full mt-2 md:mt-0 flex flex-col gap-2 ${actionIncomplete && missingFields.includes('时间排期') ? 'ring-2 ring-red-200 rounded' : ''}`}>
-                                                              <div className="relative w-full">
-                                                                  <CalendarIcon size={12} className="absolute left-2 top-1/2 -translate-y-1/2 text-slate-400" />
-                                                                  <select 
-                                                                      className={`w-full pl-7 pr-2 py-1.5 text-xs border rounded outline-none text-slate-600 appearance-none bg-white ${
-                                                                        actionIncomplete && missingFields.includes('时间排期') 
-                                                                          ? 'border-red-300 focus:border-red-400' 
-                                                                          : 'border-slate-200 focus:border-brand-300'
-                                                                      }`}
-                                                                      value={(customDeadlineMode[act.id] || !['', 'Q1', 'Q2', 'Q3', 'Q4'].includes(act.deadline || '')) ? 'custom' : (act.deadline || '')}
-                                                                      onChange={(e) => {
-                                                                          const val = e.target.value;
-                                                                          if (val === 'custom') {
-                                                                              setCustomDeadlineMode(prev => ({ ...prev, [act.id]: true }));
-                                                                          } else {
-                                                                              setCustomDeadlineMode(prev => ({ ...prev, [act.id]: false }));
-                                                                              updateAction(obj.id, strat.id, act.id, { deadline: val });
+                                                              <div className="flex flex-wrap gap-1.5">
+                                                                  {['Q1', 'Q2', 'Q3', 'Q4'].map(q => {
+                                                                      const parts = (act.deadline || '').split(',').map(s => s.trim()).filter(Boolean);
+                                                                      const isSelected = parts.includes(q);
+                                                                      return (
+                                                                          <button
+                                                                              key={q}
+                                                                              type="button"
+                                                                              onClick={() => {
+                                                                                  let parts = (act.deadline || '').split(',').map(s => s.trim()).filter(Boolean);
+                                                                                  const stdQuarters = ['Q1', 'Q2', 'Q3', 'Q4'];
+                                                                                  const currentQuarters = parts.filter(p => stdQuarters.includes(p));
+                                                                                  const customParts = parts.filter(p => !stdQuarters.includes(p));
+                                                                                  let newQuarters: string[];
+                                                                                  if (isSelected) {
+                                                                                      newQuarters = currentQuarters.filter(x => x !== q);
+                                                                                  } else {
+                                                                                      newQuarters = [...currentQuarters, q].sort((a, b) => stdQuarters.indexOf(a) - stdQuarters.indexOf(b));
+                                                                                  }
+                                                                                  updateAction(obj.id, strat.id, act.id, { deadline: [...newQuarters, ...customParts].join(', ') });
+                                                                              }}
+                                                                              className={`px-2.5 py-1 text-xs font-medium rounded border transition-colors ${
+                                                                                  isSelected
+                                                                                      ? 'bg-brand-600 text-white border-brand-600'
+                                                                                      : 'bg-white text-slate-600 border-slate-200 hover:border-brand-300 hover:text-brand-600'
+                                                                              }`}
+                                                                          >
+                                                                              {q}
+                                                                          </button>
+                                                                      );
+                                                                  })}
+                                                              </div>
+                                                              <div className="flex items-center gap-1">
+                                                                  <input
+                                                                      type="text"
+                                                                      className="flex-1 text-xs border border-slate-200 rounded px-2 py-1.5 outline-none focus:border-brand-300 text-slate-600 bg-white"
+                                                                      placeholder="输入其他时间 (如: 每月)"
+                                                                      value={customDeadlineInputs[act.id] || ''}
+                                                                      onChange={(e) => setCustomDeadlineInputs(prev => ({ ...prev, [act.id]: e.target.value }))}
+                                                                      onKeyDown={(e) => {
+                                                                          if (e.key === 'Enter' && (customDeadlineInputs[act.id] || '').trim()) {
+                                                                              const parts = (act.deadline || '').split(',').map(s => s.trim()).filter(Boolean);
+                                                                              const stdQuarters = ['Q1', 'Q2', 'Q3', 'Q4'];
+                                                                              const currentQuarters = parts.filter(p => stdQuarters.includes(p));
+                                                                              const customParts = parts.filter(p => !stdQuarters.includes(p));
+                                                                              customParts.push(customDeadlineInputs[act.id].trim());
+                                                                              updateAction(obj.id, strat.id, act.id, { deadline: [...currentQuarters, ...customParts].join(', ') });
+                                                                              setCustomDeadlineInputs(prev => ({ ...prev, [act.id]: '' }));
                                                                           }
                                                                       }}
+                                                                  />
+                                                                  <button
+                                                                      type="button"
+                                                                      onClick={() => {
+                                                                          const val = (customDeadlineInputs[act.id] || '').trim();
+                                                                          if (!val) return;
+                                                                          const parts = (act.deadline || '').split(',').map(s => s.trim()).filter(Boolean);
+                                                                          const stdQuarters = ['Q1', 'Q2', 'Q3', 'Q4'];
+                                                                          const currentQuarters = parts.filter(p => stdQuarters.includes(p));
+                                                                          const customParts = parts.filter(p => !stdQuarters.includes(p));
+                                                                          customParts.push(val);
+                                                                          updateAction(obj.id, strat.id, act.id, { deadline: [...currentQuarters, ...customParts].join(', ') });
+                                                                          setCustomDeadlineInputs(prev => ({ ...prev, [act.id]: '' }));
+                                                                      }}
+                                                                      disabled={!(customDeadlineInputs[act.id] || '').trim()}
+                                                                      className="px-2.5 py-1.5 text-xs font-medium rounded bg-brand-600 text-white hover:bg-brand-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex-shrink-0"
                                                                   >
-                                                                      <option value="">未排期</option>
-                                                                      <option value="Q1">Q1</option>
-                                                                      <option value="Q2">Q2</option>
-                                                                      <option value="Q3">Q3</option>
-                                                                      <option value="Q4">Q4</option>
-                                                                      <option value="custom">自定义</option>
-                                                                  </select>
-                                                                  <ChevronDown size={12} className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
+                                                                      添加
+                                                                  </button>
                                                               </div>
-                                                              
-                                                              {(customDeadlineMode[act.id] || !['', 'Q1', 'Q2', 'Q3', 'Q4'].includes(act.deadline || '')) && (
-                                                                  <div className="flex flex-col gap-2 bg-slate-50 p-2 rounded border border-slate-100">
-                                                                      <div className="flex flex-wrap gap-3">
-                                                                          {['Q1', 'Q2', 'Q3', 'Q4'].map(q => {
-                                                                              const isSelected = act.deadline?.includes(q);
-                                                                              return (
-                                                                                  <label key={q} className="flex items-center space-x-1.5 cursor-pointer">
-                                                                                      <input 
-                                                                                          type="checkbox" 
-                                                                                          className="rounded border-slate-300 text-brand-600 focus:ring-brand-500 w-3.5 h-3.5"
-                                                                                          checked={isSelected}
-                                                                                          onChange={() => {
-                                                                                              let quarters = (act.deadline || '').split(',').map(s => s.trim()).filter(Boolean);
-                                                                                              if (isSelected) {
-                                                                                                  quarters = quarters.filter(x => x !== q);
-                                                                                              } else {
-                                                                                                  if (!quarters.includes(q)) quarters.push(q);
-                                                                                              }
-                                                                                              const order = ['Q1', 'Q2', 'Q3', 'Q4'];
-                                                                                              quarters.sort((a, b) => {
-                                                                                                  const idxA = order.indexOf(a);
-                                                                                                  const idxB = order.indexOf(b);
-                                                                                                  if (idxA !== -1 && idxB !== -1) return idxA - idxB;
-                                                                                                  if (idxA !== -1) return -1;
-                                                                                                  if (idxB !== -1) return 1;
-                                                                                                  return 0;
-                                                                                              });
-                                                                                              updateAction(obj.id, strat.id, act.id, { deadline: quarters.join(', ') });
-                                                                                          }}
-                                                                                      />
-                                                                                      <span className="text-xs font-medium text-slate-600">{q}</span>
-                                                                                  </label>
-                                                                              );
-                                                                          })}
-                                                                      </div>
-                                                                      <input 
-                                                                          type="text"
-                                                                          className="w-full text-xs border border-slate-200 rounded px-2 py-1.5 outline-none focus:border-brand-300 text-slate-600 bg-white"
-                                                                          placeholder="或输入其他时间 (如: 每月)"
-                                                                          value={act.deadline || ''}
-                                                                          onChange={(e) => updateAction(obj.id, strat.id, act.id, { deadline: e.target.value })}
-                                                                      />
+                                                              {/* Show current combined deadline */}
+                                                              {(act.deadline || '').trim() && (
+                                                                  <div className="flex flex-wrap gap-1 items-center">
+                                                                      <span className="text-[10px] text-slate-400">已选:</span>
+                                                                      {(act.deadline || '').split(',').map(s => s.trim()).filter(Boolean).map((part, i) => (
+                                                                          <span key={i} className="inline-flex items-center gap-0.5 px-1.5 py-0.5 text-[10px] font-medium bg-slate-100 text-slate-600 rounded">
+                                                                              {part}
+                                                                              <button
+                                                                                  type="button"
+                                                                                  onClick={() => {
+                                                                                      const parts = (act.deadline || '').split(',').map(s => s.trim()).filter(Boolean);
+                                                                                      const newParts = parts.filter(p => p !== part);
+                                                                                      updateAction(obj.id, strat.id, act.id, { deadline: newParts.join(', ') });
+                                                                                  }}
+                                                                                  className="ml-0.5 text-slate-400 hover:text-red-500"
+                                                                              >
+                                                                                  <X size={10} />
+                                                                              </button>
+                                                                          </span>
+                                                                      ))}
                                                                   </div>
                                                               )}
                                                           </div>
