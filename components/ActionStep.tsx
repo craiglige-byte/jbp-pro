@@ -73,6 +73,7 @@ const ActionStep: React.FC<ActionStepProps> = ({ data, updateData, onNext, onBac
   const [viewMode, setViewMode] = useState<'list' | 'calendar'>('list');
   const [customOwnerInputs, setCustomOwnerInputs] = useState<Record<string, string>>({}); // actionId -> input value
   const [activeOwnerDropdown, setActiveOwnerDropdown] = useState<string | null>(null);
+  const [activeDeadlineDropdown, setActiveDeadlineDropdown] = useState<string | null>(null);
   const [draggedActionId, setDraggedActionId] = useState<string | null>(null);
   const [filterOwner, setFilterOwner] = useState<string>('all');
   const [customDeadlineInputs, setCustomDeadlineInputs] = useState<Record<string, string>>({});
@@ -345,78 +346,80 @@ const ActionStep: React.FC<ActionStepProps> = ({ data, updateData, onNext, onBac
     const isDropdownOpen = activeOwnerDropdown === act.id;
 
     return (
-      <div className="flex flex-wrap gap-2 items-center">
-        {currentOwners.map(owner => (
-          <span key={owner} className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${OWNER_COLORS[owner] || 'bg-slate-100 text-slate-600'}`}>
-            {owner}
-            <button 
-              onClick={() => toggleOwner(objId, stratId, act.id, owner, currentOwners)}
-              className="ml-1 hover:text-red-500"
+      <div className="flex flex-col gap-1.5">
+        <span className="text-[10px] font-bold text-slate-400 uppercase">负责人</span>
+        <div className="flex flex-wrap gap-1 items-center">
+          {currentOwners.map(owner => (
+            <span key={owner} className={`inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[11px] font-medium ${OWNER_COLORS[owner] || 'bg-slate-100 text-slate-600'}`}>
+              {owner}
+              <button
+                onClick={() => toggleOwner(objId, stratId, act.id, owner, currentOwners)}
+                className="ml-0.5 text-slate-400 hover:text-red-500"
+              >
+                <X size={10} />
+              </button>
+            </span>
+          ))}
+          <div className="relative">
+            <button
+              onClick={() => setActiveOwnerDropdown(isDropdownOpen ? null : act.id)}
+              className="flex items-center justify-center w-5 h-5 rounded border border-dashed border-slate-300 text-slate-400 hover:border-brand-400 hover:text-brand-500 transition-colors"
             >
-              <X size={10} />
+              <Plus size={12} />
             </button>
-          </span>
-        ))}
-        
-        <div className="relative">
-          <button 
-            onClick={() => setActiveOwnerDropdown(isDropdownOpen ? null : act.id)}
-            className={`flex items-center text-xs border rounded px-3 py-1 transition-colors ${isDropdownOpen ? 'border-brand-500 text-brand-700 bg-brand-50' : 'border-brand-200 text-brand-600 bg-white hover:bg-brand-50 hover:border-brand-300'}`}
-          >
-            <Plus size={12} className="mr-1.5" /> 添加负责人
-          </button>
-          
-          {/* Dropdown for adding owners */}
-          {isDropdownOpen && (
-            <div className="absolute left-0 top-full mt-1 w-56 bg-white border border-slate-200 shadow-lg rounded-lg p-2 z-10 animate-in fade-in zoom-in-95 duration-200">
-              <div className="mb-2 flex justify-between items-center">
-                <span className="text-[10px] font-bold text-slate-400 uppercase">选择或输入</span>
-                <button onClick={() => setActiveOwnerDropdown(null)} className="text-slate-400 hover:text-slate-600"><X size={12}/></button>
-              </div>
-              <div className="mb-2">
-                <div className="flex items-center gap-1">
-                  <input
-                    type="text"
-                    className="flex-1 text-xs border border-slate-200 rounded px-2 py-1 focus:border-brand-300 focus:ring-1 focus:ring-brand-100 outline-none"
-                    placeholder="自定义角色..."
-                    value={inputValue}
-                    onChange={(e) => setCustomOwnerInputs(prev => ({ ...prev, [act.id]: e.target.value }))}
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter' && inputValue.trim()) {
-                        toggleOwner(objId, stratId, act.id, inputValue.trim(), currentOwners);
-                        setCustomOwnerInputs(prev => ({ ...prev, [act.id]: '' }));
-                      }
-                    }}
-                    autoFocus
-                  />
-                  <button
-                    onClick={() => {
-                      if (inputValue.trim()) {
-                        toggleOwner(objId, stratId, act.id, inputValue.trim(), currentOwners);
-                        setCustomOwnerInputs(prev => ({ ...prev, [act.id]: '' }));
-                      }
-                    }}
-                    disabled={!inputValue.trim()}
-                    className="px-2 py-1 text-xs font-medium rounded bg-brand-600 text-white hover:bg-brand-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex-shrink-0"
-                  >
-                    添加
-                  </button>
+
+            {/* Dropdown for adding owners */}
+            {isDropdownOpen && (
+              <div className="absolute left-0 top-full mt-1 w-56 bg-white border border-slate-200 shadow-lg rounded-lg p-2 z-20">
+                <div className="mb-2 flex justify-between items-center">
+                  <span className="text-[10px] font-bold text-slate-400 uppercase">选择或输入</span>
+                  <button onClick={() => setActiveOwnerDropdown(null)} className="text-slate-400 hover:text-slate-600"><X size={12}/></button>
+                </div>
+                <div className="mb-2">
+                  <div className="flex items-center gap-1">
+                    <input
+                      type="text"
+                      className="flex-1 text-xs border border-slate-200 rounded px-2 py-1 focus:border-brand-300 focus:ring-1 focus:ring-brand-100 outline-none"
+                      placeholder="自定义角色..."
+                      value={inputValue}
+                      onChange={(e) => setCustomOwnerInputs(prev => ({ ...prev, [act.id]: e.target.value }))}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' && inputValue.trim()) {
+                          toggleOwner(objId, stratId, act.id, inputValue.trim(), currentOwners);
+                          setCustomOwnerInputs(prev => ({ ...prev, [act.id]: '' }));
+                        }
+                      }}
+                      autoFocus
+                    />
+                    <button
+                      onClick={() => {
+                        if (inputValue.trim()) {
+                          toggleOwner(objId, stratId, act.id, inputValue.trim(), currentOwners);
+                          setCustomOwnerInputs(prev => ({ ...prev, [act.id]: '' }));
+                        }
+                      }}
+                      disabled={!inputValue.trim()}
+                      className="px-2 py-1 text-xs font-medium rounded bg-brand-600 text-white hover:bg-brand-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex-shrink-0"
+                    >
+                      添加
+                    </button>
+                  </div>
+                </div>
+                <div className="max-h-32 overflow-y-auto space-y-1">
+                  {ACTION_OWNERS.map(owner => (
+                    <button
+                      key={owner}
+                      onClick={() => toggleOwner(objId, stratId, act.id, owner, currentOwners)}
+                      className={`w-full text-left text-xs px-2 py-1 rounded hover:bg-slate-50 flex justify-between items-center ${currentOwners.includes(owner) ? 'text-brand-600 font-medium bg-brand-50' : 'text-slate-600'}`}
+                    >
+                      {owner}
+                      {currentOwners.includes(owner) && <CheckCircle2 size={10} />}
+                    </button>
+                  ))}
                 </div>
               </div>
-              <div className="max-h-32 overflow-y-auto space-y-1">
-                {ACTION_OWNERS.map(owner => (
-                  <button
-                    key={owner}
-                    onClick={() => toggleOwner(objId, stratId, act.id, owner, currentOwners)}
-                    className={`w-full text-left text-xs px-2 py-1 rounded hover:bg-slate-50 flex justify-between items-center ${currentOwners.includes(owner) ? 'text-brand-600 font-medium bg-brand-50' : 'text-slate-600'}`}
-                  >
-                    {owner}
-                    {currentOwners.includes(owner) && <CheckCircle2 size={10} />}
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
+            )}
+          </div>
         </div>
       </div>
     );
@@ -788,99 +791,121 @@ const ActionStep: React.FC<ActionStepProps> = ({ data, updateData, onNext, onBac
                                                           </div>
 
                                                           {/* Deadline Selector */}
-                                                          <div className={`w-full mt-2 md:mt-0 flex flex-col gap-2 ${actionIncomplete && missingFields.includes('时间排期') ? 'ring-2 ring-red-200 rounded' : ''}`}>
-                                                              <div className="flex flex-wrap gap-1.5">
-                                                                  {['Q1', 'Q2', 'Q3', 'Q4'].map(q => {
-                                                                      const parts = (act.deadline || '').split(',').map(s => s.trim()).filter(Boolean);
-                                                                      const isSelected = parts.includes(q);
-                                                                      return (
-                                                                          <button
-                                                                              key={q}
-                                                                              type="button"
-                                                                              onClick={() => {
-                                                                                  let parts = (act.deadline || '').split(',').map(s => s.trim()).filter(Boolean);
-                                                                                  const stdQuarters = ['Q1', 'Q2', 'Q3', 'Q4'];
-                                                                                  const currentQuarters = parts.filter(p => stdQuarters.includes(p));
-                                                                                  const customParts = parts.filter(p => !stdQuarters.includes(p));
-                                                                                  let newQuarters: string[];
-                                                                                  if (isSelected) {
-                                                                                      newQuarters = currentQuarters.filter(x => x !== q);
-                                                                                  } else {
-                                                                                      newQuarters = [...currentQuarters, q].sort((a, b) => stdQuarters.indexOf(a) - stdQuarters.indexOf(b));
-                                                                                  }
-                                                                                  updateAction(obj.id, strat.id, act.id, { deadline: [...newQuarters, ...customParts].join(', ') });
-                                                                              }}
-                                                                              className={`px-2.5 py-1 text-xs font-medium rounded border transition-colors ${
-                                                                                  isSelected
-                                                                                      ? 'bg-brand-600 text-white border-brand-600'
-                                                                                      : 'bg-white text-slate-600 border-slate-200 hover:border-brand-300 hover:text-brand-600'
-                                                                              }`}
-                                                                          >
-                                                                              {q}
-                                                                          </button>
-                                                                      );
-                                                                  })}
-                                                              </div>
-                                                              <div className="flex items-center gap-1">
-                                                                  <input
-                                                                      type="text"
-                                                                      className="flex-1 text-xs border border-slate-200 rounded px-2 py-1.5 outline-none focus:border-brand-300 text-slate-600 bg-white"
-                                                                      placeholder="输入其他时间 (如: 每月)"
-                                                                      value={customDeadlineInputs[act.id] || ''}
-                                                                      onChange={(e) => setCustomDeadlineInputs(prev => ({ ...prev, [act.id]: e.target.value }))}
-                                                                      onKeyDown={(e) => {
-                                                                          if (e.key === 'Enter' && (customDeadlineInputs[act.id] || '').trim()) {
-                                                                              const parts = (act.deadline || '').split(',').map(s => s.trim()).filter(Boolean);
-                                                                              const stdQuarters = ['Q1', 'Q2', 'Q3', 'Q4'];
-                                                                              const currentQuarters = parts.filter(p => stdQuarters.includes(p));
-                                                                              const customParts = parts.filter(p => !stdQuarters.includes(p));
-                                                                              customParts.push(customDeadlineInputs[act.id].trim());
-                                                                              updateAction(obj.id, strat.id, act.id, { deadline: [...currentQuarters, ...customParts].join(', ') });
-                                                                              setCustomDeadlineInputs(prev => ({ ...prev, [act.id]: '' }));
-                                                                          }
-                                                                      }}
-                                                                  />
-                                                                  <button
-                                                                      type="button"
-                                                                      onClick={() => {
-                                                                          const val = (customDeadlineInputs[act.id] || '').trim();
-                                                                          if (!val) return;
-                                                                          const parts = (act.deadline || '').split(',').map(s => s.trim()).filter(Boolean);
-                                                                          const stdQuarters = ['Q1', 'Q2', 'Q3', 'Q4'];
-                                                                          const currentQuarters = parts.filter(p => stdQuarters.includes(p));
-                                                                          const customParts = parts.filter(p => !stdQuarters.includes(p));
-                                                                          customParts.push(val);
-                                                                          updateAction(obj.id, strat.id, act.id, { deadline: [...currentQuarters, ...customParts].join(', ') });
-                                                                          setCustomDeadlineInputs(prev => ({ ...prev, [act.id]: '' }));
-                                                                      }}
-                                                                      disabled={!(customDeadlineInputs[act.id] || '').trim()}
-                                                                      className="px-2.5 py-1.5 text-xs font-medium rounded bg-brand-600 text-white hover:bg-brand-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex-shrink-0"
-                                                                  >
-                                                                      添加
-                                                                  </button>
-                                                              </div>
-                                                              {/* Show current combined deadline */}
-                                                              {(act.deadline || '').trim() && (
-                                                                  <div className="flex flex-wrap gap-1 items-center">
-                                                                      <span className="text-[10px] text-slate-400">已选:</span>
-                                                                      {(act.deadline || '').split(',').map(s => s.trim()).filter(Boolean).map((part, i) => (
-                                                                          <span key={i} className="inline-flex items-center gap-0.5 px-1.5 py-0.5 text-[10px] font-medium bg-slate-100 text-slate-600 rounded">
-                                                                              {part}
-                                                                              <button
-                                                                                  type="button"
-                                                                                  onClick={() => {
-                                                                                      const parts = (act.deadline || '').split(',').map(s => s.trim()).filter(Boolean);
-                                                                                      const newParts = parts.filter(p => p !== part);
-                                                                                      updateAction(obj.id, strat.id, act.id, { deadline: newParts.join(', ') });
-                                                                                  }}
-                                                                                  className="ml-0.5 text-slate-400 hover:text-red-500"
-                                                                              >
-                                                                                  <X size={10} />
-                                                                              </button>
-                                                                          </span>
-                                                                      ))}
-                                                                  </div>
-                                                              )}
+                                                          <div className={`w-full mt-2 md:mt-0 ${actionIncomplete && missingFields.includes('时间排期') ? 'ring-2 ring-red-200 rounded' : ''}`}>
+                                                              {(() => {
+                                                                  const isDeadlineOpen = activeDeadlineDropdown === act.id;
+                                                                  const parts = (act.deadline || '').split(',').map(s => s.trim()).filter(Boolean);
+                                                                  const stdQuarters = ['Q1', 'Q2', 'Q3', 'Q4'];
+                                                                  const currentQuarters = parts.filter(p => stdQuarters.includes(p));
+                                                                  const customParts = parts.filter(p => !stdQuarters.includes(p));
+                                                                  const allParts = [...currentQuarters, ...customParts];
+
+                                                                  return (
+                                                                      <div className="flex flex-col gap-1.5">
+                                                                          <span className="text-[10px] font-bold text-slate-400 uppercase">排期</span>
+                                                                          <div className="flex flex-wrap gap-1 items-center">
+                                                                              {allParts.map((part, i) => (
+                                                                                  <span key={i} className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[11px] font-medium bg-brand-50 text-brand-700 border border-brand-200">
+                                                                                      {part}
+                                                                                      <button
+                                                                                          type="button"
+                                                                                          onClick={() => {
+                                                                                              const newParts = allParts.filter(p => p !== part);
+                                                                                              updateAction(obj.id, strat.id, act.id, { deadline: newParts.join(', ') });
+                                                                                          }}
+                                                                                          className="ml-0.5 text-brand-400 hover:text-red-500"
+                                                                                      >
+                                                                                          <X size={10} />
+                                                                                      </button>
+                                                                                  </span>
+                                                                              ))}
+                                                                              <div className="relative">
+                                                                                  <button
+                                                                                      type="button"
+                                                                                      onClick={() => setActiveDeadlineDropdown(isDeadlineOpen ? null : act.id)}
+                                                                                      className="flex items-center justify-center w-5 h-5 rounded border border-dashed border-slate-300 text-slate-400 hover:border-brand-400 hover:text-brand-500 transition-colors"
+                                                                                  >
+                                                                                      <Plus size={12} />
+                                                                                  </button>
+
+                                                                                  {/* Dropdown */}
+                                                                                  {isDeadlineOpen && (
+                                                                                      <div className="absolute left-0 top-full mt-1 w-48 bg-white border border-slate-200 shadow-lg rounded-lg p-2 z-20">
+                                                                                          <div className="mb-2 flex justify-between items-center">
+                                                                                              <span className="text-[10px] font-bold text-slate-400 uppercase">选择季度或输入</span>
+                                                                                              <button onClick={() => setActiveDeadlineDropdown(null)} className="text-slate-400 hover:text-slate-600"><X size={12}/></button>
+                                                                                          </div>
+                                                                                          <div className="flex flex-wrap gap-1.5 mb-2">
+                                                                                              {stdQuarters.map(q => {
+                                                                                                  const isSelected = currentQuarters.includes(q);
+                                                                                                  return (
+                                                                                                      <button
+                                                                                                          key={q}
+                                                                                                          type="button"
+                                                                                                          onClick={() => {
+                                                                                                              let newQuarters: string[];
+                                                                                                              if (isSelected) {
+                                                                                                                  newQuarters = currentQuarters.filter(x => x !== q);
+                                                                                                              } else {
+                                                                                                                  newQuarters = [...currentQuarters, q].sort((a, b) => stdQuarters.indexOf(a) - stdQuarters.indexOf(b));
+                                                                                                              }
+                                                                                                              updateAction(obj.id, strat.id, act.id, { deadline: [...newQuarters, ...customParts].join(', ') });
+                                                                                                          }}
+                                                                                                          className={`px-2 py-1 text-xs font-medium rounded border transition-colors ${
+                                                                                                              isSelected
+                                                                                                                  ? 'bg-brand-600 text-white border-brand-600'
+                                                                                                                  : 'bg-white text-slate-600 border-slate-200 hover:border-brand-300 hover:text-brand-600'
+                                                                                                          }`}
+                                                                                                      >
+                                                                                                          {q}
+                                                                                                      </button>
+                                                                                                  );
+                                                                                              })}
+                                                                                          </div>
+                                                                                          <div className="flex items-center gap-1">
+                                                                                              <input
+                                                                                                  type="text"
+                                                                                                  className="flex-1 text-xs border border-slate-200 rounded px-2 py-1 outline-none focus:border-brand-300 text-slate-600 bg-white"
+                                                                                                  placeholder="输入其他时间..."
+                                                                                                  value={customDeadlineInputs[act.id] || ''}
+                                                                                                  onChange={(e) => setCustomDeadlineInputs(prev => ({ ...prev, [act.id]: e.target.value }))}
+                                                                                                  onKeyDown={(e) => {
+                                                                                                      if (e.key === 'Enter' && (customDeadlineInputs[act.id] || '').trim()) {
+                                                                                                          const val = customDeadlineInputs[act.id].trim();
+                                                                                                          const curParts = (act.deadline || '').split(',').map(s => s.trim()).filter(Boolean);
+                                                                                                          const curQ = curParts.filter(p => stdQuarters.includes(p));
+                                                                                                          const curC = curParts.filter(p => !stdQuarters.includes(p));
+                                                                                                          if (!curC.includes(val)) curC.push(val);
+                                                                                                          updateAction(obj.id, strat.id, act.id, { deadline: [...curQ, ...curC].join(', ') });
+                                                                                                          setCustomDeadlineInputs(prev => ({ ...prev, [act.id]: '' }));
+                                                                                                      }
+                                                                                                  }}
+                                                                                              />
+                                                                                              <button
+                                                                                                  type="button"
+                                                                                                  onClick={() => {
+                                                                                                      const val = (customDeadlineInputs[act.id] || '').trim();
+                                                                                                      if (!val) return;
+                                                                                                      const curParts = (act.deadline || '').split(',').map(s => s.trim()).filter(Boolean);
+                                                                                                      const curQ = curParts.filter(p => stdQuarters.includes(p));
+                                                                                                      const curC = curParts.filter(p => !stdQuarters.includes(p));
+                                                                                                      if (!curC.includes(val)) curC.push(val);
+                                                                                                      updateAction(obj.id, strat.id, act.id, { deadline: [...curQ, ...curC].join(', ') });
+                                                                                                      setCustomDeadlineInputs(prev => ({ ...prev, [act.id]: '' }));
+                                                                                                  }}
+                                                                                                  disabled={!(customDeadlineInputs[act.id] || '').trim()}
+                                                                                                  className="px-2 py-1 text-xs font-medium rounded bg-brand-600 text-white hover:bg-brand-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex-shrink-0"
+                                                                                              >
+                                                                                                  添加
+                                                                                              </button>
+                                                                                          </div>
+                                                                                      </div>
+                                                                                  )}
+                                                                              </div>
+                                                                          </div>
+                                                                      </div>
+                                                                  );
+                                                              })()}
                                                           </div>
                                                       </div>
   
