@@ -555,7 +555,7 @@ export const PurchaseBreakdownWizard: React.FC<PurchaseBreakdownWizardProps> = (
                                     Total: {catTotal.toFixed(1)}%
                                 </span>
                                 <span className="text-[10px] text-slate-400">
-                                    Current: ¥{plan.categorySplit.reduce((s, c) => s + c.amount, 0).toFixed(2)}
+                                    Current: {(plan.categorySplit.reduce((s, c) => s + c.amount, 0) / 10000).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2 })}万元
                                 </span>
                             </div>
                         </h4>
@@ -591,7 +591,7 @@ export const PurchaseBreakdownWizard: React.FC<PurchaseBreakdownWizardProps> = (
 
                                         {/* Amount Display (Read-only/Calculated) */}
                                         <div className="w-24 text-right text-slate-500 font-mono flex-shrink-0">
-                                            ¥{c.amount.toFixed(2)}
+                                            {(c.amount / 10000).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2 })}万元
                                         </div>
                                     </div>
                                     
@@ -601,7 +601,7 @@ export const PurchaseBreakdownWizard: React.FC<PurchaseBreakdownWizardProps> = (
                                             <History size={10} className="mr-1" /> 
                                             今年: {lastYearRatios.category[c.id] || 0}%
                                             <span className="ml-1">
-                                                (¥{((totalTarget * 0.9) * ((lastYearRatios.category[c.id] || 0) / 100)).toFixed(2)})
+                                                ({(totalTarget * 0.9 * ((lastYearRatios.category[c.id] || 0) / 100) / 10000).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2 })}万元)
                                             </span>
                                         </span>
                                     </div>
@@ -619,7 +619,7 @@ export const PurchaseBreakdownWizard: React.FC<PurchaseBreakdownWizardProps> = (
                                     Total: {quarterTotal.toFixed(1)}%
                                 </span>
                                 <span className="text-[10px] text-slate-400">
-                                    Current: ¥{plan.quarterSplit.reduce((s, q) => s + q.amount, 0).toFixed(2)}
+                                    Current: {(plan.quarterSplit.reduce((s, q) => s + q.amount, 0) / 10000).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2 })}万元
                                 </span>
                             </div>
                         </h4>
@@ -651,7 +651,7 @@ export const PurchaseBreakdownWizard: React.FC<PurchaseBreakdownWizardProps> = (
 
                                         {/* Amount Display (Read-only/Calculated) */}
                                         <div className="w-24 text-right text-slate-500 font-mono flex-shrink-0">
-                                            ¥{q.amount.toFixed(2)}
+                                            {(q.amount / 10000).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2 })}万元
                                         </div>
                                     </div>
                                     
@@ -661,7 +661,7 @@ export const PurchaseBreakdownWizard: React.FC<PurchaseBreakdownWizardProps> = (
                                             <History size={10} className="mr-1" /> 
                                             今年: {lastYearRatios.quarterly[q.id] || 0}%
                                             <span className="ml-1">
-                                                (¥{((totalTarget * 0.9) * ((lastYearRatios.quarterly[q.id] || 0) / 100)).toFixed(2)})
+                                                ({(totalTarget * 0.9 * ((lastYearRatios.quarterly[q.id] || 0) / 100) / 10000).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2 })}万元)
                                             </span>
                                         </span>
                                     </div>
@@ -705,7 +705,7 @@ export const PurchaseBreakdownWizard: React.FC<PurchaseBreakdownWizardProps> = (
                                                     {c.name}
                                                 </div>
                                                 <div className="text-xs text-slate-400 mt-1 pl-4">
-                                                    Total: ¥{catTotal.toFixed(2)}
+                                                    Total: {(catTotal / 10000).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2 })}万元
                                                 </div>
                                                 <div className={`text-xs mt-1 pl-4 ${Math.abs(catRatioSum - 100) < 0.1 ? 'text-emerald-500' : 'text-amber-500'}`}>
                                                     Sum: {catRatioSum.toFixed(1)}%
@@ -731,7 +731,7 @@ export const PurchaseBreakdownWizard: React.FC<PurchaseBreakdownWizardProps> = (
                                                     <td key={q.id} className="px-4 py-4 align-top">
                                                         <div className="flex flex-col gap-2">
                                                             <div className="flex items-center bg-slate-50 rounded border border-slate-200 px-2 py-1 focus-within:border-brand-300 focus-within:ring-1 focus-within:ring-brand-100">
-                                                                <span className="text-slate-400 mr-1">¥</span>
+                                                                <span className="text-slate-400 mr-1"></span>
                                                                 <input 
                                                                     type="text" inputMode="decimal"
                                                                     className="w-full bg-transparent outline-none text-right font-mono text-slate-700"
@@ -753,7 +753,7 @@ export const PurchaseBreakdownWizard: React.FC<PurchaseBreakdownWizardProps> = (
                                                             
                                                             {/* Last Year Reference */}
                                                             <div className="text-[10px] text-slate-400 text-right mt-1">
-                                                                今年: ¥{lyAmount.toFixed(0)} ({lyQuarterRatio}%)
+                                                                今年: {(lyAmount / 10000).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2 })}万元 ({lyQuarterRatio}%)
                                                             </div>
                                                         </div>
                                                     </td>
