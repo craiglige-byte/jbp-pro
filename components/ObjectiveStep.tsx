@@ -1443,37 +1443,46 @@ const ObjectiveStep: React.FC<ObjectiveStepProps> = ({ data, updateData, onNext,
                               为保障市场供应并深化战略协作，我司承诺在 <span className="font-medium">元气森林2027财年（2026年12月1日至2027年11月30日）</span> 内，根据双方共同确认的滚动预测，完成总计 
                               <span className="font-bold mx-1 text-brand-700">
                                 {(() => {
-                                  // Extract number from targetValue
-                                  const match = obj.targetValue.match(/人民币(.*?)（/);
-                                  return match ? match[1] : '零元整';
+                                  const match = obj.targetValue.match(/¥([\d,.]+)/);
+                                  if (!match || !match[1]) return '零万元整';
+                                  const raw = match[1].replace(/[,]/g, '');
+                                  const storedNum = parseInt(raw, 10);
+                                  if (isNaN(storedNum)) return '零万元整';
+                                  // 新格式「）万元」→ 已是万元；旧格式→需÷10000转为万元
+                                  const isNewFormat = /）万元/.test(obj.targetValue);
+                                  const numInYuan = isNewFormat ? storedNum * 10000 : storedNum;
+                                  return digitToChinese(numInYuan).replace(/元整$/, '万元整');
                                 })()}
                               </span>
                               （¥
                               <input
                                 type="text"
                                 value={(() => {
-                                  // Extract numeric value
-                                  const match = obj.targetValue.match(/¥([\d,]*)/);
-                                  return match ? match[1] : '';
+                                  const match = obj.targetValue.match(/¥([\d,.]+)/);
+                                  if (!match || !match[1]) return '';
+                                  const raw = match[1].replace(/[,]/g, '');
+                                  const storedNum = parseInt(raw, 10);
+                                  if (isNaN(storedNum)) return '';
+                                  const isNewFormat = /）万元/.test(obj.targetValue);
+                                  const wanValue = isNewFormat ? storedNum : storedNum / 10000;
+                                  return wanValue.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2 });
                                 })()}
                                 onFocus={(e) => {
-                                    // Clear content on focus if it's 0 or empty to let user type fresh
                                     if (e.target.value === '0' || e.target.value === '') {
                                         e.target.value = '';
-                                        // Trigger change to update state
-                                        const newText = `为保障市场供应并深化战略协作，我司承诺在 元气森林2027财年（2026年12月1日至2027年11月30日） 内，根据双方共同确认的滚动预测，完成总计 人民币零元整（¥） 的 Sell-in进货。该目标旨在确保核心产品对渠道的充足供应，为终端销售增长奠定基础。`;
+                                        const newText = `为保障市场供应并深化战略协作，我司承诺在 元气森林2027财年（2026年12月1日至2027年11月30日） 内，根据双方共同确认的滚动预测，完成总计 人民币零万元整（¥）万元 的 Sell-in进货。该目标旨在确保核心产品对渠道的充足供应，为终端销售增长奠定基础。`;
                                         updateObjectiveTarget(obj.id, newText);
                                     }
                                 }}
                                 onChange={(e) => {
-                                  const val = e.target.value.replace(/[^\d,]/g, '');
-                                  // Simple number to Chinese conversion logic for the specific format
-                                  const num = parseInt(val.replace(/,/g, ''), 10);
-                                  
-                                  const chineseAmount = isNaN(num) ? '零元整' : digitToChinese(num);
-                                  const formattedNum = isNaN(num) ? '' : num.toLocaleString();
+                                  const val = e.target.value.replace(/[^\d.]/g, '');
+                                  const wan = parseFloat(val);
+                                  const num = isNaN(wan) ? 0 : Math.round(wan * 10000);
 
-                                  const newPurchaseText = `为保障市场供应并深化战略协作，我司承诺在 元气森林2027财年（2026年12月1日至2027年11月30日） 内，根据双方共同确认的滚动预测，完成总计 人民币${chineseAmount}（¥${formattedNum}） 的 Sell-in进货。该目标旨在确保核心产品对渠道的充足供应，为终端销售增长奠定基础。`;
+                                  const chineseAmount = num === 0 ? '零万元整' : digitToChinese(num).replace(/元整$/, '万元整');
+                                  const formattedWan = num === 0 ? '' : wan.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2 });
+
+                                  const newPurchaseText = `为保障市场供应并深化战略协作，我司承诺在 元气森林2027财年（2026年12月1日至2027年11月30日） 内，根据双方共同确认的滚动预测，完成总计 人民币${chineseAmount}（¥${formattedWan}）万元 的 Sell-in进货。该目标旨在确保核心产品对渠道的充足供应，为终端销售增长奠定基础。`;
                                   
                                   // Update Purchase Target
                                   let newObjectives = data.objectives.map(o => o.id === obj.id ? { ...o, targetValue: newPurchaseText } : o);
