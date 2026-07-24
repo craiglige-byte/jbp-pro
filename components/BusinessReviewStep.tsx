@@ -1735,7 +1735,6 @@ const BusinessReviewStep: React.FC<BusinessReviewStepProps> = ({ data, updateDat
                             <Tooltip contentStyle={{ backgroundColor: '#fff', borderRadius: '8px', border: '1px solid #e2e8f0', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }} />
                             <Legend />
                             <Bar yAxisId="left" dataKey="sales" name="销售额" fill="#6366f1" radius={[4, 4, 0, 0]} barSize={30} />
-                            <Line yAxisId="right" type="monotone" dataKey="profitMargin" name="利润率" stroke="#f59e0b" strokeWidth={2} dot={{r: 4, strokeWidth: 0, fill: '#f59e0b'}} />
                         </ComposedChart>
                     </ResponsiveContainer>
                 </div>
