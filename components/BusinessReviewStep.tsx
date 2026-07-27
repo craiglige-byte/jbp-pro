@@ -1011,6 +1011,9 @@ const BusinessReviewStep: React.FC<BusinessReviewStepProps> = ({ data, updateDat
                                     </div>
                                 ))}
                             </div>
+                            <div className="text-sm text-slate-500 mt-1">
+                                元气车辆数量 {(data.operations.vehicles.reduce((acc, v) => acc + (Number(v.count) || 0), 0) * (data.detailedBudgetPlan?.vehicles?.[0]?.brandRatio ?? 100) / 100).toFixed(0)} 辆
+                            </div>
                         </div>
                     )}
                 </div>
@@ -1063,6 +1066,9 @@ const BusinessReviewStep: React.FC<BusinessReviewStepProps> = ({ data, updateDat
                                         <span className="font-medium text-slate-700">{p.count} 人</span>
                                     </div>
                                 ))}
+                            </div>
+                            <div className="text-sm text-slate-500 mt-1">
+                                元气人员团队 {(data.operations.personnel.reduce((acc, p) => acc + (Number(p.count) || 0), 0) * (data.detailedBudgetPlan?.personnel?.[0]?.brandRatio ?? 100) / 100).toFixed(0)} 人
                             </div>
                         </div>
                     )}
