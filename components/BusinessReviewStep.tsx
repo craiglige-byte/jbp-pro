@@ -961,10 +961,7 @@ const BusinessReviewStep: React.FC<BusinessReviewStepProps> = ({ data, updateDat
                     ) : (
                         <div>
                             <div className="text-2xl font-bold text-slate-800 mb-2">{data.operations.warehouse} <span className="text-sm font-normal text-slate-400">㎡</span></div>
-                            <div className="text-xs text-slate-500">
-                                占用面积
-                            </div>
-                            <div className="text-sm font-semibold text-brand-600 mt-1">
+                            <div className="text-sm text-slate-500 mt-1">
                                 元气仓库面积 {(data.operations.warehouse * (data.detailedBudgetPlan?.warehouse?.[0]?.brandRatio ?? 100) / 100).toFixed(0)} 平方米
                             </div>
                         </div>
@@ -1090,7 +1087,7 @@ const BusinessReviewStep: React.FC<BusinessReviewStepProps> = ({ data, updateDat
                             <div className="text-2xl font-bold text-slate-800 mb-2">
                                 {data.operations.capital.reduce((acc, c) => acc + (Number(c.amount) || 0), 0)} <span className="text-sm font-normal text-slate-400">万</span>
                             </div>
-                            <div className="text-sm font-semibold text-brand-600 mt-1">
+                            <div className="text-sm text-slate-500 mt-1">
                                 元气运营资金 {(data.operations.capital.reduce((acc, c) => acc + (Number(c.amount) || 0), 0) * (data.detailedBudgetPlan?.capital?.[0]?.brandRatio ?? 100) / 100).toFixed(1)} 万元
                             </div>
                         </div>
