@@ -16,10 +16,11 @@
 
 | 序号 | 子模块 | 说明 |
 |------|--------|------|
-| F01 | 仓库租赁 | 仓库类型/面积/月租金/品牌占比/年租金管理 |
-| F02 | 车辆配置 | 车辆型号/数量/年费用/品牌占比管理 |
-| F03 | 人员架构 | 岗位/人数/薪酬(月薪+社保+奖金)/品牌占比管理 |
-| F04 | 费用规划 | 市场费用项目/经销商金额/厂家金额/占比管理 |
+| F01 | 仓库租赁 | 配置方式(租赁/自有)/面积/月租金/品牌占比/年租金管理 |
+| F02 | 车辆配置 | 车型(文本输入)/配置方式/数量/年费用/品牌占比管理 |
+| F03 | 人员架构 | 岗位/年总成本(万元,直接输入)/品牌占比/元气分摊(2位小数) |
+| F04 | 费用规划 | 总投入预算→厂家承担%(输入)→经销商承担%(自动)→金额自动+占比 |
+| F05 | 资金准备 | 资金项目(含冰柜押金)/金额/品牌占比管理 |
 | F05 | 资金准备 | 资金项目/金额/品牌占比管理 |
 
 ---
@@ -66,31 +67,31 @@ interface JBPVehicleBudget {
   remark: string;
 }
 
-// 人员架构
+// 人员架构 (V2.0 简化：年总成本改为手动输入，删除拆分列)
 interface JBPPersonnelBudget {
   id: string;
-  role: string;            // 岗位，如「销售主管」
-  count: number;           // 人数
-  monthlyBaseSalary: number;   // 月基本工资（元）
-  yearlyBaseSalary: number;    // 年基本工资（元）= monthlyBaseSalary × 12
-  yearlySocialSecurity: number;// 年社保（元）
-  yearlyFixedCost: number;     // 年固定成本（元）
-  yearlyBonus: number;         // 年终奖（元）
-  yearlyTotalCost: number;     // 年总成本（元）
+  role: string;            // 岗位，枚举含「自有业代」
+  count: number;           // [隐藏] 人数（不再显示）
+  monthlyBaseSalary: number;   // [隐藏] 月基本工资
+  yearlyBaseSalary: number;    // [隐藏] 年基本工资
+  yearlySocialSecurity: number;// [隐藏] 年社保
+  yearlyFixedCost: number;     // [隐藏] 年固定成本
+  yearlyBonus: number;         // [隐藏] 年提成
+  yearlyTotalCost: number;     // ★ 年总成本（万元）— 手动输入
   brandRatio: number;          // 品牌占比（%）
-  brandYearlyCost: number;     // 品牌年费用（元）
+  brandYearlyCost: number;     // 元气分摊成本 = yearlyTotalCost × brandRatio（2位小数）
   remark: string;
 }
 
-// 费用规划（市场费用）
+// 费用规划（市场费用）V2.0 重构：总投入改为输入，经销商承担改为自动计算
 interface JBPMarketingBudget {
   id: string;
-  item: string;            // 费用项目，如「陈列费」「促销费」
-  distributorAmount: number;   // 经销商承担金额（元）
-  totalAmount: number;         // 总金额（元）
-  ratio: number;               // 经销商占比（%）
-  manufacturerRatio: number;   // 厂家占比（%）
-  manufacturerAmount: number;  // 厂家承担金额（元）
+  item: string;            // 费用项目
+  totalAmount: number;         // ★ 总投入预算（万元）— 手动输入
+  manufacturerRatio: number;   // ★ 厂家承担（%）— 手动输入
+  distributorAmount: number;   // 经销商承担（万元）= totalAmount × (100-manufacturerRatio)%
+  manufacturerAmount: number;  // 厂家承担（万元）= totalAmount × manufacturerRatio%
+  ratio: number;               // 费用占比 = totalAmount / 所有行totalAmount合计 × 100%
   remark: string;
 }
 
@@ -390,3 +391,8 @@ profitabilityPlan.expenses[category].items[]
 | 2026-07-03 | 仓库租赁/车辆配置：预算上限及预算对比数字后加「元」单位 | V1.5 |
 | 2026-07-03 | 人员架构/费用规划：预算上限及预算对比改为保留两位小数（`.toFixed(2)`），数字后加「万」单位；资金准备：启动资金合计两列加「元」单位 | V1.6 |
 | 2026-07-08 | 所有必填字段（除备注外）表头加红色 * 标记 | V1.7 |
+| 2026-07-27 | 仓库租赁：配置方式枚举改为「租赁/自有」；车辆配置：车型从 select 改为文本输入 | V1.8 |
+| 2026-07-27 | 人员架构 V2.0：删除人数/月薪/年基本/社保/固定成本/提成 6 列，年总成本改为手动输入，元气分摊保留 2 位小数，新增「自有业代」岗位枚举 | V2.0 |
+| 2026-07-27 | 费用规划 V2.0：列表重排（费用项→总投入→厂家%→经销商%→厂家金额→经销商金额→占比），总投入预算改为输入，经销商承担改自动计算 | V2.1 |
+| 2026-07-27 | 资金准备：新增「冰柜押金」枚举（位于办公设备下方） | V1.9 |
+| 2026-07-27 | 预览计划弹窗同步更新：人员架构/费用规划列表与 BudgetStep 对齐 | V1.10 |
