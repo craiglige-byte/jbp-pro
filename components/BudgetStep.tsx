@@ -452,10 +452,7 @@ const BudgetStep: React.FC<BudgetStepProps> = ({ data, updateData, onNext, onBac
 
         // 3. 检查人员架构
         for (const item of plan.personnel) {
-            if (!item.role || !item.count || item.count === 0 || 
-                !item.monthlyBaseSalary || item.monthlyBaseSalary === 0 || 
-                item.yearlySocialSecurity === null || item.yearlySocialSecurity === undefined || 
-                item.yearlyBonus === null || item.yearlyBonus === undefined || 
+            if (!item.role || !item.yearlyTotalCost || item.yearlyTotalCost === 0 ||
                 !item.brandRatio || item.brandRatio === 0) {
                 return false;
             }
@@ -547,26 +544,17 @@ const BudgetStep: React.FC<BudgetStepProps> = ({ data, updateData, onNext, onBac
         for (let i = 0; i < plan.personnel.length; i++) {
             const item = plan.personnel[i];
             const missingFields: Array<{ section: 'personnel', index: number, field: string }> = [];
-            
+
             if (!item.role) {
                 missingFields.push({ section: 'personnel', index: i, field: 'role' });
             }
-            if (!item.count || item.count === 0) {
-                missingFields.push({ section: 'personnel', index: i, field: 'count' });
-            }
-            if (!item.monthlyBaseSalary || item.monthlyBaseSalary === 0) {
-                missingFields.push({ section: 'personnel', index: i, field: 'monthlyBaseSalary' });
-            }
-            if (item.yearlySocialSecurity === null || item.yearlySocialSecurity === undefined) {
-                missingFields.push({ section: 'personnel', index: i, field: 'yearlySocialSecurity' });
-            }
-            if (item.yearlyBonus === null || item.yearlyBonus === undefined) {
-                missingFields.push({ section: 'personnel', index: i, field: 'yearlyBonus' });
+            if (!item.yearlyTotalCost || item.yearlyTotalCost === 0) {
+                missingFields.push({ section: 'personnel', index: i, field: 'yearlyTotalCost' });
             }
             if (!item.brandRatio || item.brandRatio === 0) {
                 missingFields.push({ section: 'personnel', index: i, field: 'brandRatio' });
             }
-            
+
             if (missingFields.length > 0) {
                 setHighlightFields(missingFields);
                 scrollToSection('personnel');
@@ -1010,13 +998,7 @@ const BudgetStep: React.FC<BudgetStepProps> = ({ data, updateData, onNext, onBac
                             <thead className="bg-slate-50 text-slate-600 font-medium border-b border-slate-200">
                                 <tr>
                                     <th className="px-4 py-3 w-44"><span className="text-red-500 mr-0.5">*</span>岗位</th>
-                                    <th className="px-4 py-3 text-right"><span className="text-red-500 mr-0.5">*</span>人数</th>
-                                    <th className="px-4 py-3 text-right"><span className="text-red-500 mr-0.5">*</span>月基本工资(元)</th>
-                                    <th className="px-4 py-3 text-right">年基本工资(万)</th>
-                                    <th className="px-4 py-3 text-right"><span className="text-red-500 mr-0.5">*</span>年社保(万)</th>
-                                    <th className="px-4 py-3 text-right">年固定成本(万)</th>
-                                    <th className="px-4 py-3 text-right"><span className="text-red-500 mr-0.5">*</span>年提成(万)</th>
-                                    <th className="px-4 py-3 text-right">年总成本(万)</th>
+                                    <th className="px-4 py-3 text-right"><span className="text-red-500 mr-0.5">*</span>年总成本(万)</th>
                                     <th className="px-4 py-3 text-right"><span className="text-red-500 mr-0.5">*</span>品牌占比</th>
                                     <th className="px-4 py-3 text-right">元气分摊成本(万)</th>
                                     <th className="px-4 py-3 w-48">备注</th>
@@ -1027,21 +1009,21 @@ const BudgetStep: React.FC<BudgetStepProps> = ({ data, updateData, onNext, onBac
                                 {plan.personnel.map((item, idx) => (
                                     <tr key={item.id}>
                                         <td className="px-4 py-3">
-                                            <select 
-                                                value={item.role} 
+                                            <select
+                                                value={item.role}
                                                 onChange={e => {
-                                                    const newItems = [...plan.personnel]; 
-                                                    newItems[idx].role = e.target.value; 
+                                                    const newItems = [...plan.personnel];
+                                                    newItems[idx].role = e.target.value;
                                                     updatePlan('personnel', newItems);
-                                                    // 清除高亮
                                                     clearFieldHighlight('personnel', idx, 'role');
-                                                }} 
+                                                }}
                                                 className={`border border-slate-300 rounded px-2 py-1.5 text-sm focus:outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500 bg-white w-full ${getHighlightClass('personnel', idx, 'role')}`}
                                             >
                                                 <option value="">请选择</option>
                                                 <optgroup label="经销商自有">
                                                     <option value="经销商自有 - 老板&职业经理">老板&职业经理</option>
                                                     <option value="经销商自有 - 专职业代">专职业代</option>
+                                                    <option value="经销商自有 - 自有业代">自有业代</option>
                                                     <option value="经销商自有 - 司机">司机</option>
                                                     <option value="经销商自有 - 库管">库管</option>
                                                     <option value="经销商自有 - 文员">文员</option>
@@ -1051,71 +1033,27 @@ const BudgetStep: React.FC<BudgetStepProps> = ({ data, updateData, onNext, onBac
                                                 </optgroup>
                                             </select>
                                         </td>
-                                        <td className="px-4 py-3 text-right"><input type="text" inputMode="numeric" value={getDisplay(`pe_count_${idx}`, item.count)} onChange={e => {
-                                            const cleaned = handleDecimalInput(e.target.value, 0);
-                                            setInputDisplays(prev => ({...prev, [`pe_count_${idx}`]: cleaned}));
-                                            const val = safeNumber(cleaned);
-                                            const newItems = [...plan.personnel];
-                                            newItems[idx].count = val;
-                                            const yearlyBase = (newItems[idx].monthlyBaseSalary * 12 * val) / 10000;
-                                            newItems[idx].yearlyBaseSalary = parseFloat(yearlyBase.toFixed(1));
-                                            newItems[idx].yearlyFixedCost = parseFloat((newItems[idx].yearlyBaseSalary + newItems[idx].yearlySocialSecurity).toFixed(1));
-                                            newItems[idx].yearlyTotalCost = parseFloat((newItems[idx].yearlyFixedCost + newItems[idx].yearlyBonus).toFixed(1));
-                                            newItems[idx].brandYearlyCost = parseFloat((newItems[idx].yearlyTotalCost * (newItems[idx].brandRatio / 100)).toFixed(1));
-                                            updatePlan('personnel', newItems);
-                                            clearFieldHighlight('personnel', idx, 'count');
-                                        }} className={`w-12 text-right border border-slate-300 rounded px-2 py-1 text-sm focus:outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500 ${getHighlightClass('personnel', idx, 'count')}`} placeholder="0" /></td>
-                                        <td className="px-4 py-3 text-right"><input type="text" inputMode="decimal" value={getDisplay(`pe_sal_${idx}`, item.monthlyBaseSalary)} onChange={e => {
+                                        <td className="px-4 py-3 text-right"><input type="text" inputMode="decimal" value={getDisplay(`pe_cost_${idx}`, item.yearlyTotalCost)} onChange={e => {
                                             const cleaned = handleDecimalInput(e.target.value, 2);
-                                            setInputDisplays(prev => ({...prev, [`pe_sal_${idx}`]: cleaned}));
+                                            setInputDisplays(prev => ({...prev, [`pe_cost_${idx}`]: cleaned}));
                                             const val = safeNumber(cleaned);
                                             const newItems = [...plan.personnel];
-                                            newItems[idx].monthlyBaseSalary = val;
-                                            const yearlyBase = (val * 12 * newItems[idx].count) / 10000;
-                                            newItems[idx].yearlyBaseSalary = parseFloat(yearlyBase.toFixed(1));
-                                            newItems[idx].yearlyFixedCost = parseFloat((newItems[idx].yearlyBaseSalary + newItems[idx].yearlySocialSecurity).toFixed(1));
-                                            newItems[idx].yearlyTotalCost = parseFloat((newItems[idx].yearlyFixedCost + newItems[idx].yearlyBonus).toFixed(1));
-                                            newItems[idx].brandYearlyCost = parseFloat((newItems[idx].yearlyTotalCost * (newItems[idx].brandRatio / 100)).toFixed(1));
+                                            newItems[idx].yearlyTotalCost = val;
+                                            newItems[idx].brandYearlyCost = parseFloat((val * (newItems[idx].brandRatio / 100)).toFixed(2));
                                             updatePlan('personnel', newItems);
-                                            clearFieldHighlight('personnel', idx, 'monthlyBaseSalary');
-                                        }} className={`w-20 text-right border border-slate-300 rounded px-2 py-1 text-sm focus:outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500 ${getHighlightClass('personnel', idx, 'monthlyBaseSalary')}`} placeholder="0" /></td>
-                                        <td className="px-4 py-3 text-right">{item.yearlyBaseSalary.toFixed(1)}</td>
-                                        <td className="px-4 py-3 text-right"><input type="text" inputMode="decimal" value={getDisplay(`pe_ss_${idx}`, item.yearlySocialSecurity)} onChange={e => {
-                                            const cleaned = handleDecimalInput(e.target.value, 2);
-                                            setInputDisplays(prev => ({...prev, [`pe_ss_${idx}`]: cleaned}));
-                                            const val = safeNumber(cleaned);
-                                            const newItems = [...plan.personnel];
-                                            newItems[idx].yearlySocialSecurity = val;
-                                            newItems[idx].yearlyFixedCost = parseFloat((newItems[idx].yearlyBaseSalary + val).toFixed(1));
-                                            newItems[idx].yearlyTotalCost = parseFloat((newItems[idx].yearlyFixedCost + newItems[idx].yearlyBonus).toFixed(1));
-                                            newItems[idx].brandYearlyCost = parseFloat((newItems[idx].yearlyTotalCost * (newItems[idx].brandRatio / 100)).toFixed(1));
-                                            updatePlan('personnel', newItems);
-                                            clearFieldHighlight('personnel', idx, 'yearlySocialSecurity');
-                                        }} className={`w-16 text-right border border-slate-300 rounded px-2 py-1 text-sm focus:outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500 ${getHighlightClass('personnel', idx, 'yearlySocialSecurity')}`} placeholder="0" /></td>
-                                        <td className="px-4 py-3 text-right">{item.yearlyFixedCost.toFixed(1)}</td>
-                                        <td className="px-4 py-3 text-right"><input type="text" inputMode="decimal" value={getDisplay(`pe_bonus_${idx}`, item.yearlyBonus)} onChange={e => {
-                                            const cleaned = handleDecimalInput(e.target.value, 2);
-                                            setInputDisplays(prev => ({...prev, [`pe_bonus_${idx}`]: cleaned}));
-                                            const val = safeNumber(cleaned);
-                                            const newItems = [...plan.personnel];
-                                            newItems[idx].yearlyBonus = val;
-                                            newItems[idx].yearlyTotalCost = parseFloat((newItems[idx].yearlyFixedCost + val).toFixed(1));
-                                            newItems[idx].brandYearlyCost = parseFloat((newItems[idx].yearlyTotalCost * (newItems[idx].brandRatio / 100)).toFixed(1));
-                                            updatePlan('personnel', newItems);
-                                            clearFieldHighlight('personnel', idx, 'yearlyBonus');
-                                        }} className={`w-16 text-right border border-slate-300 rounded px-2 py-1 text-sm focus:outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500 ${getHighlightClass('personnel', idx, 'yearlyBonus')}`} placeholder="0" /></td>
-                                        <td className="px-4 py-3 text-right font-bold">{item.yearlyTotalCost.toFixed(1)}</td>
+                                            clearFieldHighlight('personnel', idx, 'yearlyTotalCost');
+                                        }} className={`w-20 text-right border border-slate-300 rounded px-2 py-1 text-sm focus:outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500 ${getHighlightClass('personnel', idx, 'yearlyTotalCost')}`} placeholder="0" /></td>
                                         <td className="px-4 py-3 text-right"><input type="text" inputMode="decimal" value={getDisplay(`pe_ratio_${idx}`, item.brandRatio)} onChange={e => {
                                             const cleaned = handleRatioInput(e.target.value);
                                             setInputDisplays(prev => ({...prev, [`pe_ratio_${idx}`]: cleaned}));
                                             const val = safeNumber(cleaned);
                                             const newItems = [...plan.personnel];
                                             newItems[idx].brandRatio = val;
-                                            newItems[idx].brandYearlyCost = parseFloat((newItems[idx].yearlyTotalCost * (val / 100)).toFixed(1));
+                                            newItems[idx].brandYearlyCost = parseFloat((newItems[idx].yearlyTotalCost * (val / 100)).toFixed(2));
                                             updatePlan('personnel', newItems);
                                             clearFieldHighlight('personnel', idx, 'brandRatio');
                                         }} className={`w-12 text-right border border-slate-300 rounded px-2 py-1 text-sm focus:outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500 ${getHighlightClass('personnel', idx, 'brandRatio')}`} placeholder="0" />%</td>
-                                        <td className="px-4 py-3 text-right font-bold text-brand-600">{item.brandYearlyCost.toFixed(1)}</td>
+                                        <td className="px-4 py-3 text-right font-bold text-brand-600">{item.brandYearlyCost.toFixed(2)}</td>
                                         <td className="px-4 py-3"><AutoResizingTextarea value={item.remark} onChange={e => {
                                             const newItems = [...plan.personnel]; newItems[idx].remark = e.target.value; updatePlan('personnel', newItems);
                                         }} className="border border-slate-300 rounded px-2 py-1.5 text-sm focus:outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500" placeholder="备注信息" /></td>
@@ -1134,21 +1072,15 @@ const BudgetStep: React.FC<BudgetStepProps> = ({ data, updateData, onNext, onBac
                                 ))}
                                 <tr className="bg-slate-50 font-bold">
                                     <td className="px-4 py-3">合计</td>
-                                    <td className="px-4 py-3 text-right">{plan.personnel.reduce((s, i) => s + i.count, 0)}</td>
+                                    <td className="px-4 py-3 text-right">{plan.personnel.reduce((s, i) => s + i.yearlyTotalCost, 0).toFixed(2)}</td>
                                     <td className="px-4 py-3"></td>
-                                    <td className="px-4 py-3 text-right">{plan.personnel.reduce((s, i) => s + i.yearlyBaseSalary, 0).toFixed(1)}</td>
-                                    <td className="px-4 py-3 text-right">{plan.personnel.reduce((s, i) => s + i.yearlySocialSecurity, 0).toFixed(1)}</td>
-                                    <td className="px-4 py-3 text-right">{plan.personnel.reduce((s, i) => s + i.yearlyFixedCost, 0).toFixed(1)}</td>
-                                    <td className="px-4 py-3 text-right">{plan.personnel.reduce((s, i) => s + i.yearlyBonus, 0).toFixed(1)}</td>
-                                    <td className="px-4 py-3 text-right">{plan.personnel.reduce((s, i) => s + i.yearlyTotalCost, 0).toFixed(1)}</td>
-                                    <td className="px-4 py-3"></td>
-                                    <td className="px-4 py-3 text-right text-brand-600">{plan.personnel.reduce((s, i) => s + i.brandYearlyCost, 0).toFixed(1)}</td>
+                                    <td className="px-4 py-3 text-right text-brand-600">{plan.personnel.reduce((s, i) => s + i.brandYearlyCost, 0).toFixed(2)}</td>
                                     <td className="px-4 py-3"></td>
                                     <td className="px-4 py-3"></td>
                                 </tr>
                                 <tr className="bg-white border-t border-slate-200">
                                     <td className="px-4 py-3 font-medium text-slate-600 whitespace-nowrap">预算上限</td>
-                                    <td className="px-4 py-3" colSpan={8}></td>
+                                    <td className="px-4 py-3" colSpan={2}></td>
                                     <td className="px-4 py-3 text-right">
                                         <div className="font-medium text-slate-700">{budgetLimits.personnel > 0 ? `${budgetLimits.personnel.toFixed(2)}万` : '--'}</div>
                                         {budgetLimits.personnel > 0 && <div className="text-xs text-slate-400 font-normal mt-0.5 whitespace-nowrap">取自【拆解策略】-人员费用</div>}
@@ -1158,7 +1090,7 @@ const BudgetStep: React.FC<BudgetStepProps> = ({ data, updateData, onNext, onBac
                                 </tr>
                                 <tr className="bg-white border-t border-slate-200">
                                     <td className="px-4 py-3 font-medium text-slate-600 whitespace-nowrap">预算对比</td>
-                                    <td className="px-4 py-3" colSpan={8}></td>
+                                    <td className="px-4 py-3" colSpan={2}></td>
                                     <td className={`px-4 py-3 text-right text-sm font-bold ${budgetLimits.personnel > 0
                                         ? (budgetLimits.personnel - currentTotals.personnel < 0 ? 'text-red-500' : 'text-emerald-600')
                                         : 'text-slate-500'
