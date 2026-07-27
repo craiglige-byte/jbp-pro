@@ -370,16 +370,16 @@ const ActionStep: React.FC<ActionStepProps> = ({ data, updateData, onNext, onBac
 
             {/* Dropdown for adding owners */}
             {isDropdownOpen && (
-              <div className="absolute left-0 top-full mt-1 w-56 bg-white border border-slate-200 shadow-lg rounded-lg p-2 z-20">
+              <div className="absolute right-0 top-full mt-1 w-72 bg-white border border-slate-200 shadow-lg rounded-lg p-3 z-20">
                 <div className="mb-2 flex justify-between items-center">
                   <span className="text-[10px] font-bold text-slate-400 uppercase">选择或输入</span>
                   <button onClick={() => setActiveOwnerDropdown(null)} className="text-slate-400 hover:text-slate-600"><X size={12}/></button>
                 </div>
                 <div className="mb-2">
-                  <div className="flex items-center gap-1">
+                  <div className="flex items-center gap-1.5">
                     <input
                       type="text"
-                      className="flex-1 text-xs border border-slate-200 rounded px-2 py-1 focus:border-brand-300 focus:ring-1 focus:ring-brand-100 outline-none"
+                      className="flex-1 text-xs border border-slate-200 rounded px-2 py-1.5 focus:border-brand-300 focus:ring-1 focus:ring-brand-100 outline-none"
                       placeholder="自定义角色..."
                       value={inputValue}
                       onChange={(e) => setCustomOwnerInputs(prev => ({ ...prev, [act.id]: e.target.value }))}
@@ -399,7 +399,7 @@ const ActionStep: React.FC<ActionStepProps> = ({ data, updateData, onNext, onBac
                         }
                       }}
                       disabled={!inputValue.trim()}
-                      className="px-2 py-1 text-xs font-medium rounded bg-brand-600 text-white hover:bg-brand-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex-shrink-0"
+                      className="px-3 py-1.5 text-xs font-medium rounded bg-brand-600 text-white hover:bg-brand-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex-shrink-0 whitespace-nowrap"
                     >
                       添加
                     </button>
@@ -830,7 +830,7 @@ const ActionStep: React.FC<ActionStepProps> = ({ data, updateData, onNext, onBac
 
                                                                                   {/* Dropdown */}
                                                                                   {isDeadlineOpen && (
-                                                                                      <div className="absolute left-0 top-full mt-1 w-48 bg-white border border-slate-200 shadow-lg rounded-lg p-2 z-20">
+                                                                                      <div className="absolute right-0 top-full mt-1 w-64 bg-white border border-slate-200 shadow-lg rounded-lg p-3 z-20">
                                                                                           <div className="mb-2 flex justify-between items-center">
                                                                                               <span className="text-[10px] font-bold text-slate-400 uppercase">选择季度或输入</span>
                                                                                               <button onClick={() => setActiveDeadlineDropdown(null)} className="text-slate-400 hover:text-slate-600"><X size={12}/></button>
@@ -862,10 +862,10 @@ const ActionStep: React.FC<ActionStepProps> = ({ data, updateData, onNext, onBac
                                                                                                   );
                                                                                               })}
                                                                                           </div>
-                                                                                          <div className="flex items-center gap-1">
+                                                                                          <div className="flex items-center gap-1.5">
                                                                                               <input
                                                                                                   type="text"
-                                                                                                  className="flex-1 text-xs border border-slate-200 rounded px-2 py-1 outline-none focus:border-brand-300 text-slate-600 bg-white"
+                                                                                                  className="flex-1 text-xs border border-slate-200 rounded px-2 py-1.5 outline-none focus:border-brand-300 text-slate-600 bg-white"
                                                                                                   placeholder="输入其他时间..."
                                                                                                   value={customDeadlineInputs[act.id] || ''}
                                                                                                   onChange={(e) => setCustomDeadlineInputs(prev => ({ ...prev, [act.id]: e.target.value }))}
@@ -894,7 +894,7 @@ const ActionStep: React.FC<ActionStepProps> = ({ data, updateData, onNext, onBac
                                                                                                       setCustomDeadlineInputs(prev => ({ ...prev, [act.id]: '' }));
                                                                                                   }}
                                                                                                   disabled={!(customDeadlineInputs[act.id] || '').trim()}
-                                                                                                  className="px-2 py-1 text-xs font-medium rounded bg-brand-600 text-white hover:bg-brand-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex-shrink-0"
+                                                                                                  className="px-3 py-1.5 text-xs font-medium rounded bg-brand-600 text-white hover:bg-brand-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex-shrink-0 whitespace-nowrap"
                                                                                               >
                                                                                                   添加
                                                                                               </button>
