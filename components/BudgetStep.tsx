@@ -460,7 +460,7 @@ const BudgetStep: React.FC<BudgetStepProps> = ({ data, updateData, onNext, onBac
 
         // 4. 检查费用规划
         for (const item of plan.marketing) {
-            if (!item.item || !item.distributorAmount || item.distributorAmount === 0 || 
+            if (!item.item || !item.totalAmount || item.totalAmount === 0 ||
                 !item.manufacturerRatio || item.manufacturerRatio === 0) {
                 return false;
             }
@@ -571,13 +571,13 @@ const BudgetStep: React.FC<BudgetStepProps> = ({ data, updateData, onNext, onBac
             if (!item.item) {
                 missingFields.push({ section: 'marketing', index: i, field: 'item' });
             }
-            if (!item.distributorAmount || item.distributorAmount === 0) {
-                missingFields.push({ section: 'marketing', index: i, field: 'distributorAmount' });
+            if (!item.totalAmount || item.totalAmount === 0) {
+                missingFields.push({ section: 'marketing', index: i, field: 'totalAmount' });
             }
             if (!item.manufacturerRatio || item.manufacturerRatio === 0) {
                 missingFields.push({ section: 'marketing', index: i, field: 'manufacturerRatio' });
             }
-            
+
             if (missingFields.length > 0) {
                 setHighlightFields(missingFields);
                 scrollToSection('marketing');
@@ -1127,28 +1127,30 @@ const BudgetStep: React.FC<BudgetStepProps> = ({ data, updateData, onNext, onBac
                             <thead className="bg-slate-50 text-slate-600 font-medium border-b border-slate-200">
                                 <tr>
                                     <th className="px-4 py-3 w-32"><span className="text-red-500 mr-0.5">*</span>费用项</th>
-                                    <th className="px-4 py-3 text-right"><span className="text-red-500 mr-0.5">*</span>经销商承担(万元)</th>
-                                    <th className="px-4 py-3 text-right">费用占比</th>
+                                    <th className="px-4 py-3 text-right"><span className="text-red-500 mr-0.5">*</span>总投入预算(万元)</th>
                                     <th className="px-4 py-3 text-right"><span className="text-red-500 mr-0.5">*</span>厂家承担(%)</th>
+                                    <th className="px-4 py-3 text-right">经销商承担(%)</th>
                                     <th className="px-4 py-3 text-right">厂家承担(万元)</th>
-                                    <th className="px-4 py-3 text-right">总投入预算(万元)</th>
+                                    <th className="px-4 py-3 text-right">经销商承担(万元)</th>
+                                    <th className="px-4 py-3 text-right">费用占比</th>
                                     <th className="px-4 py-3 w-48">备注说明</th>
                                     <th className="px-4 py-3 w-12"></th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-slate-100">
-                                {plan.marketing.map((item, idx) => (
+                                {plan.marketing.map((item, idx) => {
+                                    const distRatio = 100 - item.manufacturerRatio;
+                                    return (
                                     <tr key={item.id}>
                                         <td className="px-4 py-3">
-                                            <select 
-                                                value={item.item} 
+                                            <select
+                                                value={item.item}
                                                 onChange={e => {
-                                                    const newItems = [...plan.marketing]; 
-                                                    newItems[idx].item = e.target.value; 
+                                                    const newItems = [...plan.marketing];
+                                                    newItems[idx].item = e.target.value;
                                                     updatePlan('marketing', newItems);
-                                                    // 清除高亮
                                                     clearFieldHighlight('marketing', idx, 'item');
-                                                }} 
+                                                }}
                                                 className={`border border-slate-300 rounded px-2 py-1.5 text-sm focus:outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500 bg-white w-full ${getHighlightClass('marketing', idx, 'item')}`}
                                             >
                                                 <option value="">请选择</option>
@@ -1159,43 +1161,35 @@ const BudgetStep: React.FC<BudgetStepProps> = ({ data, updateData, onNext, onBac
                                                 <option value="其他">其他</option>
                                             </select>
                                         </td>
-                                        <td className="px-4 py-3 text-right"><input type="text" inputMode="decimal" value={getDisplay(`mk_dist_${idx}`, item.distributorAmount)} onChange={e => {
+                                        <td className="px-4 py-3 text-right"><input type="text" inputMode="decimal" value={getDisplay(`mk_total_${idx}`, item.totalAmount)} onChange={e => {
                                             const cleaned = handleDecimalInput(e.target.value, 2);
-                                            setInputDisplays(prev => ({...prev, [`mk_dist_${idx}`]: cleaned}));
+                                            setInputDisplays(prev => ({...prev, [`mk_total_${idx}`]: cleaned}));
                                             const val = safeNumber(cleaned);
                                             const newItems = [...plan.marketing];
-                                            newItems[idx].distributorAmount = val;
-                                            const mfrRatio = newItems[idx].manufacturerRatio;
-                                            if (mfrRatio < 100 && val > 0) {
-                                                const total = val / (1 - mfrRatio / 100);
-                                                newItems[idx].totalAmount = parseFloat(total.toFixed(2));
-                                                newItems[idx].manufacturerAmount = parseFloat((total - val).toFixed(2));
-                                            } else {
-                                                newItems[idx].totalAmount = val;
-                                                newItems[idx].manufacturerAmount = 0;
-                                            }
-                                            const totalDist = newItems.reduce((s, i) => s + i.distributorAmount, 0);
-                                            newItems.forEach(i => i.ratio = totalDist > 0 ? parseFloat(((i.distributorAmount / totalDist) * 100).toFixed(1)) : 0);
+                                            newItems[idx].totalAmount = val;
+                                            const mfrPct = newItems[idx].manufacturerRatio;
+                                            newItems[idx].manufacturerAmount = parseFloat((val * mfrPct / 100).toFixed(2));
+                                            newItems[idx].distributorAmount = parseFloat((val * (100 - mfrPct) / 100).toFixed(2));
+                                            const totalSum = newItems.reduce((s, i) => s + i.totalAmount, 0);
+                                            newItems.forEach(i => i.ratio = totalSum > 0 ? parseFloat(((i.totalAmount / totalSum) * 100).toFixed(2)) : 0);
                                             updatePlan('marketing', newItems);
-                                            clearFieldHighlight('marketing', idx, 'distributorAmount');
-                                        }} className={`w-20 text-right border border-slate-300 rounded px-2 py-1 text-sm focus:outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500 ${getHighlightClass('marketing', idx, 'distributorAmount')}`} placeholder="0" /></td>
-                                        <td className="px-4 py-3 text-right">{item.ratio}%</td>
+                                            clearFieldHighlight('marketing', idx, 'totalAmount');
+                                        }} className={`w-24 text-right border border-slate-300 rounded px-2 py-1 text-sm focus:outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500 ${getHighlightClass('marketing', idx, 'totalAmount')}`} placeholder="0" /></td>
                                         <td className="px-4 py-3 text-right"><input type="text" inputMode="decimal" value={getDisplay(`mk_mfr_${idx}`, item.manufacturerRatio)} onChange={e => {
                                             const cleaned = handleRatioInput(e.target.value);
                                             setInputDisplays(prev => ({...prev, [`mk_mfr_${idx}`]: cleaned}));
                                             const val = safeNumber(cleaned);
                                             const newItems = [...plan.marketing];
                                             newItems[idx].manufacturerRatio = val;
-                                            if (val < 100 && newItems[idx].distributorAmount > 0) {
-                                                const total = newItems[idx].distributorAmount / (1 - val / 100);
-                                                newItems[idx].totalAmount = parseFloat(total.toFixed(2));
-                                                newItems[idx].manufacturerAmount = parseFloat((total - newItems[idx].distributorAmount).toFixed(2));
-                                            }
+                                            newItems[idx].manufacturerAmount = parseFloat((newItems[idx].totalAmount * val / 100).toFixed(2));
+                                            newItems[idx].distributorAmount = parseFloat((newItems[idx].totalAmount * (100 - val) / 100).toFixed(2));
                                             updatePlan('marketing', newItems);
                                             clearFieldHighlight('marketing', idx, 'manufacturerRatio');
                                         }} className={`w-16 text-right border border-slate-300 rounded px-2 py-1 text-sm focus:outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500 ${getHighlightClass('marketing', idx, 'manufacturerRatio')}`} placeholder="0" />%</td>
+                                        <td className="px-4 py-3 text-right text-slate-500">{distRatio.toFixed(0)}%</td>
                                         <td className="px-4 py-3 text-right">{item.manufacturerAmount.toFixed(2)}</td>
-                                        <td className="px-4 py-3 text-right font-bold">{item.totalAmount.toFixed(2)}</td>
+                                        <td className="px-4 py-3 text-right font-bold text-brand-600">{item.distributorAmount.toFixed(2)}</td>
+                                        <td className="px-4 py-3 text-right">{item.ratio}%</td>
                                         <td className="px-4 py-3"><AutoResizingTextarea value={item.remark} onChange={e => {
                                             const newItems = [...plan.marketing]; newItems[idx].remark = e.target.value; updatePlan('marketing', newItems);
                                         }} className="border border-slate-300 rounded px-2 py-1.5 text-sm focus:outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500" placeholder="备注说明" /></td>
@@ -1211,28 +1205,31 @@ const BudgetStep: React.FC<BudgetStepProps> = ({ data, updateData, onNext, onBac
                                             )}
                                         </td>
                                     </tr>
-                                ))}
+                                )})}
                                 <tr className="bg-slate-50 font-bold">
                                     <td className="px-4 py-3">合计</td>
-                                    <td className="px-4 py-3 text-right text-brand-600">{plan.marketing.reduce((s, i) => s + i.distributorAmount, 0).toFixed(2)}</td>
-                                    <td className="px-4 py-3 text-right">100%</td>
+                                    <td className="px-4 py-3 text-right">{plan.marketing.reduce((s, i) => s + i.totalAmount, 0).toFixed(2)}</td>
+                                    <td className="px-4 py-3"></td>
                                     <td className="px-4 py-3"></td>
                                     <td className="px-4 py-3 text-right">{plan.marketing.reduce((s, i) => s + i.manufacturerAmount, 0).toFixed(2)}</td>
-                                    <td className="px-4 py-3 text-right">{plan.marketing.reduce((s, i) => s + i.totalAmount, 0).toFixed(2)}</td>
+                                    <td className="px-4 py-3 text-right text-brand-600">{plan.marketing.reduce((s, i) => s + i.distributorAmount, 0).toFixed(2)}</td>
+                                    <td className="px-4 py-3 text-right">100%</td>
                                     <td className="px-4 py-3"></td>
                                     <td className="px-4 py-3"></td>
                                 </tr>
                                 <tr className="bg-white border-t border-slate-200">
                                     <td className="px-4 py-3 font-medium text-slate-600 whitespace-nowrap">预算上限</td>
+                                    <td className="px-4 py-3" colSpan={4}></td>
                                     <td className="px-4 py-3 text-right">
                                         <div className="font-medium text-slate-700">{budgetLimits.marketing > 0 ? `${budgetLimits.marketing.toFixed(2)}万` : '--'}</div>
                                         {budgetLimits.marketing > 0 && <div className="text-xs text-slate-400 font-normal mt-0.5 whitespace-nowrap">取自【拆解策略】-营销费用</div>}
                                     </td>
-                                    <td className="px-4 py-3" colSpan={5}></td>
+                                    <td className="px-4 py-3" colSpan={2}></td>
                                     <td className="px-4 py-3"></td>
                                 </tr>
                                 <tr className="bg-white border-t border-slate-200">
                                     <td className="px-4 py-3 font-medium text-slate-600 whitespace-nowrap">预算对比</td>
+                                    <td className="px-4 py-3" colSpan={4}></td>
                                     <td className={`px-4 py-3 text-right text-sm font-bold ${budgetLimits.marketing > 0
                                         ? (budgetLimits.marketing - currentTotals.marketing < 0 ? 'text-red-500' : 'text-emerald-600')
                                         : 'text-slate-500'
@@ -1241,7 +1238,7 @@ const BudgetStep: React.FC<BudgetStepProps> = ({ data, updateData, onNext, onBac
                                             <>{budgetLimits.marketing - currentTotals.marketing < 0 ? '超支' : '结余'} {Math.abs(budgetLimits.marketing - currentTotals.marketing).toFixed(2)}万</>
                                         ) : '--'}
                                     </td>
-                                    <td className="px-4 py-3" colSpan={5}></td>
+                                    <td className="px-4 py-3" colSpan={2}></td>
                                     <td className="px-4 py-3"></td>
                                 </tr>
                             </tbody>
