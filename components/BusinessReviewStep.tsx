@@ -961,8 +961,11 @@ const BusinessReviewStep: React.FC<BusinessReviewStepProps> = ({ data, updateDat
                     ) : (
                         <div>
                             <div className="text-2xl font-bold text-slate-800 mb-2">{data.operations.warehouse} <span className="text-sm font-normal text-slate-400">㎡</span></div>
-                            <div className="text-sm text-slate-500 mt-1">
-                                元气仓库面积 {(data.operations.warehouse * (data.detailedBudgetPlan?.warehouse?.[0]?.brandRatio ?? 100) / 100).toFixed(0)} 平方米
+                            <div className="space-y-1 mt-2">
+                                <div className="flex justify-between text-xs text-slate-500">
+                                    <span>元气仓库面积</span>
+                                    <span className="font-medium text-slate-700">{(data.operations.warehouse * (data.detailedBudgetPlan?.warehouse?.[0]?.brandRatio ?? 100) / 100).toFixed(0)} 平方米</span>
+                                </div>
                             </div>
                         </div>
                     )}
@@ -1010,9 +1013,6 @@ const BusinessReviewStep: React.FC<BusinessReviewStepProps> = ({ data, updateDat
                                         <span className="font-medium text-slate-700">{v.count} 辆</span>
                                     </div>
                                 ))}
-                            </div>
-                            <div className="text-sm text-slate-500 mt-1">
-                                元气车辆数量 {(data.operations.vehicles.reduce((acc, v) => acc + (Number(v.count) || 0), 0) * (data.detailedBudgetPlan?.vehicles?.[0]?.brandRatio ?? 100) / 100).toFixed(0)} 辆
                             </div>
                         </div>
                     )}
@@ -1067,9 +1067,6 @@ const BusinessReviewStep: React.FC<BusinessReviewStepProps> = ({ data, updateDat
                                     </div>
                                 ))}
                             </div>
-                            <div className="text-sm text-slate-500 mt-1">
-                                元气人员团队 {(data.operations.personnel.reduce((acc, p) => acc + (Number(p.count) || 0), 0) * (data.detailedBudgetPlan?.personnel?.[0]?.brandRatio ?? 100) / 100).toFixed(0)} 人
-                            </div>
                         </div>
                     )}
                 </div>
@@ -1093,8 +1090,11 @@ const BusinessReviewStep: React.FC<BusinessReviewStepProps> = ({ data, updateDat
                             <div className="text-2xl font-bold text-slate-800 mb-2">
                                 {data.operations.capital.reduce((acc, c) => acc + (Number(c.amount) || 0), 0)} <span className="text-sm font-normal text-slate-400">万</span>
                             </div>
-                            <div className="text-sm text-slate-500 mt-1">
-                                元气运营资金 {(data.operations.capital.reduce((acc, c) => acc + (Number(c.amount) || 0), 0) * (data.detailedBudgetPlan?.capital?.[0]?.brandRatio ?? 100) / 100).toFixed(1)} 万元
+                            <div className="space-y-1 mt-2">
+                                <div className="flex justify-between text-xs text-slate-500">
+                                    <span>元气运营资金</span>
+                                    <span className="font-medium text-slate-700">{(data.operations.capital.reduce((acc, c) => acc + (Number(c.amount) || 0), 0) * (data.detailedBudgetPlan?.capital?.[0]?.brandRatio ?? 100) / 100).toFixed(1)} 万元</span>
+                                </div>
                             </div>
                         </div>
                     )}
