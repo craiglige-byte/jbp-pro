@@ -335,7 +335,7 @@ const DEMO_DATA: JBPData = {
   ],
   "detailedBudgetPlan": {
     "warehouse": [
-      { "id": "1", "type": "长租", "area": 1300, "brandRatio": 100, "brandArea": 1380, "monthlyRent": 20700, "yearlyRent": 248400, "brandYearlyRent": 248400, "remark": "100%用于元气品牌" }
+      { "id": "1", "type": "租赁", "area": 1300, "brandRatio": 100, "brandArea": 1380, "monthlyRent": 20700, "yearlyRent": 248400, "brandYearlyRent": 248400, "remark": "100%用于元气品牌" }
     ],
     "vehicles": [
       { "id": "1", "model": "4.2米左右厢货车", "type": "自有", "count": 1, "dailyCapacity": 700, "yearlyCost": 64200, "brandRatio": 100, "brandYearlyCost": 64200, "remark": "固定配置" },

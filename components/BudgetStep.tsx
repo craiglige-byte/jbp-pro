@@ -738,8 +738,7 @@ const BudgetStep: React.FC<BudgetStepProps> = ({ data, updateData, onNext, onBac
                                                 className={`border border-slate-300 rounded px-2 py-1.5 text-sm focus:outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500 bg-white ${getHighlightClass('warehouse', idx, 'type')}`}
                                             >
                                                 <option value="">请选择</option>
-                                                <option value="长租">长租</option>
-                                                <option value="短租">短租</option>
+                                                <option value="租赁">租赁</option>
                                                 <option value="自有">自有</option>
                                             </select>
                                         </td>
@@ -876,22 +875,18 @@ const BudgetStep: React.FC<BudgetStepProps> = ({ data, updateData, onNext, onBac
                                 {plan.vehicles.map((item, idx) => (
                                     <tr key={item.id}>
                                         <td className="px-4 py-3">
-                                            <select 
-                                                value={item.model} 
+                                            <input
+                                                type="text"
+                                                value={item.model}
                                                 onChange={e => {
-                                                    const newItems = [...plan.vehicles]; 
-                                                    newItems[idx].model = e.target.value; 
+                                                    const newItems = [...plan.vehicles];
+                                                    newItems[idx].model = e.target.value;
                                                     updatePlan('vehicles', newItems);
-                                                    // 清除高亮
                                                     clearFieldHighlight('vehicles', idx, 'model');
-                                                }} 
-                                                className={`border border-slate-300 rounded px-2 py-1.5 text-sm focus:outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500 bg-white ${getHighlightClass('vehicles', idx, 'model')}`}
-                                            >
-                                                <option value="">请选择</option>
-                                                <option value="4.2米左右厢货车">4.2米左右厢货车</option>
-                                                <option value="3.2米左右面包车">3.2米左右面包车</option>
-                                                <option value="2.0米左右三轮车">2.0米左右三轮车</option>
-                                            </select>
+                                                }}
+                                                className={`border border-slate-300 rounded px-2 py-1.5 text-sm focus:outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500 w-32 ${getHighlightClass('vehicles', idx, 'model')}`}
+                                                placeholder="输入车型..."
+                                            />
                                         </td>
                                         <td className="px-4 py-3">
                                             <select 
