@@ -169,8 +169,9 @@ const BudgetStep: React.FC<BudgetStepProps> = ({ data, updateData, onNext, onBac
                 { id: '5', item: '首期车辆费用', amount: 0, brandRatio: 0, brandAmount: 0, remark: '' },
                 { id: '6', item: '冰柜采购成本', amount: 0, brandRatio: 0, brandAmount: 0, remark: '' },
                 { id: '7', item: '办公设备', amount: 0, brandRatio: 0, brandAmount: 0, remark: '' },
-                { id: '8', item: '备用金', amount: 0, brandRatio: 0, brandAmount: 0, remark: '' },
-                { id: '9', item: '其他费用', amount: 0, brandRatio: 0, brandAmount: 0, remark: '' }
+                { id: '8', item: '冰柜押金', amount: 0, brandRatio: 0, brandAmount: 0, remark: '' },
+                { id: '9', item: '备用金', amount: 0, brandRatio: 0, brandAmount: 0, remark: '' },
+                { id: '10', item: '其他费用', amount: 0, brandRatio: 0, brandAmount: 0, remark: '' }
             ],
             marketing: defaultMarketing
         };
@@ -1296,6 +1297,7 @@ const BudgetStep: React.FC<BudgetStepProps> = ({ data, updateData, onNext, onBac
                                                 <option value="首期车辆费用">首期车辆费用</option>
                                                 <option value="冰柜采购成本">冰柜采购成本</option>
                                                 <option value="办公设备">办公设备</option>
+                                                <option value="冰柜押金">冰柜押金</option>
                                                 <option value="备用金">备用金</option>
                                                 <option value="其他费用">其他费用</option>
                                             </select>
