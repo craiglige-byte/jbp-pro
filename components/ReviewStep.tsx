@@ -621,16 +621,16 @@ const ReviewStep: React.FC<ReviewStepProps> = ({ data, onBack, planVersion = 'la
         if (data.detailedBudgetPlan) {
             const warehouseArea = data.detailedBudgetPlan.warehouse.reduce((acc, i) => acc + i.area, 0);
             const vehicleCount = data.detailedBudgetPlan.vehicles.reduce((acc, i) => acc + i.count, 0);
-            const personnelCount = data.detailedBudgetPlan.personnel.reduce((acc, i) => acc + i.count, 0);
-            const marketingInvest = data.detailedBudgetPlan.marketing.reduce((acc, i) => acc + (i.distributorAmount || ((i.amount || i.totalAmount) * ((i.distributorRatio || (100 - (i.manufacturerRatio || i.ratio || 0))) / 100)) || 0), 0);
+            const personnelCost = data.detailedBudgetPlan.personnel.reduce((acc, i) => acc + (i.yearlyTotalCost || 0), 0);
+            const marketingInvest = data.detailedBudgetPlan.marketing.reduce((acc, i) => acc + (i.distributorAmount || 0), 0);
             const capitalTotal = data.detailedBudgetPlan.capital.reduce((acc, i) => acc + i.amount, 0) / 10000;
-            return { warehouseArea, vehicleCount, personnelCount, marketingInvest, capitalTotal };
+            return { warehouseArea, vehicleCount, personnelCost, marketingInvest, capitalTotal };
         }
         // Fallback to operations data if detailed plan not available
         const warehouseArea = parseInt(data.operations.warehouse.toString()) || 0;
         const vehicleCount = data.operations.vehicles.reduce((acc, i) => acc + (typeof i.count === 'string' ? parseInt(i.count) : i.count), 0);
-        const personnelCount = data.operations.personnel.reduce((acc, i) => acc + (typeof i.count === 'string' ? parseInt(i.count) : i.count), 0);
-        return { warehouseArea, vehicleCount, personnelCount, marketingInvest: 0, capitalTotal: 0 };
+        const personnelCost = data.operations.personnel.reduce((acc, i) => acc + (typeof i.count === 'string' ? parseInt(i.count) : i.count), 0);
+        return { warehouseArea, vehicleCount, personnelCost, marketingInvest: 0, capitalTotal: 0 };
     };
 
     const budgetSummary = getBudgetSummary();
@@ -797,12 +797,6 @@ const ReviewStep: React.FC<ReviewStepProps> = ({ data, onBack, planVersion = 'la
                         <thead className="bg-slate-50 text-slate-500 font-medium sticky top-0 z-10">
                             <tr>
                                 <th className="p-4 border-b border-slate-100">岗位</th>
-                                <th className="p-4 border-b border-slate-100 text-right">人数</th>
-                                <th className="p-4 border-b border-slate-100 text-right">月基本工资(元)</th>
-                                <th className="p-4 border-b border-slate-100 text-right">年基本工资(万)</th>
-                                <th className="p-4 border-b border-slate-100 text-right">年社保(万)</th>
-                                <th className="p-4 border-b border-slate-100 text-right">年固定成本(万)</th>
-                                <th className="p-4 border-b border-slate-100 text-right">年提成(万)</th>
                                 <th className="p-4 border-b border-slate-100 text-right">年总成本(万)</th>
                                 <th className="p-4 border-b border-slate-100 text-right">品牌占比</th>
                                 <th className="p-4 border-b border-slate-100 text-right">元气分摊成本(万)</th>
@@ -813,15 +807,9 @@ const ReviewStep: React.FC<ReviewStepProps> = ({ data, onBack, planVersion = 'la
                             {plan.personnel.map(item => (
                                 <tr key={item.id} className="hover:bg-slate-50/50 transition-colors">
                                     <td className="p-4 font-medium text-slate-800">{item.role}</td>
-                                    <td className="p-4 text-right text-slate-700">{item.count}</td>
-                                    <td className="p-4 text-right text-slate-600">¥{item.monthlyBaseSalary?.toLocaleString() || '0'}</td>
-                                    <td className="p-4 text-right text-slate-600">{item.yearlyBaseSalary?.toFixed(1) || '0'}</td>
-                                    <td className="p-4 text-right text-slate-600">{item.yearlySocialSecurity?.toFixed(1) || '0'}</td>
-                                    <td className="p-4 text-right text-slate-600">{item.yearlyFixedCost?.toFixed(1) || '0'}</td>
-                                    <td className="p-4 text-right text-slate-600">{item.yearlyBonus?.toFixed(1) || '0'}</td>
-                                    <td className="p-4 text-right text-slate-600">{item.yearlyTotalCost?.toFixed(1) || '0'}</td>
+                                    <td className="p-4 text-right text-slate-700">{item.yearlyTotalCost?.toFixed(2) || '0'}</td>
                                     <td className="p-4 text-right text-slate-500">{item.brandRatio}%</td>
-                                    <td className="p-4 text-right font-bold text-brand-600">{item.brandYearlyCost.toFixed(1)}</td>
+                                    <td className="p-4 text-right font-bold text-brand-600">{item.brandYearlyCost.toFixed(2)}</td>
                                     <td className="p-4 text-slate-500 text-xs max-w-xs">{item.remark}</td>
                                 </tr>
                             ))}
@@ -829,20 +817,14 @@ const ReviewStep: React.FC<ReviewStepProps> = ({ data, onBack, planVersion = 'la
                         <tfoot className="bg-slate-50/80 font-bold border-t border-slate-200">
                             <tr>
                                 <td className="p-4">合计</td>
-                                <td className="p-4 text-right">{plan.personnel.reduce((s, i) => s + i.count, 0)}</td>
-                                <td className="p-4 text-right">¥{plan.personnel.reduce((s, i) => s + (i.monthlyBaseSalary || 0), 0).toLocaleString()}</td>
-                                <td className="p-4 text-right">{plan.personnel.reduce((s, i) => s + (i.yearlyBaseSalary || 0), 0).toFixed(1)}</td>
-                                <td className="p-4 text-right">{plan.personnel.reduce((s, i) => s + (i.yearlySocialSecurity || 0), 0).toFixed(1)}</td>
-                                <td className="p-4 text-right">{plan.personnel.reduce((s, i) => s + (i.yearlyFixedCost || 0), 0).toFixed(1)}</td>
-                                <td className="p-4 text-right">{plan.personnel.reduce((s, i) => s + (i.yearlyBonus || 0), 0).toFixed(1)}</td>
-                                <td className="p-4 text-right">{plan.personnel.reduce((s, i) => s + (i.yearlyTotalCost || 0), 0).toFixed(1)}</td>
+                                <td className="p-4 text-right">{plan.personnel.reduce((s, i) => s + (i.yearlyTotalCost || 0), 0).toFixed(2)}</td>
                                 <td className="p-4"></td>
-                                <td className="p-4 text-right text-brand-600">{plan.personnel.reduce((s, i) => s + i.brandYearlyCost, 0).toFixed(1)}</td>
+                                <td className="p-4 text-right text-brand-600">{plan.personnel.reduce((s, i) => s + i.brandYearlyCost, 0).toFixed(2)}</td>
                                 <td className="p-4"></td>
                             </tr>
                             <tr className="bg-white border-t border-slate-200">
                                 <td className="p-4 font-medium text-slate-600">预算上限</td>
-                                <td className="p-4" colSpan={8}></td>
+                                <td className="p-4" colSpan={2}></td>
                                 <td className="p-4 text-right font-medium text-slate-700">
                                     {budgetLimits.personnel > 0 ? budgetLimits.personnel.toLocaleString() : '--'}
                                 </td>
@@ -850,7 +832,7 @@ const ReviewStep: React.FC<ReviewStepProps> = ({ data, onBack, planVersion = 'la
                             </tr>
                             <tr className="bg-white border-t border-slate-200">
                                 <td className="p-4 font-medium text-slate-600">预算对比</td>
-                                <td className="p-4" colSpan={8}></td>
+                                <td className="p-4" colSpan={2}></td>
                                 <td className={`p-4 text-right text-sm font-bold ${budgetLimits.personnel > 0
                                     ? (budgetLimits.personnel - currentTotals.personnel < 0 ? 'text-red-500' : 'text-emerald-600')
                                     : 'text-slate-500'
@@ -872,47 +854,54 @@ const ReviewStep: React.FC<ReviewStepProps> = ({ data, onBack, planVersion = 'la
                         <thead className="bg-slate-50 text-slate-500 font-medium sticky top-0 z-10">
                             <tr>
                                 <th className="p-4 border-b border-slate-100">费用项</th>
+                                <th className="p-4 border-b border-slate-100 text-right">总投入预算(万元)</th>
+                                <th className="p-4 border-b border-slate-100 text-right">厂家承担(%)</th>
+                                <th className="p-4 border-b border-slate-100 text-right">经销商承担(%)</th>
+                                <th className="p-4 border-b border-slate-100 text-right">厂家承担(万元)</th>
                                 <th className="p-4 border-b border-slate-100 text-right">经销商承担(万元)</th>
                                 <th className="p-4 border-b border-slate-100 text-right">费用占比</th>
-                                <th className="p-4 border-b border-slate-100 text-right">厂家承担(%)</th>
-                                <th className="p-4 border-b border-slate-100 text-right">厂家承担(万元)</th>
-                                <th className="p-4 border-b border-slate-100 text-right">总投入预算(万元)</th>
                                 <th className="p-4 border-b border-slate-100">备注说明</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-slate-100">
-                            {plan.marketing.map(item => (
+                            {plan.marketing.map(item => {
+                                const distPct = 100 - item.manufacturerRatio;
+                                return (
                                 <tr key={item.id} className="hover:bg-slate-50/50 transition-colors">
                                     <td className="p-4 font-medium text-slate-800">{item.item}</td>
-                                    <td className="p-4 text-right font-medium text-brand-600">¥{item.distributorAmount || ((item.amount || item.totalAmount) * ((item.distributorRatio || (100 - (item.manufacturerRatio || item.ratio || 0))) / 100)).toFixed(2)}</td>
+                                    <td className="p-4 text-right font-bold text-slate-800">{item.totalAmount.toFixed(2)}</td>
+                                    <td className="p-4 text-right text-slate-500">{item.manufacturerRatio}%</td>
+                                    <td className="p-4 text-right text-slate-500">{distPct.toFixed(0)}%</td>
+                                    <td className="p-4 text-right text-slate-600">{item.manufacturerAmount.toFixed(2)}</td>
+                                    <td className="p-4 text-right font-bold text-brand-600">{item.distributorAmount.toFixed(2)}</td>
                                     <td className="p-4 text-right text-slate-500">{item.ratio}%</td>
-                                    <td className="p-4 text-right text-slate-500">{item.manufacturerRatio || item.ratio || 0}%</td>
-                                    <td className="p-4 text-right text-slate-600">¥{item.manufacturerAmount || ((item.amount || item.totalAmount) * ((item.manufacturerRatio || item.ratio || 0) / 100)).toFixed(2)}</td>
-                                    <td className="p-4 text-right font-bold text-slate-800">¥{item.amount || item.totalAmount}</td>
                                     <td className="p-4 text-slate-500 text-xs max-w-xs">{item.remark || ''}</td>
                                 </tr>
-                            ))}
+                            )})}
                         </tbody>
                         <tfoot className="bg-slate-50/80 font-bold border-t border-slate-200">
                             <tr>
                                 <td className="p-4">合计</td>
-                                <td className="p-4 text-right text-brand-600">¥{plan.marketing.reduce((s, i) => s + (i.distributorAmount || ((i.amount || i.totalAmount) * ((i.distributorRatio || (100 - (i.manufacturerRatio || i.ratio || 0))) / 100)) || 0), 0).toFixed(2)}</td>
+                                <td className="p-4 text-right">{plan.marketing.reduce((s, i) => s + i.totalAmount, 0).toFixed(2)}</td>
                                 <td className="p-4"></td>
                                 <td className="p-4"></td>
-                                <td className="p-4 text-right">¥{plan.marketing.reduce((s, i) => s + (i.manufacturerAmount || ((i.amount || i.totalAmount) * ((i.manufacturerRatio || i.ratio || 0) / 100)) || 0), 0).toFixed(2)}</td>
-                                <td className="p-4 text-right">¥{plan.marketing.reduce((s, i) => s + (i.amount || i.totalAmount || 0), 0).toFixed(2)}</td>
+                                <td className="p-4 text-right">{plan.marketing.reduce((s, i) => s + i.manufacturerAmount, 0).toFixed(2)}</td>
+                                <td className="p-4 text-right text-brand-600">{plan.marketing.reduce((s, i) => s + i.distributorAmount, 0).toFixed(2)}</td>
+                                <td className="p-4 text-right">100%</td>
                                 <td className="p-4"></td>
                             </tr>
                             <tr className="bg-white border-t border-slate-200">
                                 <td className="p-4 font-medium text-slate-600">预算上限</td>
+                                <td className="p-4" colSpan={3}></td>
                                 <td className="p-4 text-right font-medium text-slate-700">
                                     {budgetLimits.marketing > 0 ? budgetLimits.marketing.toLocaleString() : '--'}
                                 </td>
-                                <td className="p-4" colSpan={4}></td>
+                                <td className="p-4" colSpan={2}></td>
                                 <td className="p-4"></td>
                             </tr>
                             <tr className="bg-white border-t border-slate-200">
                                 <td className="p-4 font-medium text-slate-600">预算对比</td>
+                                <td className="p-4" colSpan={3}></td>
                                 <td className={`p-4 text-right text-sm font-bold ${budgetLimits.marketing > 0
                                     ? (budgetLimits.marketing - currentTotals.marketing < 0 ? 'text-red-500' : 'text-emerald-600')
                                     : 'text-slate-500'
@@ -923,7 +912,7 @@ const ReviewStep: React.FC<ReviewStepProps> = ({ data, onBack, planVersion = 'la
                                         </>
                                     ) : '--'}
                                 </td>
-                                <td className="p-4" colSpan={4}></td>
+                                <td className="p-4" colSpan={2}></td>
                                 <td className="p-4"></td>
                             </tr>
                         </tfoot>
@@ -1410,7 +1399,7 @@ const ReviewStep: React.FC<ReviewStepProps> = ({ data, onBack, planVersion = 'la
                                         <Users size={24} />
                                     </div>
                                     <div className="text-xs font-medium text-slate-500 mb-1.5 uppercase tracking-wider">人员架构</div>
-                                    <div className="text-base font-bold text-slate-800">{budgetSummary.personnelCount} <span className="text-xs font-normal text-slate-400">人</span></div>
+                                    <div className="text-base font-bold text-slate-800">¥{budgetSummary.personnelCost.toFixed(1)} <span className="text-xs font-normal text-slate-400">万</span></div>
                                     <div className="mt-2 text-[10px] text-brand-600 font-semibold opacity-0 group-hover:opacity-100 transition-opacity">查看明细</div>
                                 </div>
                                 <div
