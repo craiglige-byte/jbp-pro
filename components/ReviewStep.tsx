@@ -129,6 +129,78 @@ const ReviewStep: React.FC<ReviewStepProps> = ({ data, onBack, planVersion = 'la
         };
     }, [plan]);
 
+    // 目标范围校验警告（与设定目标节点一致）
+    const objectiveWarnings = useMemo(() => {
+        const warnings: Record<string, string | null> = {
+            '实现销售目标': null,
+            '达成进货承诺': null,
+            '守住库存健康': null,
+            '提升盈利能力': null,
+        };
+        const rawDist = data.marketStats?.regionalDistributionAmount;
+        const distributionWan = rawDist ? parseFloat(String(rawDist).replace(/[^\d.]/g, '')) : 0;
+        let salesTargetWan = 0;
+        const salesObj = data.objectives.find(o => o.title === '实现销售目标');
+        if (salesObj?.targetValue) {
+            const m = salesObj.targetValue.match(/销售目标\s*([\d,.]+)\s*万元/);
+            if (m) salesTargetWan = parseFloat(m[1].replace(/,/g, ''));
+        }
+        if (salesObj?.targetValue && distributionWan > 0) {
+            const m = salesObj.targetValue.match(/销售目标\s*([\d,.]+)\s*万元/);
+            if (m) {
+                const val = parseFloat(m[1].replace(/,/g, ''));
+                if (!isNaN(val)) {
+                    const min = distributionWan * 1.05;
+                    const max = distributionWan * 1.30;
+                    if (val < min) {
+                        warnings['实现销售目标'] = `新地图范围今年分销额为${Math.round(distributionWan).toLocaleString()}万，明年销售目标低于期望`;
+                    } else if (val > max) {
+                        warnings['实现销售目标'] = `新地图范围今年分销额为${Math.round(distributionWan).toLocaleString()}万，明年销售目标超期望上限`;
+                    }
+                }
+            }
+        }
+        const purchaseObj = data.objectives.find(o => o.title === '达成进货承诺');
+        if (purchaseObj?.targetValue && salesTargetWan > 0) {
+            const m = purchaseObj.targetValue.match(/总计\s*([\d,.]+)\s*万元/);
+            if (m) {
+                const val = parseFloat(m[1].replace(/,/g, ''));
+                if (!isNaN(val)) {
+                    const min = salesTargetWan * 0.95;
+                    const max = salesTargetWan * 1.05;
+                    if (val < min) {
+                        warnings['达成进货承诺'] = `明年销售目标为${salesTargetWan.toLocaleString()}万，明年进货目标低于预期`;
+                    } else if (val > max) {
+                        warnings['达成进货承诺'] = `明年销售目标为${salesTargetWan.toLocaleString()}万，明年进货目标超期望上限`;
+                    }
+                }
+            }
+        }
+        const inventoryObj = data.objectives.find(o => o.title === '守住库存健康');
+        if (inventoryObj?.targetValue) {
+            const m = inventoryObj.targetValue.match(/≤\s*(\d+)\s*天/);
+            if (m) {
+                const val = parseInt(m[1], 10);
+                if (!isNaN(val)) {
+                    if (val < 25) warnings['守住库存健康'] = '明年平均库存周转天数低于预期';
+                    else if (val > 45) warnings['守住库存健康'] = '明年平均库存周转天数超期望上限';
+                }
+            }
+        }
+        const profitObj = data.objectives.find(o => o.title === '提升盈利能力');
+        if (profitObj?.targetValue) {
+            const m = profitObj.targetValue.match(/提升至\s*([\d,.]+)\s*%/);
+            if (m) {
+                const val = parseFloat(m[1]);
+                if (!isNaN(val)) {
+                    if (val < 3) warnings['提升盈利能力'] = '明年利润率低于预期';
+                    else if (val > 12) warnings['提升盈利能力'] = '明年利润率超期望上限';
+                }
+            }
+        }
+        return warnings;
+    }, [data.objectives, data.marketStats?.regionalDistributionAmount]);
+
     // Generate months based on period (shared logic)
     const months = useMemo(() => {
         const period = data.period;
@@ -1281,8 +1353,14 @@ const ReviewStep: React.FC<ReviewStepProps> = ({ data, onBack, planVersion = 'la
                                         <div className="bg-slate-50 px-6 py-4 border-b border-slate-200 flex justify-between items-center">
                                             <div className="font-bold text-slate-800 flex items-center">
                                                 <span className="text-brand-600 mr-2">G{idx + 1}</span> {obj.title}
+                                                {objectiveWarnings[obj.title] && (
+                                                    <span className="ml-3 text-xs text-red-500 flex items-center">
+                                                        <AlertCircle size={12} className="mr-1 flex-shrink-0" />
+                                                        {objectiveWarnings[obj.title]}
+                                                    </span>
+                                                )}
                                             </div>
-                                            <div 
+                                            <div
                                                 className="text-xs font-semibold text-brand-700 bg-brand-50 px-4 py-1.5 rounded-lg border border-brand-200/50 flex items-center shadow-sm cursor-pointer hover:bg-brand-100 transition-colors"
                                                 onClick={() => setActivePlanModal(obj.id)}
                                                 data-export-plan-modal={obj.id}
