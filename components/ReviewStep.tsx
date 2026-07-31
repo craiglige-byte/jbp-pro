@@ -201,6 +201,46 @@ const ReviewStep: React.FC<ReviewStepProps> = ({ data, onBack, planVersion = 'la
         return warnings;
     }, [data.objectives, data.marketStats?.regionalDistributionAmount]);
 
+    // 预算规划校验警告（与规划预算节点一致）
+    const purchaseAmountWan = useMemo(() => {
+        const obj = data.objectives.find(o => o.title === '达成进货承诺');
+        if (!obj?.targetValue) return 0;
+        const m = obj.targetValue.match(/总计\s*([\d,.]+)\s*万元/);
+        return m ? parseFloat(m[1].replace(/,/g, '')) : 0;
+    }, [data.objectives]);
+
+    const budgetWarnings = useMemo(() => {
+        const w: { vehicle?: string; personnelSales?: string; personnelDriver?: string; capitalAdvance?: string; capitalTotal?: string } = {};
+        if (!plan) return w;
+        const totalVehicles = plan.vehicles.reduce((s: number, v: any) => s + (v.count || 0), 0);
+        if (purchaseAmountWan > 0) {
+            if (totalVehicles === 0) {
+                w.vehicle = `对比明年进货目标${purchaseAmountWan.toLocaleString()}万，规划车辆数量不足`;
+            } else {
+                const perVehicle = purchaseAmountWan / totalVehicles;
+                if (perVehicle < 150) w.vehicle = `对比明年进货目标${purchaseAmountWan.toLocaleString()}万，规划车辆数量过剩`;
+                else if (perVehicle > 250) w.vehicle = `对比明年进货目标${purchaseAmountWan.toLocaleString()}万，规划车辆数量不足`;
+            }
+            const salesCount = plan.personnel.filter((p: any) => p.role.includes('专职业代') || p.role.includes('厂家业代')).reduce((s: number, p: any) => s + (p.count || 0), 0);
+            if (salesCount > 0) {
+                const perSales = purchaseAmountWan / salesCount;
+                if (perSales < 80) w.personnelSales = `对比明年进货目标${purchaseAmountWan.toLocaleString()}万，规划专职业代与厂家业代个数过剩`;
+                else if (perSales > 200) w.personnelSales = `对比明年进货目标${purchaseAmountWan.toLocaleString()}万，规划专职业代与厂家业代个数不足`;
+            }
+        }
+        const driverCount = plan.personnel.filter((p: any) => p.role.includes('司机')).reduce((s: number, p: any) => s + (p.count || 0), 0);
+        if (totalVehicles > 0 && driverCount < totalVehicles) w.personnelDriver = '对比车辆数量，司机数量不足';
+        const advanceItem = plan.capital.find((c: any) => c.item === '厂家预付款');
+        if (advanceItem && purchaseAmountWan > 0 && advanceItem.amount < purchaseAmountWan * 10000 * 0.25) {
+            w.capitalAdvance = `对比明年进货目标${purchaseAmountWan.toLocaleString()}万，厂家预付款不足`;
+        }
+        const totalCapital = plan.capital.reduce((s: number, c: any) => s + (c.amount || 0), 0);
+        if (purchaseAmountWan > 0 && totalCapital < purchaseAmountWan * 10000 * 0.30) {
+            w.capitalTotal = `对比明年进货目标${purchaseAmountWan.toLocaleString()}万，启动资金不足`;
+        }
+        return w;
+    }, [plan, purchaseAmountWan]);
+
     // Generate months based on period (shared logic)
     const months = useMemo(() => {
         const period = data.period;
@@ -860,6 +900,16 @@ const ReviewStep: React.FC<ReviewStepProps> = ({ data, onBack, planVersion = 'la
                                 </td>
                                 <td className="p-4"></td>
                             </tr>
+                            {budgetWarnings.vehicle && (
+                            <tr>
+                                <td className="px-4 py-2" colSpan={8}>
+                                    <div className="text-xs text-red-500 flex items-center">
+                                        <AlertCircle size={12} className="mr-1 flex-shrink-0" />
+                                        {budgetWarnings.vehicle}
+                                    </div>
+                                </td>
+                            </tr>
+                            )}
                         </tfoot>
                     </table>
                 );
@@ -917,6 +967,24 @@ const ReviewStep: React.FC<ReviewStepProps> = ({ data, onBack, planVersion = 'la
                                 </td>
                                 <td className="p-4"></td>
                             </tr>
+                            {(budgetWarnings.personnelSales || budgetWarnings.personnelDriver) && (
+                            <tr>
+                                <td className="px-4 py-2" colSpan={5}>
+                                    {budgetWarnings.personnelSales && (
+                                        <div className="text-xs text-red-500 flex items-center">
+                                            <AlertCircle size={12} className="mr-1 flex-shrink-0" />
+                                            {budgetWarnings.personnelSales}
+                                        </div>
+                                    )}
+                                    {budgetWarnings.personnelDriver && (
+                                        <div className="text-xs text-red-500 flex items-center mt-0.5">
+                                            <AlertCircle size={12} className="mr-1 flex-shrink-0" />
+                                            {budgetWarnings.personnelDriver}
+                                        </div>
+                                    )}
+                                </td>
+                            </tr>
+                            )}
                         </tfoot>
                     </table>
                 );
@@ -1021,6 +1089,24 @@ const ReviewStep: React.FC<ReviewStepProps> = ({ data, onBack, planVersion = 'la
                                 <td className="p-4 text-right text-brand-600">¥{(plan.capital.reduce((s, i) => s + i.brandAmount, 0) / 10000).toFixed(1)}</td>
                                 <td className="p-4"></td>
                             </tr>
+                            {(budgetWarnings.capitalAdvance || budgetWarnings.capitalTotal) && (
+                            <tr>
+                                <td className="px-4 py-2" colSpan={5}>
+                                    {budgetWarnings.capitalAdvance && (
+                                        <div className="text-xs text-red-500 flex items-center">
+                                            <AlertCircle size={12} className="mr-1 flex-shrink-0" />
+                                            {budgetWarnings.capitalAdvance}
+                                        </div>
+                                    )}
+                                    {budgetWarnings.capitalTotal && (
+                                        <div className="text-xs text-red-500 flex items-center mt-0.5">
+                                            <AlertCircle size={12} className="mr-1 flex-shrink-0" />
+                                            {budgetWarnings.capitalTotal}
+                                        </div>
+                                    )}
+                                </td>
+                            </tr>
+                            )}
                         </tfoot>
                     </table>
                 );
