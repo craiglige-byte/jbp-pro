@@ -1212,7 +1212,7 @@ const BudgetStep: React.FC<BudgetStepProps> = ({ data, updateData, onNext, onBac
                                             </div>
                                         )}
                                         {validationWarnings.personnelDriver && (
-                                            <div className="text-xs bg-red-50 text-red-600 rounded-lg px-3 py-2 flex items-center mt-1">
+                                            <div className="text-xs text-red-500 flex items-center mt-1">
                                                 <AlertCircle size={12} className="mr-1.5 flex-shrink-0" />
                                                 {validationWarnings.personnelDriver}
                                             </div>
@@ -1474,7 +1474,7 @@ const BudgetStep: React.FC<BudgetStepProps> = ({ data, updateData, onNext, onBac
                                             </div>
                                         )}
                                         {validationWarnings.capitalTotal && (
-                                            <div className="text-xs bg-red-50 text-red-600 rounded-lg px-3 py-2 flex items-center mt-1">
+                                            <div className="text-xs text-red-500 flex items-center mt-1">
                                                 <AlertCircle size={12} className="mr-1.5 flex-shrink-0" />
                                                 {validationWarnings.capitalTotal}
                                             </div>
