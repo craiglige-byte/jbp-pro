@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { JBPData, JBPIssue, JBPOpportunity } from '../types';
 
-import { Map as MapIcon, MapPin, TrendingUp, AlertCircle, ShoppingBag, ArrowUpRight, Loader2, RefreshCw, Lightbulb, Target, Edit2, Check, X, FileJson, Upload, FileSpreadsheet, CheckCircle2, Globe, BarChart3, Users, Zap, Plus, Trash2, Save, Wallet, CupSoda, Info, ChevronLeft, ChevronRight, Maximize2, Minimize2, BarChart, Database, Coins, PieChart, Activity, Store, Table, LineChart, Warehouse, Truck, Briefcase, Layers, Eye, Calculator, Minus, ChevronDown } from 'lucide-react';
+import { Map as MapIcon, MapPin, TrendingUp, AlertCircle, ShoppingBag, ArrowUpRight, Loader2, RefreshCw, Lightbulb, Target, Edit2, Check, X, FileJson, Upload, FileSpreadsheet, CheckCircle2, Globe, BarChart3, Users, Zap, Plus, Trash2, Save, Wallet, CupSoda, Info, ChevronLeft, ChevronRight, Maximize2, Minimize2, BarChart, Database, Coins, PieChart, Activity, Store, Table, LineChart, Warehouse, Truck, Briefcase, Layers, Eye, Calculator, Minus, ChevronDown, DollarSign } from 'lucide-react';
 // @ts-ignore
 import * as XLSX from 'xlsx';
 import {
@@ -1499,6 +1499,24 @@ const BusinessReviewStep: React.FC<BusinessReviewStepProps> = ({ data, updateDat
                                                     <span className="text-xs text-slate-500 font-medium">人均饮用量</span>
                                                 </div>
                                                 <span className="text-xs font-bold text-slate-800 font-mono">{data.marketStats.perCapitaConsumption}<span className="text-[10px] text-slate-400 ml-0.5">升/年</span></span>
+                                            </div>
+                                            <div className="flex items-center justify-between">
+                                                <div className="flex items-center">
+                                                    <div className="bg-cyan-50 p-1.5 rounded-lg mr-2.5">
+                                                        <TrendingUp size={13} className="text-cyan-600"/>
+                                                    </div>
+                                                    <span className="text-xs text-slate-500 font-medium">区域今年分销额</span>
+                                                </div>
+                                                <span className="text-xs font-bold text-slate-800 font-mono">{data.marketStats.regionalDistributionAmount || '1000'}<span className="text-[10px] text-slate-400 ml-0.5">万元</span></span>
+                                            </div>
+                                            <div className="flex items-center justify-between">
+                                                <div className="flex items-center">
+                                                    <div className="bg-purple-50 p-1.5 rounded-lg mr-2.5">
+                                                        <DollarSign size={13} className="text-purple-600"/>
+                                                    </div>
+                                                    <span className="text-xs text-slate-500 font-medium">今年分销金额</span>
+                                                </div>
+                                                <span className="text-xs font-bold text-slate-800 font-mono">{data.marketStats.distributionAmount || '-'}<span className="text-[10px] text-slate-400 ml-0.5">千万</span></span>
                                             </div>
                                         </div>
 

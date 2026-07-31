@@ -102,7 +102,7 @@ const DEMO_DATA: JBPData = {
     ],
     "insights": []
   },
-  "marketStats": { "population": "245", "gdp": "380.2", "perCapitaConsumption": "42.5" },
+  "marketStats": { "population": "245", "gdp": "380.2", "perCapitaConsumption": "42.5", "distributionAmount": "3.8 千万", "regionalDistributionAmount": "1000" },
   "competitors": [
     { "id": "c1", "name": "农夫山泉", "abbr": "NF", "target": "420", "achievement": 92, "outlets": 1200 },
     { "id": "c2", "name": "怡宝", "abbr": "MD", "target": "180", "achievement": 85, "outlets": 850 },

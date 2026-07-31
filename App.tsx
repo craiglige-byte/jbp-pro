@@ -263,7 +263,9 @@ const INITIAL_DATA: JBPData = {
   marketStats: {
     population: '245 万',
     gdp: '¥380.2 亿',
-    perCapitaConsumption: '42.5 升/年'
+    perCapitaConsumption: '42.5 升/年',
+    distributionAmount: '3.8 千万',
+    regionalDistributionAmount: '1000'
   },
   competitors: [
     { id: 'c1', name: '农夫山泉', abbr: 'NF', target: '¥420万', achievement: 92, outlets: 1200 },
@@ -287,6 +289,11 @@ const App: React.FC = () => {
           vehicles: INITIAL_DATA.operations.vehicles,
           personnel: INITIAL_DATA.operations.personnel,
           capital: INITIAL_DATA.operations.capital,
+        };
+        // 确保 marketStats 补齐新增字段（如 regionalDistributionAmount）
+        merged.marketStats = {
+          ...INITIAL_DATA.marketStats,
+          ...parsed.marketStats,
         };
         return merged;
       }

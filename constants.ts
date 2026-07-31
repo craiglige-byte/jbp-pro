@@ -89,7 +89,8 @@ export const INITIAL_DATA: JBPData = {
   marketStats: {
     population: '150万',
     gdp: '850亿',
-    perCapitaConsumption: '58元'
+    perCapitaConsumption: '58元',
+    regionalDistributionAmount: '1000'
   },
   competitors: [
     { id: 'comp1', name: '农夫山泉', abbr: 'NFSQ', target: '1.5亿', achievement: 95, outlets: 4200 },

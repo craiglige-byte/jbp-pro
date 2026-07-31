@@ -94,6 +94,8 @@ export interface JBPData {
     population: string;
     gdp: string;
     perCapitaConsumption: string;
+    distributionAmount: string;
+    regionalDistributionAmount: string;
   };
   competitors: { id: string; name: string; abbr: string; target: string; achievement: number; outlets: number }[];
   trends: JBPTrend[];
