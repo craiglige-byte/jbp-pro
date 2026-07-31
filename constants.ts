@@ -90,6 +90,7 @@ export const INITIAL_DATA: JBPData = {
     population: '150万',
     gdp: '850亿',
     perCapitaConsumption: '58元',
+    distributionAmount: '3.8 千万',
     regionalDistributionAmount: '1000'
   },
   competitors: [
@@ -131,15 +132,6 @@ export const INITIAL_DATA: JBPData = {
 export const OBJECTIVE_TEMPLATES: { id: string; label: string; suggestedStrategies: TemplateStrategy[] }[] = [
   {
     id: 'obj1',
-    label: '达成进货承诺',
-    suggestedStrategies: [
-      { text: '资金前置储备：提前测算旺季资金缺口，落实银行授信或自有资金增资，确保打款无忧。', measure: '旺季前资金到位率100%', tag: '资金' },
-      { text: '年度规划与动态复盘双循环：制定年度进货规划，并建立月度预实分析、季度策略调整机制，确保目标不偏航。', measure: '季度进货目标达成率≥95%', tag: '管理' },
-      { text: '月度预估与订货微调双保险：基于历史数据与最新动销预测月度需求，订货前结合库存水位动态微调，精准下单。', measure: '月度订货准确率≥90%', tag: '运营' }
-    ]
-  },
-  {
-    id: 'obj2',
     label: '实现销售目标',
     suggestedStrategies: [
       { text: '人效提升与激励绑定：优化人员片区匹配，设计高激励提成方案，将个人收入与销售目标强挂钩。', measure: '人均销售额提升15%', tag: '团队' },
@@ -147,6 +139,15 @@ export const OBJECTIVE_TEMPLATES: { id: string; label: string; suggestedStrategi
       { text: '终端分级与单店产出提升：实施终端分级管理（A/B/C类），对高产出A类店进行资源倾斜与精细化服务。', measure: 'A类店单店产出提升10%', tag: '渠道' },
       { text: '渠道拓展与空白区域开发：针对未覆盖的特通、餐饮或新开发区进行专项攻坚，寻找增量。', measure: '新开有效终端数≥500家', tag: '渠道' },
       { text: '过程管控与数据复盘：建立日报周报机制，强化过程指标（拜访、陈列）管控，通过数据复盘及时纠偏。', measure: '拜访执行率100%', tag: '管理' }
+    ]
+  },
+  {
+    id: 'obj2',
+    label: '达成进货承诺',
+    suggestedStrategies: [
+      { text: '资金前置储备：提前测算旺季资金缺口，落实银行授信或自有资金增资，确保打款无忧。', measure: '旺季前资金到位率100%', tag: '资金' },
+      { text: '年度规划与动态复盘双循环：制定年度进货规划，并建立月度预实分析、季度策略调整机制，确保目标不偏航。', measure: '季度进货目标达成率≥95%', tag: '管理' },
+      { text: '月度预估与订货微调双保险：基于历史数据与最新动销预测月度需求，订货前结合库存水位动态微调，精准下单。', measure: '月度订货准确率≥90%', tag: '运营' }
     ]
   },
   {

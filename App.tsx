@@ -74,13 +74,13 @@ const INITIAL_DATA: JBPData = {
   objectives: [
     {
       id: 'obj_1',
-      title: '达成进货承诺',
+      title: '实现销售目标',
       targetValue: '',
       strategies: []
     },
     {
       id: 'obj_2',
-      title: '实现销售目标',
+      title: '达成进货承诺',
       targetValue: '',
       strategies: []
     },
@@ -295,6 +295,14 @@ const App: React.FC = () => {
           ...INITIAL_DATA.marketStats,
           ...parsed.marketStats,
         };
+        // 确保 objectives 顺序正确（实现销售目标 → 达成进货承诺）
+        if (merged.objectives && merged.objectives.length >= 2) {
+          const firstTitle = merged.objectives[0]?.title;
+          const secondTitle = merged.objectives[1]?.title;
+          if (firstTitle === '达成进货承诺' && secondTitle === '实现销售目标') {
+            [merged.objectives[0], merged.objectives[1]] = [merged.objectives[1], merged.objectives[0]];
+          }
+        }
         return merged;
       }
     } catch (error) {
@@ -387,8 +395,8 @@ const App: React.FC = () => {
       
       // 检查目标拆解
       if (isSpecial) {
-        if (obj.title === '达成进货承诺' && !obj.purchasePlan) return false;
-        if (obj.title === '实现销售目标' && !obj.salesPlan) return false;
+        if (obj.title === '达成进货承诺' && !obj.purchasePlan && !obj.salesPlan) return false;
+        if (obj.title === '实现销售目标' && !obj.salesPlan && !obj.purchasePlan) return false;
         if (obj.title === '守住库存健康' && !obj.inventoryPlan) return false;
         if (obj.title === '提升盈利能力' && !obj.profitabilityPlan) return false;
       } else {

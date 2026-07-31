@@ -860,10 +860,10 @@ const ObjectiveStep: React.FC<ObjectiveStepProps> = ({ data, updateData, onNext,
       }
       
       if (objectiveNames[i] === '实现销售目标') {
-        // 检查是否包含有效的箱数
-        const match = objective.targetValue.match(/销售目标\s*([\d,]+)\s*箱/);
+        // 检查是否包含有效的万元数
+        const match = objective.targetValue.match(/销售目标\s*([\d,.]+)\s*万元/);
         if (!match || !match[1] || match[1] === '0') {
-          setValidationError(`请填写"${objectiveNames[i]}"的箱数`);
+          setValidationError(`请填写"${objectiveNames[i]}"的万元数`);
           setTimeout(() => setValidationError(null), 5000);
           return false;
         }
@@ -1440,125 +1440,60 @@ const ObjectiveStep: React.FC<ObjectiveStepProps> = ({ data, updateData, onNext,
                           {obj.title === '达成进货承诺' ? (
                             <div className="flex gap-2">
                               <div className="flex-grow text-sm text-slate-700 bg-slate-50 p-3 rounded-lg border border-slate-200 leading-relaxed">
-                              为保障市场供应并深化战略协作，我司承诺在 <span className="font-medium">元气森林2027财年（2026年12月1日至2027年11月30日）</span> 内，根据双方共同确认的滚动预测，完成总计 
-                              <span className="font-bold mx-1 text-brand-700">
-                                {(() => {
-                                  // 提取括号内的数值和单位
-                                  const newMatch = obj.targetValue.match(/（([\d,.]+)万元）/);
-                                  const oldMatch = obj.targetValue.match(/¥([\d,.]+)/);
-                                  if (newMatch && newMatch[1]) {
-                                    const wanNum = parseInt(newMatch[1].replace(/[,]/g, ''), 10);
-                                    if (!isNaN(wanNum)) return digitToChinese(wanNum * 10000).replace(/元整$/, '万元整');
-                                  }
-                                  if (oldMatch && oldMatch[1]) {
-                                    const yuanNum = parseInt(oldMatch[1].replace(/[,]/g, ''), 10);
-                                    if (!isNaN(yuanNum)) return digitToChinese(yuanNum).replace(/元整$/, '万元整');
-                                  }
-                                  return '零万元整';
-                                })()}
-                              </span>
-                              （
+                              为保障市场供应并深化战略协作，我司承诺在 <span className="font-medium">元气森林2027财年（2026年12月1日至2027年11月30日）</span> 内，根据双方共同确认的滚动预测，完成总计
                               <input
                                 type="text"
                                 value={(() => {
-                                  const newMatch = obj.targetValue.match(/（([\d,.]+)万元）/);
-                                  if (newMatch && newMatch[1]) {
-                                    const wanNum = parseInt(newMatch[1].replace(/[,]/g, ''), 10);
-                                    if (!isNaN(wanNum)) return wanNum.toLocaleString();
-                                  }
-                                  const oldMatch = obj.targetValue.match(/¥([\d,.]+)/);
-                                  if (oldMatch && oldMatch[1]) {
-                                    const yuanNum = parseInt(oldMatch[1].replace(/[,]/g, ''), 10);
-                                    if (!isNaN(yuanNum)) return (yuanNum / 10000).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2 });
-                                  }
-                                  return '';
+                                  const match = obj.targetValue.match(/总计\s*([\d,.]+)\s*万元/);
+                                  return match ? match[1] : '';
                                 })()}
-                                onFocus={(e) => {
-                                    if (e.target.value === '0' || e.target.value === '') {
-                                        e.target.value = '';
-                                        const newText = `为保障市场供应并深化战略协作，我司承诺在 元气森林2027财年（2026年12月1日至2027年11月30日） 内，根据双方共同确认的滚动预测，完成总计 人民币零万元整（万元） 的 Sell-in进货。该目标旨在确保核心产品对渠道的充足供应，为终端销售增长奠定基础。`;
-                                        updateObjectiveTarget(obj.id, newText);
-                                    }
-                                }}
                                 onChange={(e) => {
                                   const val = e.target.value.replace(/[^\d.]/g, '');
-                                  const wan = parseFloat(val);
-                                  const num = isNaN(wan) ? 0 : Math.round(wan * 10000);
-
-                                  const chineseAmount = num === 0 ? '零万元整' : digitToChinese(num).replace(/元整$/, '万元整');
-                                  const formattedWan = num === 0 ? '' : wan.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2 });
-
-                                  const newPurchaseText = `为保障市场供应并深化战略协作，我司承诺在 元气森林2027财年（2026年12月1日至2027年11月30日） 内，根据双方共同确认的滚动预测，完成总计 人民币${chineseAmount}（${formattedWan}万元） 的 Sell-in进货。该目标旨在确保核心产品对渠道的充足供应，为终端销售增长奠定基础。`;
-                                  
-                                  // Update Purchase Target
-                                  let newObjectives = data.objectives.map(o => o.id === obj.id ? { ...o, targetValue: newPurchaseText } : o);
-
-                                  // Calculate Sales Target
-                                  // Cases = Purchase Target / 45 (rounded)
-                                  // Amount = Purchase Target / (1 - 0.19) (rounded)
-                                  if (!isNaN(num)) {
-                                      const salesCases = Math.round(num / 45);
-                                      const salesCasesFormatted = salesCases.toLocaleString();
-                                      const salesAmount = Math.round(num / (1 - 0.19));
-                                      const salesAmountFormatted = salesAmount.toLocaleString();
-                                      
-                                      const newSalesText = `为共同扩大市场份额，我司承诺在 元气森林2027财年（2026年12月1日至2027年11月30日） 内，通过全渠道精细化运营，达成终端市场 Sell-out 销售目标 ${salesCasesFormatted} 箱（约合人民币 ${salesAmountFormatted} 元），并提升核心单品在辖区的渗透率。`;
-
-                                      newObjectives = newObjectives.map(o => o.title === '实现销售目标' ? { ...o, targetValue: newSalesText } : o);
-                                  }
-
-                                  updateData({ objectives: newObjectives });
+                                  const newText = `为保障市场供应并深化战略协作，我司承诺在 元气森林2027财年（2026年12月1日至2027年11月30日） 内，根据双方共同确认的滚动预测，完成总计 ${val} 万元 的 Sell-in进货。该目标旨在确保核心产品对渠道的充足供应，为终端销售增长奠定基础。`;
+                                  updateObjectiveTarget(obj.id, newText);
                                 }}
                                 className="w-24 text-center border-b border-slate-300 focus:border-brand-500 outline-none bg-transparent font-bold text-brand-600 px-1"
                                 placeholder="输入金额"
                               />
-                              万元） 的 Sell-in进货。该目标旨在确保核心产品对渠道的充足供应，为终端销售增长奠定基础。
+                              万元 的 Sell-in进货。该目标旨在确保核心产品对渠道的充足供应，为终端销售增长奠定基础。
                               </div>
                             </div>
                           ) : obj.title === '实现销售目标' ? (
                             <div className="flex gap-2">
                               <div className="flex-grow text-sm text-slate-700 bg-slate-50 p-3 rounded-lg border border-slate-200 leading-relaxed">
-                              为共同扩大市场份额，我司承诺在 <span className="font-medium">元气森林2027财年（2026年12月1日至2027年11月30日）</span> 内，通过全渠道精细化运营，达成终端市场 Sell-out 销售目标 
+                              为共同扩大市场份额，我司承诺在 <span className="font-medium">元气森林2027财年（2026年12月1日至2027年11月30日）</span> 内，通过全渠道精细化运营，达成终端市场 Sell-out 销售目标
                               <input
                                 type="text"
                                 value={(() => {
-                                  const match = obj.targetValue.match(/销售目标\s*([\d,]+)\s*箱/);
+                                  const match = obj.targetValue.match(/销售目标\s*([\d,.]+)\s*万元/);
                                   return match ? match[1] : '';
                                 })()}
                                 onChange={(e) => {
-                                  const val = e.target.value.replace(/[^\d]/g, '');
-                                  
-                                  // 如果输入为空，清空targetValue，让placeholder显示
+                                  const val = e.target.value.replace(/[^\d.]/g, '');
                                   if (!val || val === '') {
                                     updateObjectiveTarget(obj.id, '');
                                     return;
                                   }
-                                  
-                                  const cases = parseInt(val, 10);
+                                  const wan = parseFloat(val);
+                                  if (isNaN(wan)) return;
+                                  const cases = Math.floor(wan * 10000 / 45);
                                   const casesFormatted = cases.toLocaleString();
-                                  
-                                  // Recalculate auxiliary amount based on cases if manually edited
-                                  // Ratio: Amount = Cases * (45 / 0.81) = Cases * 55.555...
-                                  const amount = Math.round(cases * (45 / 0.81));
-                                  const amountFormatted = amount.toLocaleString();
-
-                                  const newText = `为共同扩大市场份额，我司承诺在 元气森林2027财年（2026年12月1日至2027年11月30日） 内，通过全渠道精细化运营，达成终端市场 Sell-out 销售目标 ${casesFormatted} 箱（约合人民币 ${amountFormatted} 元），并提升核心单品在辖区的渗透率。`;
+                                  const wanFormatted = wan.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2 });
+                                  const newText = `为共同扩大市场份额，我司承诺在 元气森林2027财年（2026年12月1日至2027年11月30日） 内，通过全渠道精细化运营，达成终端市场 Sell-out 销售目标 ${wanFormatted} 万元（约合 ${casesFormatted} 箱），并提升核心单品在辖区的渗透率。`;
                                   updateObjectiveTarget(obj.id, newText);
                                 }}
                                 className="w-24 text-center border-b border-slate-300 focus:border-brand-500 outline-none bg-transparent font-bold text-brand-600 px-1"
-                                placeholder="输入箱数"
+                                placeholder="输入金额"
                               />
-                              箱（约合人民币 
+                              万元（约合
                               <span className="font-bold mx-1 text-slate-600">
                                 {(() => {
-                                  const match = obj.targetValue.match(/销售目标\s*([\d,]+)\s*箱/);
+                                  const match = obj.targetValue.match(/约合\s*([\d,]+)\s*箱/);
                                   if (!match || !match[1] || match[1] === '0') return '';
-                                  const cases = parseInt(match[1].replace(/,/g, ''), 10);
-                                  const amount = Math.round(cases * (45 / 0.81));
-                                  return amount.toLocaleString();
+                                  return match[1];
                                 })()}
                               </span>
-                              元），并提升核心单品在辖区的渗透率。
+                              箱），并提升核心单品在辖区的渗透率。
                               </div>
                             </div>
                           ) : obj.title === '守住库存健康' ? (
