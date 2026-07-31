@@ -1058,7 +1058,7 @@ const BudgetStep: React.FC<BudgetStepProps> = ({ data, updateData, onNext, onBac
                                 {validationWarnings.vehicle && (
                                 <tr>
                                     <td className="px-4 py-2" colSpan={9}>
-                                        <div className="text-xs bg-red-50 text-red-600 rounded-lg px-3 py-2 flex items-center">
+                                        <div className="text-xs text-red-500 flex items-center">
                                             <AlertCircle size={12} className="mr-1.5 flex-shrink-0" />
                                             {validationWarnings.vehicle}
                                         </div>
@@ -1206,7 +1206,7 @@ const BudgetStep: React.FC<BudgetStepProps> = ({ data, updateData, onNext, onBac
                                 <tr>
                                     <td className="px-4 py-2" colSpan={7}>
                                         {validationWarnings.personnelSales && (
-                                            <div className="text-xs bg-red-50 text-red-600 rounded-lg px-3 py-2 flex items-center">
+                                            <div className="text-xs text-red-500 flex items-center">
                                                 <AlertCircle size={12} className="mr-1.5 flex-shrink-0" />
                                                 {validationWarnings.personnelSales}
                                             </div>
@@ -1468,7 +1468,7 @@ const BudgetStep: React.FC<BudgetStepProps> = ({ data, updateData, onNext, onBac
                                 <tr>
                                     <td className="px-4 py-2" colSpan={6}>
                                         {validationWarnings.capitalAdvance && (
-                                            <div className="text-xs bg-red-50 text-red-600 rounded-lg px-3 py-2 flex items-center">
+                                            <div className="text-xs text-red-500 flex items-center">
                                                 <AlertCircle size={12} className="mr-1.5 flex-shrink-0" />
                                                 {validationWarnings.capitalAdvance}
                                             </div>
