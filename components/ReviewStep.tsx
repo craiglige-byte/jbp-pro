@@ -1435,26 +1435,28 @@ const ReviewStep: React.FC<ReviewStepProps> = ({ data, onBack, planVersion = 'la
                                         <div className="bg-slate-50 px-6 py-4 border-b border-slate-200 flex justify-between items-center">
                                             <div className="font-bold text-slate-800 flex items-center">
                                                 <span className="text-brand-600 mr-2">G{idx + 1}</span> {obj.title}
+                                            </div>
+                                            <div className="flex flex-col items-end gap-1">
+                                                <div
+                                                    className="text-xs font-semibold text-brand-700 bg-brand-50 px-4 py-1.5 rounded-lg border border-brand-200/50 flex items-center shadow-sm cursor-pointer hover:bg-brand-100 transition-colors"
+                                                    onClick={() => setActivePlanModal(obj.id)}
+                                                    data-export-plan-modal={obj.id}
+                                                    data-plan-title={
+                                                        obj.title === '达成进货承诺' ? '年度进货规划表' :
+                                                        obj.title === '实现销售目标' ? '年度销售规划表' :
+                                                        obj.title === '守住库存健康' ? '年度库存规划表' :
+                                                        obj.title === '提升盈利能力' ? '年度盈利规划表' : '规划详情'
+                                                    }
+                                                >
+                                                    <Target size={14} className="mr-2 flex-shrink-0 text-brand-500" />
+                                                    <span>{getShortTarget(obj)}</span>
+                                                </div>
                                                 {objectiveWarnings[obj.title] && (
-                                                    <span className="ml-3 text-xs text-red-500 flex items-center">
+                                                    <span className="text-xs text-red-500 flex items-center">
                                                         <AlertCircle size={12} className="mr-1 flex-shrink-0" />
                                                         {objectiveWarnings[obj.title]}
                                                     </span>
                                                 )}
-                                            </div>
-                                            <div
-                                                className="text-xs font-semibold text-brand-700 bg-brand-50 px-4 py-1.5 rounded-lg border border-brand-200/50 flex items-center shadow-sm cursor-pointer hover:bg-brand-100 transition-colors"
-                                                onClick={() => setActivePlanModal(obj.id)}
-                                                data-export-plan-modal={obj.id}
-                                                data-plan-title={
-                                                    obj.title === '达成进货承诺' ? '年度进货规划表' :
-                                                    obj.title === '实现销售目标' ? '年度销售规划表' :
-                                                    obj.title === '守住库存健康' ? '年度库存规划表' :
-                                                    obj.title === '提升盈利能力' ? '年度盈利规划表' : '规划详情'
-                                                }
-                                            >
-                                                <Target size={14} className="mr-2 flex-shrink-0 text-brand-500" />
-                                                <span>{getShortTarget(obj)}</span>
                                             </div>
                                         </div>
                                         {!isSmall && (
