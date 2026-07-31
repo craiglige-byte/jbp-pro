@@ -951,9 +951,9 @@ const ObjectiveStep: React.FC<ObjectiveStepProps> = ({ data, updateData, onNext,
           const min = distributionWan * 1.05;
           const max = distributionWan * 1.30;
           if (val < min) {
-            warnings['实现销售目标'] = `明年地图范围今年分销额为${Math.round(distributionWan).toLocaleString()}万，明年销售目标低于期望`;
+            warnings['实现销售目标'] = `新地图范围今年分销额为${Math.round(distributionWan).toLocaleString()}万，明年销售目标低于期望`;
           } else if (val > max) {
-            warnings['实现销售目标'] = `明年地图范围今年分销额为${Math.round(distributionWan).toLocaleString()}万，明年销售目标超期望上限`;
+            warnings['实现销售目标'] = `新地图范围今年分销额为${Math.round(distributionWan).toLocaleString()}万，明年销售目标超期望上限`;
           }
         }
       }
