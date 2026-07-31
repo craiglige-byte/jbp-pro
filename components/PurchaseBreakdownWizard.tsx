@@ -149,6 +149,15 @@ export const PurchaseBreakdownWizard: React.FC<PurchaseBreakdownWizardProps> = (
     return { catTotals, totalAmount: parseFloat(totalAmount.toFixed(2)) };
   }, [plan.monthlyData]);
 
+  // Annual completion ratio: how much of the target has been decomposed
+  const annualCompletionRatio = useMemo(() => {
+    if (totalTarget <= 0) return 0;
+    return parseFloat(((annualTotals.totalAmount / totalTarget) * 100).toFixed(2));
+  }, [annualTotals.totalAmount, totalTarget]);
+
+  // Whether the plan is fully decomposed (100% of target)
+  const isFullyDecomposed = Math.abs(annualCompletionRatio - 100) < 0.01;
+
   // Handle category input change for a month
   const handleCategoryChange = (monthId: string, catId: string, rawValue: string) => {
     if (!isValidDecimal(rawValue)) return;
@@ -288,7 +297,7 @@ export const PurchaseBreakdownWizard: React.FC<PurchaseBreakdownWizardProps> = (
             <div>
                 <h3 className="text-lg font-bold text-slate-800 flex items-center">
                     <Calculator className="mr-2 text-brand-600" size={20} />
-                    确认进货计划
+                    拆解进货计划
                 </h3>
                 <p className="text-xs text-slate-500 mt-1">
                     年度目标: <span className="font-bold text-brand-600">{(totalTarget / 10000).toFixed(2)}万元</span>
@@ -346,7 +355,7 @@ export const PurchaseBreakdownWizard: React.FC<PurchaseBreakdownWizardProps> = (
                                                         <td className="px-3 py-2">
                                                             <input
                                                                 type="text"
-                                                                className="w-full bg-transparent border-b border-transparent focus:border-brand-300 outline-none text-slate-600 placeholder-slate-300 text-xs"
+                                                                className="w-full bg-blue-50 border border-blue-200 rounded px-2 py-1 outline-none focus:border-blue-400 focus:ring-1 focus:ring-blue-200 text-slate-700 placeholder-slate-400 text-xs"
                                                                 placeholder="场景..."
                                                                 value={d.scenario || ''}
                                                                 onChange={(e) => handleScenarioChange(m.id, e.target.value)}
@@ -361,7 +370,7 @@ export const PurchaseBreakdownWizard: React.FC<PurchaseBreakdownWizardProps> = (
                                                                     <div className="flex flex-col items-end">
                                                                         <input
                                                                             type="text" inputMode="decimal"
-                                                                            className="w-20 bg-transparent text-right outline-none border-b border-transparent focus:border-brand-300 text-slate-700 font-mono text-xs"
+                                                                            className="w-20 bg-amber-50 border border-amber-200 rounded px-2 py-1 text-right outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-200 text-slate-700 font-mono text-xs"
                                                                             value={toWanInput(catVal)}
                                                                             placeholder="0"
                                                                             onChange={(e) => handleCategoryChange(m.id, c.id, e.target.value)}
@@ -472,8 +481,8 @@ export const PurchaseBreakdownWizard: React.FC<PurchaseBreakdownWizardProps> = (
                                 <td className="px-3 py-4 text-right text-base">
                                     {toWan(annualTotals.totalAmount)}
                                 </td>
-                                <td className="px-3 py-4 text-right text-base">
-                                    100%
+                                <td className={`px-3 py-4 text-right text-base font-bold ${isFullyDecomposed ? 'text-emerald-700' : 'text-red-500'}`}>
+                                    {annualCompletionRatio.toFixed(2)}%
                                 </td>
                             </tr>
 
@@ -515,12 +524,24 @@ export const PurchaseBreakdownWizard: React.FC<PurchaseBreakdownWizardProps> = (
             >
                 取消
             </button>
-            <button
-                onClick={handleSave}
-                className="px-6 py-2 bg-brand-600 text-white font-medium rounded-lg hover:bg-brand-700 transition-colors shadow-lg shadow-brand-200 flex items-center"
-            >
-                <Check size={16} className="mr-2" /> 确认生成计划
-            </button>
+            <div className="flex flex-col items-end gap-1">
+                <button
+                    onClick={handleSave}
+                    disabled={!isFullyDecomposed}
+                    className={`px-6 py-2 text-white font-medium rounded-lg transition-all shadow-lg flex items-center ${
+                        isFullyDecomposed
+                            ? 'bg-brand-600 hover:bg-brand-700 shadow-brand-200 cursor-pointer'
+                            : 'bg-slate-300 cursor-not-allowed shadow-slate-100'
+                    }`}
+                >
+                    <Check size={16} className="mr-2" /> 确认生成计划
+                </button>
+                {!isFullyDecomposed && (
+                    <p className="text-xs text-red-500 font-medium">
+                        请将明年计划100%拆解至品类月计划
+                    </p>
+                )}
+            </div>
         </div>
       </div>
     </div>
