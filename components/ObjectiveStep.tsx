@@ -923,6 +923,94 @@ const ObjectiveStep: React.FC<ObjectiveStepProps> = ({ data, updateData, onNext,
     }
   };
 
+  // 实时范围校验警告
+  const objectiveWarnings = useMemo(() => {
+    const warnings: Record<string, string | null> = {
+      '实现销售目标': null,
+      '达成进货承诺': null,
+      '守住库存健康': null,
+      '提升盈利能力': null,
+    };
+
+    // 1. 销售目标：区域今年分销额 * 1.05 ~ 1.30
+    const rawDist = data.marketStats?.regionalDistributionAmount;
+    const distributionWan = rawDist ? parseFloat(String(rawDist).replace(/[^\d.]/g, '')) : 0;
+
+    let salesTargetWan = 0;
+    const salesObj = data.objectives.find(o => o.title === '实现销售目标');
+    if (salesObj?.targetValue) {
+      const m = salesObj.targetValue.match(/销售目标\s*([\d,.]+)\s*万元/);
+      if (m) salesTargetWan = parseFloat(m[1].replace(/,/g, ''));
+    }
+
+    if (salesObj?.targetValue && distributionWan > 0) {
+      const m = salesObj.targetValue.match(/销售目标\s*([\d,.]+)\s*万元/);
+      if (m) {
+        const val = parseFloat(m[1].replace(/,/g, ''));
+        if (!isNaN(val)) {
+          const min = distributionWan * 1.05;
+          const max = distributionWan * 1.30;
+          if (val < min) {
+            warnings['实现销售目标'] = `明年地图范围今年分销额为${Math.round(distributionWan).toLocaleString()}万，明年销售目标低于期望`;
+          } else if (val > max) {
+            warnings['实现销售目标'] = `明年地图范围今年分销额为${Math.round(distributionWan).toLocaleString()}万，明年销售目标超期望上限`;
+          }
+        }
+      }
+    }
+
+    // 2. 进货承诺：销售目标 * 0.95 ~ 1.05
+    const purchaseObj = data.objectives.find(o => o.title === '达成进货承诺');
+    if (purchaseObj?.targetValue && salesTargetWan > 0) {
+      const m = purchaseObj.targetValue.match(/总计\s*([\d,.]+)\s*万元/);
+      if (m) {
+        const val = parseFloat(m[1].replace(/,/g, ''));
+        if (!isNaN(val)) {
+          const min = salesTargetWan * 0.95;
+          const max = salesTargetWan * 1.05;
+          if (val < min) {
+            warnings['达成进货承诺'] = `明年销售目标为${salesTargetWan.toLocaleString()}万，明年进货目标低于预期`;
+          } else if (val > max) {
+            warnings['达成进货承诺'] = `明年销售目标为${salesTargetWan.toLocaleString()}万，明年进货目标超期望上限`;
+          }
+        }
+      }
+    }
+
+    // 3. 库存健康：25~45天
+    const inventoryObj = data.objectives.find(o => o.title === '守住库存健康');
+    if (inventoryObj?.targetValue) {
+      const m = inventoryObj.targetValue.match(/≤\s*(\d+)\s*天/);
+      if (m) {
+        const val = parseInt(m[1], 10);
+        if (!isNaN(val)) {
+          if (val < 25) {
+            warnings['守住库存健康'] = '明年平均库存周转天数低于预期';
+          } else if (val > 45) {
+            warnings['守住库存健康'] = '明年平均库存周转天数超期望上限';
+          }
+        }
+      }
+    }
+
+    // 4. 盈利能力：3%~12%
+    const profitObj = data.objectives.find(o => o.title === '提升盈利能力');
+    if (profitObj?.targetValue) {
+      const m = profitObj.targetValue.match(/提升至\s*([\d,.]+)\s*%/);
+      if (m) {
+        const val = parseFloat(m[1]);
+        if (!isNaN(val)) {
+          if (val < 3) {
+            warnings['提升盈利能力'] = '明年利润率低于预期';
+          } else if (val > 12) {
+            warnings['提升盈利能力'] = '明年利润率超期望上限';
+          }
+        }
+      }
+    }
+
+    return warnings;
+  }, [data.objectives, data.marketStats?.regionalDistributionAmount]);
 
 
   const digitToChinese = (n: number): string => {
@@ -1557,8 +1645,14 @@ const ObjectiveStep: React.FC<ObjectiveStepProps> = ({ data, updateData, onNext,
                           </div>
                           )}
                         </div>
+                        {objectiveWarnings[obj.title] && (
+                          <div className="mt-2 text-xs text-red-500 flex items-center">
+                            <AlertCircle size={12} className="mr-1 flex-shrink-0" />
+                            {objectiveWarnings[obj.title]}
+                          </div>
+                        )}
                      </div>
-                     
+
 
                    </div>
                  ))}
