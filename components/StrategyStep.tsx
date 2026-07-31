@@ -1430,7 +1430,10 @@ const StrategyStep: React.FC<StrategyStepProps> = ({ data, updateData, onNext, o
       </div>
 
       <div className="space-y-8">
-        {data.objectives.map((obj, idx) => {
+        {[...data.objectives].sort((a, b) => {
+          const order = ['达成进货承诺', '实现销售目标', '守住库存健康', '提升盈利能力'];
+          return order.indexOf(a.title) - order.indexOf(b.title);
+        }).map((obj, idx) => {
 
           
           return (
