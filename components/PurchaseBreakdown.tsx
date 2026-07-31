@@ -33,7 +33,7 @@ const QUARTERS = [
 const PurchaseBreakdown: React.FC<PurchaseBreakdownProps> = ({ objective, updateObjective, months, trends, productCategories, readOnly = false, highlight = false }) => {
   const [activeTab, setActiveTab] = useState<'overview' | 'table'>('table');
   const [showWizard, setShowWizard] = useState(false);
-  
+
   // Calculate Last Year's Ratios
   const lastYearRatios = useMemo(() => {
     // 1. Quarterly Ratios from Trends
@@ -60,27 +60,26 @@ const PurchaseBreakdown: React.FC<PurchaseBreakdownProps> = ({ objective, update
     }
 
     // 2. Category Ratios (Mocked based on CATEGORIES since productCategories names don't match exactly)
-    // In a real app, we would match by ID or Name. Here we simulate historical data.
     const cRatios: Record<string, number> = {
-        'cat1': 35.0, // Electrolyte
-        'cat2': 25.0, // Sparkling
-        'cat3': 15.0, // Ice Tea
-        'cat4': 10.0, // Vitamin
-        'cat5': 10.0, // HZZ
-        'cat6': 5.0   // Other
+        'cat1': 35.0,
+        'cat2': 25.0,
+        'cat3': 15.0,
+        'cat4': 10.0,
+        'cat5': 10.0,
+        'cat6': 5.0
     };
 
     return { quarterly: qRatios, category: cRatios };
   }, [trends]);
-  
+
   // Parse total target value
   const totalTarget = useMemo(() => {
     const valStr = objective.targetValue;
     if (!valStr) return 0;
-    
+
     let val = 0;
 
-    // 1. Priority: New万元 format — （xxx万元），转为元
+    // 1. Priority: New万元 format
     const newWanMatch = valStr.match(/（([\d,.]+)万元）/);
     if (newWanMatch) {
         val = parseFloat(newWanMatch[1].replace(/,/g, '')) * 10000;
@@ -90,7 +89,7 @@ const PurchaseBreakdown: React.FC<PurchaseBreakdownProps> = ({ objective, update
         const currencyMatch = valStr.match(/¥\s*([\d,]+(\.\d+)?)/);
         val = parseFloat(currencyMatch![1].replace(/,/g, ''));
     } else {
-        // 3. Fallback: Look for numbers with units
+        // 3. Fallback
         const wanMatch = valStr.match(/(\d+(\.\d+)?)\s*万/);
         const yiMatch = valStr.match(/(\d+(\.\d+)?)\s*亿/);
 
@@ -99,16 +98,12 @@ const PurchaseBreakdown: React.FC<PurchaseBreakdownProps> = ({ objective, update
         } else if (wanMatch) {
             val = parseFloat(wanMatch[1]) * 10000;
         } else {
-            // 3. Last Resort: Find the largest number in the string that looks like a target
-            // This helps avoid "2026" being picked up if the target is "6500000"
             const allNumbers = valStr.replace(/,/g, '').match(/(\d+(\.\d+)?)/g);
             if (allNumbers) {
-                // Filter out likely years (e.g. 2020-2030 integers) if we have other options
                 const candidates = allNumbers.map(n => parseFloat(n));
                 const nonYearCandidates = candidates.filter(n => n < 2020 || n > 2030);
-                
+
                 if (nonYearCandidates.length > 0) {
-                    // Pick the largest one, assuming target is the main number
                     val = Math.max(...nonYearCandidates);
                 } else {
                     val = Math.max(...candidates);
@@ -120,20 +115,14 @@ const PurchaseBreakdown: React.FC<PurchaseBreakdownProps> = ({ objective, update
     return parseFloat(val.toFixed(2));
   }, [objective.targetValue]);
 
-  // Initialize Plan if missing - REMOVED as per requirements (default no display)
-  
   const { purchasePlan } = objective;
 
   // Calculate current totals to show validation status (only if plan exists)
   const currentCatTotal = purchasePlan?.categorySplit?.reduce((sum, c) => sum + c.amount, 0) || 0;
-  const currentQuarterTotal = purchasePlan?.quarterSplit?.reduce((sum, q) => sum + q.amount, 0) || 0;
-  
-  const isCatValid = Math.abs(currentCatTotal - totalTarget) < 0.1;
-  const isQuarterValid = Math.abs(currentQuarterTotal - totalTarget) < 0.1;
 
   // Helper to get Quarter Data for Table
   const getQuarterRowData = (qId: string) => {
-    if (!purchasePlan) return { totalRatio: 0, totalAmount: 0, catTotals: {}, relevantMonths: [] };
+    if (!purchasePlan) return { totalRatio: 0, totalAmount: 0, catTotals: {} as Record<string, number>, relevantMonths: [] as typeof months };
 
     const qMonths = QUARTERS.find(q => q.id === qId)?.months || [];
     const relevantMonths = months.filter(m => {
@@ -141,7 +130,6 @@ const PurchaseBreakdown: React.FC<PurchaseBreakdownProps> = ({ objective, update
         return qMonths.includes(mNum);
     });
 
-    let totalRatio = 0;
     let totalAmount = 0;
     const catTotals: Record<string, number> = {};
     CATEGORIES.forEach(c => catTotals[c.id] = 0);
@@ -149,13 +137,14 @@ const PurchaseBreakdown: React.FC<PurchaseBreakdownProps> = ({ objective, update
     relevantMonths.forEach(m => {
         const d = purchasePlan.monthlyData[m.id];
         if (d) {
-            totalRatio += d.ratio;
             totalAmount += d.total;
             Object.entries(d.categoryValues).forEach(([cId, val]) => {
                 if (catTotals[cId] !== undefined) catTotals[cId] += (val as number);
             });
         }
     });
+
+    const totalRatio = totalTarget > 0 ? parseFloat(((totalAmount / totalTarget) * 100).toFixed(2)) : 0;
 
     return { totalRatio, totalAmount, catTotals, relevantMonths };
   };
@@ -199,13 +188,13 @@ const PurchaseBreakdown: React.FC<PurchaseBreakdownProps> = ({ objective, update
             <table className="w-full text-xs text-left">
                 <thead className="bg-slate-50 text-slate-500 font-medium border-b border-slate-200">
                 <tr>
-                    <th className="px-4 py-3 w-24 sticky left-0 bg-slate-50 z-10">时间</th>
-                    <th className="px-4 py-3 w-32">场景</th>
-                    <th className="px-4 py-3 w-16 text-right">占比</th>
-                    <th className="px-4 py-3 w-24 text-right bg-emerald-50 text-emerald-800 font-bold">总进货(万元)</th>
+                    <th className="px-3 py-3 w-16 sticky left-0 bg-slate-50 z-10">时间</th>
+                    <th className="px-3 py-3 w-24">场景</th>
                     {CATEGORIES.map(c => (
-                    <th key={c.id} className="px-4 py-3 w-24 text-right" style={{ color: c.color }}>{c.name}(万元)</th>
+                    <th key={c.id} className="px-3 py-3 w-28 text-right" style={{ color: c.color }}>{c.name}<br/><span className="text-[10px] font-normal text-slate-400">(万元)</span></th>
                     ))}
+                    <th className="px-3 py-3 w-28 text-right bg-emerald-50 text-emerald-800 font-bold">总进货<br/><span className="text-[10px] font-normal text-emerald-600">(万元)</span></th>
+                    <th className="px-3 py-3 w-20 text-right">占比</th>
                 </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100">
@@ -214,24 +203,11 @@ const PurchaseBreakdown: React.FC<PurchaseBreakdownProps> = ({ objective, update
 
                     return (
                     <React.Fragment key={q.id}>
-                        {/* Quarter Header Row */}
-                        <tr className="bg-slate-50/50 font-bold text-slate-800">
-                        <td className="px-4 py-3 sticky left-0 bg-slate-50/50">{q.id}</td>
-                        <td className="px-4 py-3"></td>
-                        <td className="px-4 py-3 text-right">{totalRatio.toFixed(1)}%</td>
-                        <td className="px-4 py-3 text-right bg-emerald-50 text-emerald-800">
-                            {(totalAmount / 10000).toFixed(4)}万元
-                        </td>
-                        {CATEGORIES.map(c => (
-                            <td key={c.id} className="px-4 py-3 text-right">
-                                <div className="flex flex-col items-end">
-                                    <span>{(catTotals[c.id] / 10000).toFixed(4)}万元</span>
-                                    <span className="text-[10px] text-slate-400 font-normal">
-                                        {totalAmount > 0 ? ((catTotals[c.id] / totalAmount) * 100).toFixed(1) : 0}%
-                                    </span>
-                                </div>
+                        {/* Quarter Label Row */}
+                        <tr className="bg-slate-100/80">
+                            <td colSpan={2 + CATEGORIES.length + 2} className="px-3 py-2 text-xs font-bold text-slate-600 uppercase tracking-wide">
+                                {q.name}
                             </td>
-                        ))}
                         </tr>
 
                         {/* Monthly Rows */}
@@ -240,57 +216,77 @@ const PurchaseBreakdown: React.FC<PurchaseBreakdownProps> = ({ objective, update
                         if (!d) return null;
 
                         return (
-                            <React.Fragment key={m.id}>
-                                <tr className="hover:bg-blue-50/30 transition-colors group">
-                                <td className="px-4 py-2 font-medium text-slate-700 sticky left-0 bg-white group-hover:bg-blue-50/30">{m.shortLabel}</td>
-                                <td className="px-4 py-2 text-slate-600">
+                            <tr key={m.id} className="hover:bg-blue-50/30 transition-colors group">
+                                <td className="px-3 py-2 font-medium text-slate-700 sticky left-0 bg-white group-hover:bg-blue-50/30">{m.shortLabel}</td>
+                                <td className="px-3 py-2 text-slate-600">
                                     {d.scenario || '-'}
                                 </td>
-                                <td className="px-4 py-2 text-right text-slate-600">
-                                    {d.ratio.toFixed(1)}%
+                                {CATEGORIES.map(c => {
+                                    const catVal = (d.categoryValues[c.id] as number) || 0;
+                                    const catPct = totalAmount > 0 ? ((catVal / totalAmount) * 100).toFixed(2) : '0.00';
+                                    return (
+                                        <td key={c.id} className="px-3 py-2 text-right">
+                                            <div className="flex flex-col items-end">
+                                                <span className="text-slate-600">{(catVal / 10000).toFixed(4)}</span>
+                                                <span className="text-[9px] text-slate-400">{catPct}%</span>
+                                            </div>
+                                        </td>
+                                    );
+                                })}
+                                <td className="px-3 py-2 text-right font-medium bg-emerald-50/50 text-emerald-700 font-mono">
+                                    {(d.total / 10000).toFixed(4)}
                                 </td>
-                                <td className="px-4 py-2 text-right font-medium bg-emerald-50 text-emerald-700">
-                                    {(d.total / 10000).toFixed(4)}万元
+                                <td className="px-3 py-2 text-right text-slate-600 font-mono">
+                                    {d.ratio.toFixed(2)}%
                                 </td>
-                                {CATEGORIES.map(c => (
-                                    <td key={c.id} className="px-4 py-2 text-right">
-                                        <div className="flex flex-col items-end">
-                                            <span className="text-slate-600">{((d.categoryValues[c.id] as number) / 10000).toFixed(4) || '0.0000'}万元</span>
-                                            <span className="text-[9px] text-slate-400">
-                                                {d.total > 0 ? (((d.categoryValues[c.id] as number) / d.total) * 100).toFixed(1) : 0}%
-                                            </span>
-                                        </div>
-                                    </td>
-                                ))}
-                                </tr>
-                            </React.Fragment>
+                            </tr>
                         );
                         })}
+
+                        {/* Quarter Summary Row */}
+                        <tr className="bg-slate-50 font-bold text-slate-800 border-t-2 border-slate-200">
+                        <td className="px-3 py-3 sticky left-0 bg-slate-50">{q.id}汇总</td>
+                        <td className="px-3 py-3"></td>
+                        {CATEGORIES.map(c => (
+                            <td key={c.id} className="px-3 py-3 text-right">
+                                <div className="flex flex-col items-end">
+                                    <span>{(catTotals[c.id] / 10000).toFixed(4)}</span>
+                                    <span className="text-[10px] text-slate-400 font-normal">
+                                        {totalAmount > 0 ? ((catTotals[c.id] / totalAmount) * 100).toFixed(2) : '0.00'}%
+                                    </span>
+                                </div>
+                            </td>
+                        ))}
+                        <td className="px-3 py-3 text-right text-emerald-700 font-mono">
+                            {(totalAmount / 10000).toFixed(4)}
+                        </td>
+                        <td className="px-3 py-3 text-right font-mono">{totalRatio.toFixed(2)}%</td>
+                        </tr>
                     </React.Fragment>
                     );
                 })}
 
                 {/* Annual Summary Rows */}
                 <tr className="bg-emerald-50 font-bold text-emerald-800 border-t-2 border-emerald-100">
-                    <td className="px-4 py-4 sticky left-0 bg-emerald-50">明年计划</td>
-                    <td className="px-4 py-4"></td>
-                    <td className="px-4 py-4 text-right">100%</td>
-                    <td className="px-4 py-4 text-right">
-                        {(currentCatTotal / 10000).toFixed(4)}万元
-                    </td>
+                    <td className="px-3 py-4 sticky left-0 bg-emerald-50">明年计划</td>
+                    <td className="px-3 py-4"></td>
                     {CATEGORIES.map(c => {
                         const catVal = purchasePlan.categorySplit.find(cat => cat.id === c.id)?.amount || 0;
                         return (
-                            <td key={c.id} className="px-4 py-4 text-right">
+                            <td key={c.id} className="px-3 py-4 text-right">
                                 <div className="flex flex-col items-end">
-                                    <span>{(catVal / 10000).toFixed(4)}万元</span>
+                                    <span>{(catVal / 10000).toFixed(4)}</span>
                                     <span className="text-[10px] text-emerald-600 font-normal">
-                                        {currentCatTotal > 0 ? ((catVal / currentCatTotal) * 100).toFixed(1) : 0}%
+                                        {currentCatTotal > 0 ? ((catVal / currentCatTotal) * 100).toFixed(2) : '0.00'}%
                                     </span>
                                 </div>
                             </td>
                         );
                     })}
+                    <td className="px-3 py-4 text-right text-base font-mono">
+                        {(currentCatTotal / 10000).toFixed(4)}
+                    </td>
+                    <td className="px-3 py-4 text-right text-base">100%</td>
                 </tr>
                 </tbody>
             </table>
@@ -300,7 +296,7 @@ const PurchaseBreakdown: React.FC<PurchaseBreakdownProps> = ({ objective, update
 
       {/* Wizard Modal */}
       {showWizard && (
-        <PurchaseBreakdownWizard 
+        <PurchaseBreakdownWizard
             objective={objective}
             onSave={(newPlan) => {
                 updateObjective({ purchasePlan: newPlan });
