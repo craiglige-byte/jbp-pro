@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { JBPData, JBPDetailedBudgetPlan, JBPWarehouseBudget, JBPVehicleBudget, JBPPersonnelBudget, JBPCapitalBudget, JBPMarketingBudget, JBPObjective } from '../types';
-import { Building2, Truck, Users, Wallet, Megaphone, ArrowRight, ArrowLeft, Save, Info, X, Plus, Trash2 } from 'lucide-react';
+import { Building2, Truck, Users, Wallet, Megaphone, ArrowRight, ArrowLeft, Save, Info, X, Plus, Trash2, AlertCircle } from 'lucide-react';
 
 interface BudgetStepProps {
     data: JBPData;
@@ -327,6 +327,73 @@ const BudgetStep: React.FC<BudgetStepProps> = ({ data, updateData, onNext, onBac
         marketing: plan.marketing.reduce((sum, item) => sum + item.distributorAmount, 0) // Distributor amount is the cost to us
     };
 
+    // 提取达成进货承诺金额（万元）
+    const purchaseAmountWan = useMemo(() => {
+        const obj = data.objectives.find(o => o.title === '达成进货承诺');
+        if (!obj?.targetValue) return 0;
+        const m = obj.targetValue.match(/总计\s*([\d,.]+)\s*万元/);
+        return m ? parseFloat(m[1].replace(/,/g, '')) : 0;
+    }, [data.objectives]);
+
+    // 实时校验警告
+    const validationWarnings = useMemo(() => {
+        const w: { vehicle?: string; personnelSales?: string; personnelDriver?: string; capitalAdvance?: string; capitalTotal?: string } = {};
+        const totalVehicles = plan.vehicles.reduce((s, v) => s + v.count, 0);
+
+        if (purchaseAmountWan > 0) {
+            // 车辆：进货承诺 / 车辆总数 ∈ [150, 250]万
+            if (totalVehicles === 0) {
+                w.vehicle = `对比明年进货目标${purchaseAmountWan.toLocaleString()}万，规划车辆数量不足`;
+            } else {
+                const perVehicle = purchaseAmountWan / totalVehicles;
+                if (perVehicle < 150) {
+                    w.vehicle = `对比明年进货目标${purchaseAmountWan.toLocaleString()}万，规划车辆数量过剩`;
+                } else if (perVehicle > 250) {
+                    w.vehicle = `对比明年进货目标${purchaseAmountWan.toLocaleString()}万，规划车辆数量不足`;
+                }
+            }
+
+            // 人员：进货承诺 / (专职业代+厂家业代) ∈ [80, 200]万
+            const salesCount = plan.personnel
+                .filter(p => p.role.includes('专职业代') || p.role.includes('厂家业代'))
+                .reduce((s, p) => s + (p.count || 0), 0);
+            if (salesCount > 0) {
+                const perSales = purchaseAmountWan / salesCount;
+                if (perSales < 80) {
+                    w.personnelSales = `对比明年进货目标${purchaseAmountWan.toLocaleString()}万，规划专职业代与厂家业代个数过剩`;
+                } else if (perSales > 200) {
+                    w.personnelSales = `对比明年进货目标${purchaseAmountWan.toLocaleString()}万，规划专职业代与厂家业代个数不足`;
+                }
+            }
+        }
+
+        // 司机 ≥ 车辆
+        const driverCount = plan.personnel
+            .filter(p => p.role.includes('司机'))
+            .reduce((s, p) => s + (p.count || 0), 0);
+        if (totalVehicles > 0 && driverCount < totalVehicles) {
+            w.personnelDriver = '对比车辆数量，司机数量不足';
+        }
+
+        // 资金：厂家预付款 ≥ 进货承诺×25%（元 vs 万元）
+        const advanceItem = plan.capital.find(c => c.item === '厂家预付款');
+        if (advanceItem && purchaseAmountWan > 0) {
+            if (advanceItem.amount < purchaseAmountWan * 10000 * 0.25) {
+                w.capitalAdvance = `对比明年进货目标${purchaseAmountWan.toLocaleString()}万，厂家预付款不足`;
+            }
+        }
+
+        // 资金：启动资金合计 ≥ 进货承诺×30%（元 vs 万元）
+        const totalCapital = plan.capital.reduce((s, c) => s + c.amount, 0);
+        if (purchaseAmountWan > 0) {
+            if (totalCapital < purchaseAmountWan * 10000 * 0.30) {
+                w.capitalTotal = `对比明年进货目标${purchaseAmountWan.toLocaleString()}万，启动资金不足`;
+            }
+        }
+
+        return w;
+    }, [plan, purchaseAmountWan]);
+
     // Sync to Profitability Plan
     const syncToProfitability = () => {
         // 1. Calculate Totals (in Wan Yuan)
@@ -453,7 +520,8 @@ const BudgetStep: React.FC<BudgetStepProps> = ({ data, updateData, onNext, onBac
 
         // 3. 检查人员架构
         for (const item of plan.personnel) {
-            if (!item.role || !item.yearlyTotalCost || item.yearlyTotalCost === 0 ||
+            if (!item.role || !item.count || item.count === 0 ||
+                !item.yearlyTotalCost || item.yearlyTotalCost === 0 ||
                 !item.brandRatio || item.brandRatio === 0) {
                 return false;
             }
@@ -508,6 +576,13 @@ const BudgetStep: React.FC<BudgetStepProps> = ({ data, updateData, onNext, onBac
                 return false;
             }
         }
+        // 1b. 校验仓储面积范围
+        const totalBrandArea = plan.warehouse.reduce((s, i) => s + i.brandArea, 0);
+        if (totalBrandArea < 50 || totalBrandArea > 2000) {
+            scrollToSection('warehouse');
+            showToast('元气专用仓库面积过大或过小，请检查。');
+            return false;
+        }
 
         // 2. 校验车辆配置
         for (let i = 0; i < plan.vehicles.length; i++) {
@@ -548,6 +623,9 @@ const BudgetStep: React.FC<BudgetStepProps> = ({ data, updateData, onNext, onBac
 
             if (!item.role) {
                 missingFields.push({ section: 'personnel', index: i, field: 'role' });
+            }
+            if (!item.count || item.count === 0) {
+                missingFields.push({ section: 'personnel', index: i, field: 'count' });
             }
             if (!item.yearlyTotalCost || item.yearlyTotalCost === 0) {
                 missingFields.push({ section: 'personnel', index: i, field: 'yearlyTotalCost' });
@@ -864,8 +942,7 @@ const BudgetStep: React.FC<BudgetStepProps> = ({ data, updateData, onNext, onBac
                                 {plan.vehicles.map((item, idx) => (
                                     <tr key={item.id}>
                                         <td className="px-4 py-3">
-                                            <input
-                                                type="text"
+                                            <select
                                                 value={item.model}
                                                 onChange={e => {
                                                     const newItems = [...plan.vehicles];
@@ -873,9 +950,13 @@ const BudgetStep: React.FC<BudgetStepProps> = ({ data, updateData, onNext, onBac
                                                     updatePlan('vehicles', newItems);
                                                     clearFieldHighlight('vehicles', idx, 'model');
                                                 }}
-                                                className={`border border-slate-300 rounded px-2 py-1.5 text-sm focus:outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500 w-32 ${getHighlightClass('vehicles', idx, 'model')}`}
-                                                placeholder="输入车型..."
-                                            />
+                                                className={`border border-slate-300 rounded px-2 py-1.5 text-sm focus:outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500 bg-white w-48 ${getHighlightClass('vehicles', idx, 'model')}`}
+                                            >
+                                                <option value="">请选择车型</option>
+                                                <option value="2~2.3米微型面包车">2~2.3米微型面包车</option>
+                                                <option value="2.4~3.4米中型面包车/轻客">2.4~3.4米中型面包车/轻客</option>
+                                                <option value="4.2米箱货">4.2米箱货</option>
+                                            </select>
                                         </td>
                                         <td className="px-4 py-3">
                                             <select 
@@ -974,6 +1055,16 @@ const BudgetStep: React.FC<BudgetStepProps> = ({ data, updateData, onNext, onBac
                                     </td>
                                     <td className="px-4 py-3"></td>
                                 </tr>
+                                {validationWarnings.vehicle && (
+                                <tr className="bg-white border-t border-slate-200">
+                                    <td className="px-4 py-3" colSpan={9}>
+                                        <div className="text-xs text-red-500 flex items-center">
+                                            <AlertCircle size={12} className="mr-1 flex-shrink-0" />
+                                            {validationWarnings.vehicle}
+                                        </div>
+                                    </td>
+                                </tr>
+                                )}
                             </tbody>
                         </table>
                     </div>
@@ -999,6 +1090,7 @@ const BudgetStep: React.FC<BudgetStepProps> = ({ data, updateData, onNext, onBac
                             <thead className="bg-slate-50 text-slate-600 font-medium border-b border-slate-200">
                                 <tr>
                                     <th className="px-4 py-3 w-44"><span className="text-red-500 mr-0.5">*</span>岗位</th>
+                                    <th className="px-4 py-3 text-right"><span className="text-red-500 mr-0.5">*</span>人数</th>
                                     <th className="px-4 py-3 text-right"><span className="text-red-500 mr-0.5">*</span>年总成本(万)</th>
                                     <th className="px-4 py-3 text-right"><span className="text-red-500 mr-0.5">*</span>品牌占比</th>
                                     <th className="px-4 py-3 text-right">元气分摊成本(万)</th>
@@ -1034,6 +1126,12 @@ const BudgetStep: React.FC<BudgetStepProps> = ({ data, updateData, onNext, onBac
                                                 </optgroup>
                                             </select>
                                         </td>
+                                        <td className="px-4 py-3 text-right"><input type="text" inputMode="numeric" value={getDisplay(`pe_count_${idx}`, item.count)} onChange={e => {
+                                            const cleaned = handleDecimalInput(e.target.value, 0);
+                                            setInputDisplays(prev => ({...prev, [`pe_count_${idx}`]: cleaned}));
+                                            const newItems = [...plan.personnel]; newItems[idx].count = safeNumber(cleaned); updatePlan('personnel', newItems);
+                                            clearFieldHighlight('personnel', idx, 'count');
+                                        }} className={`w-14 text-right border border-slate-300 rounded px-2 py-1 text-sm focus:outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500 ${getHighlightClass('personnel', idx, 'count')}`} placeholder="0" /></td>
                                         <td className="px-4 py-3 text-right"><input type="text" inputMode="decimal" value={getDisplay(`pe_cost_${idx}`, item.yearlyTotalCost)} onChange={e => {
                                             const cleaned = handleDecimalInput(e.target.value, 2);
                                             setInputDisplays(prev => ({...prev, [`pe_cost_${idx}`]: cleaned}));
@@ -1073,6 +1171,7 @@ const BudgetStep: React.FC<BudgetStepProps> = ({ data, updateData, onNext, onBac
                                 ))}
                                 <tr className="bg-slate-50 font-bold">
                                     <td className="px-4 py-3">合计</td>
+                                    <td className="px-4 py-3 text-right">{plan.personnel.reduce((s, i) => s + (i.count || 0), 0)}</td>
                                     <td className="px-4 py-3 text-right">{plan.personnel.reduce((s, i) => s + i.yearlyTotalCost, 0).toFixed(2)}</td>
                                     <td className="px-4 py-3"></td>
                                     <td className="px-4 py-3 text-right text-brand-600">{plan.personnel.reduce((s, i) => s + i.brandYearlyCost, 0).toFixed(2)}</td>
@@ -1081,7 +1180,7 @@ const BudgetStep: React.FC<BudgetStepProps> = ({ data, updateData, onNext, onBac
                                 </tr>
                                 <tr className="bg-white border-t border-slate-200">
                                     <td className="px-4 py-3 font-medium text-slate-600 whitespace-nowrap">预算上限</td>
-                                    <td className="px-4 py-3" colSpan={2}></td>
+                                    <td className="px-4 py-3" colSpan={3}></td>
                                     <td className="px-4 py-3 text-right">
                                         <div className="font-medium text-slate-700">{budgetLimits.personnel > 0 ? `${budgetLimits.personnel.toFixed(2)}万` : '--'}</div>
                                         {budgetLimits.personnel > 0 && <div className="text-xs text-slate-400 font-normal mt-0.5 whitespace-nowrap">取自【拆解策略】-人员费用</div>}
@@ -1091,7 +1190,7 @@ const BudgetStep: React.FC<BudgetStepProps> = ({ data, updateData, onNext, onBac
                                 </tr>
                                 <tr className="bg-white border-t border-slate-200">
                                     <td className="px-4 py-3 font-medium text-slate-600 whitespace-nowrap">预算对比</td>
-                                    <td className="px-4 py-3" colSpan={2}></td>
+                                    <td className="px-4 py-3" colSpan={3}></td>
                                     <td className={`px-4 py-3 text-right text-sm font-bold ${budgetLimits.personnel > 0
                                         ? (budgetLimits.personnel - currentTotals.personnel < 0 ? 'text-red-500' : 'text-emerald-600')
                                         : 'text-slate-500'
@@ -1103,6 +1202,24 @@ const BudgetStep: React.FC<BudgetStepProps> = ({ data, updateData, onNext, onBac
                                     <td className="px-4 py-3"></td>
                                     <td className="px-4 py-3"></td>
                                 </tr>
+                                {(validationWarnings.personnelSales || validationWarnings.personnelDriver) && (
+                                <tr className="bg-white border-t border-slate-200">
+                                    <td className="px-4 py-3" colSpan={7}>
+                                        {validationWarnings.personnelSales && (
+                                            <div className="text-xs text-red-500 flex items-center">
+                                                <AlertCircle size={12} className="mr-1 flex-shrink-0" />
+                                                {validationWarnings.personnelSales}
+                                            </div>
+                                        )}
+                                        {validationWarnings.personnelDriver && (
+                                            <div className="text-xs text-red-500 flex items-center mt-0.5">
+                                                <AlertCircle size={12} className="mr-1 flex-shrink-0" />
+                                                {validationWarnings.personnelDriver}
+                                            </div>
+                                        )}
+                                    </td>
+                                </tr>
+                                )}
                             </tbody>
                         </table>
                     </div>
@@ -1347,6 +1464,24 @@ const BudgetStep: React.FC<BudgetStepProps> = ({ data, updateData, onNext, onBac
                                     <td className="px-4 py-3"></td>
                                     <td className="px-4 py-3"></td>
                                 </tr>
+                                {(validationWarnings.capitalAdvance || validationWarnings.capitalTotal) && (
+                                <tr className="bg-white border-t border-slate-200">
+                                    <td className="px-4 py-3" colSpan={6}>
+                                        {validationWarnings.capitalAdvance && (
+                                            <div className="text-xs text-red-500 flex items-center">
+                                                <AlertCircle size={12} className="mr-1 flex-shrink-0" />
+                                                {validationWarnings.capitalAdvance}
+                                            </div>
+                                        )}
+                                        {validationWarnings.capitalTotal && (
+                                            <div className="text-xs text-red-500 flex items-center mt-0.5">
+                                                <AlertCircle size={12} className="mr-1 flex-shrink-0" />
+                                                {validationWarnings.capitalTotal}
+                                            </div>
+                                        )}
+                                    </td>
+                                </tr>
+                                )}
                             </tbody>
                         </table>
                     </div>
