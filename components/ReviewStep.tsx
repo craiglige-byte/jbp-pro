@@ -1092,18 +1092,14 @@ const ReviewStep: React.FC<ReviewStepProps> = ({ data, onBack, planVersion = 'la
                             {(budgetWarnings.capitalAdvance || budgetWarnings.capitalTotal) && (
                             <tr>
                                 <td className="px-4 py-2" colSpan={5}>
-                                    {budgetWarnings.capitalAdvance && (
-                                        <div className="text-xs text-red-500 flex items-center">
-                                            <AlertCircle size={12} className="mr-1 flex-shrink-0" />
-                                            {budgetWarnings.capitalAdvance}
-                                        </div>
-                                    )}
-                                    {budgetWarnings.capitalTotal && (
-                                        <div className="text-xs text-red-500 flex items-center mt-0.5">
-                                            <AlertCircle size={12} className="mr-1 flex-shrink-0" />
-                                            {budgetWarnings.capitalTotal}
-                                        </div>
-                                    )}
+                                    <div className="text-xs text-red-500 flex items-center">
+                                        <AlertCircle size={12} className="mr-1 flex-shrink-0" />
+                                        对比明年进货目标{purchaseAmountWan.toLocaleString()}万，
+                                        {budgetWarnings.capitalAdvance && '厂家预付款'}
+                                        {budgetWarnings.capitalAdvance && budgetWarnings.capitalTotal && '，'}
+                                        {budgetWarnings.capitalTotal && '启动资金'}
+                                        不足
+                                    </div>
                                 </td>
                             </tr>
                             )}

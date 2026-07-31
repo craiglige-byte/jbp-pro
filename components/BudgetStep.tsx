@@ -1467,18 +1467,14 @@ const BudgetStep: React.FC<BudgetStepProps> = ({ data, updateData, onNext, onBac
                                 {(validationWarnings.capitalAdvance || validationWarnings.capitalTotal) && (
                                 <tr>
                                     <td className="px-4 py-2" colSpan={6}>
-                                        {validationWarnings.capitalAdvance && (
-                                            <div className="text-xs text-red-500 flex items-center">
-                                                <AlertCircle size={12} className="mr-1.5 flex-shrink-0" />
-                                                {validationWarnings.capitalAdvance}
-                                            </div>
-                                        )}
-                                        {validationWarnings.capitalTotal && (
-                                            <div className="text-xs text-red-500 flex items-center mt-1">
-                                                <AlertCircle size={12} className="mr-1.5 flex-shrink-0" />
-                                                {validationWarnings.capitalTotal}
-                                            </div>
-                                        )}
+                                        <div className="text-xs text-red-500 flex items-center">
+                                            <AlertCircle size={12} className="mr-1.5 flex-shrink-0" />
+                                            对比明年进货目标{purchaseAmountWan.toLocaleString()}万，
+                                            {validationWarnings.capitalAdvance && '厂家预付款'}
+                                            {validationWarnings.capitalAdvance && validationWarnings.capitalTotal && '，'}
+                                            {validationWarnings.capitalTotal && '启动资金'}
+                                            不足
+                                        </div>
                                     </td>
                                 </tr>
                                 )}
