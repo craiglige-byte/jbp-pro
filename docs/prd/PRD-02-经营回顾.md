@@ -156,9 +156,11 @@ interface JBPProductCategory {
 
 ```typescript
 interface MarketStats {
-  population: string;            // 区域人口，如「245 万」
-  gdp: string;                   // 区域 GDP，如「¥380.2 亿」
-  perCapitaConsumption: string;  // 人均消费，如「42.5 升/年」
+  population: string;                  // 区域人口，如「245 万」
+  gdp: string;                         // 区域 GDP，如「¥380.2 亿」
+  perCapitaConsumption: string;        // 人均饮用量，如「42.5 升/年」
+  regionalDistributionAmount: string;  // 区域今年分销额（万元），默认「1000」
+  distributionAmount: string;          // 今年分销金额，如「3.8 千万」
 }
 
 interface Competitor {
@@ -173,7 +175,7 @@ interface Competitor {
 
 **UI 规格**：
 - 高德地图多边形授权区域展示（复用 InfoStep 地图逻辑）
-- 市场统计三指标卡片（人口/GDP/人均消费）
+- 市场统计五指标卡片（人口/GDP/人均饮用量/区域今年分销额/今年分销金额）
 - 竞品分析对比表（名称/目标/达成率/网点数）
 - 默认竞品：农夫山泉（达成率 92%）、怡宝（85%）、康师傅（78%）
 
@@ -443,4 +445,5 @@ BusinessReviewStep
 | 2026-06-22 | F06/F07/F08：增加「今年地图范围」/「新地图范围」双 Tab；移除增长率列；新地图范围增加百分比差异标签；渠道和团队模块对比合并为行内标签 | V1.3 |
 | 2026-06-22 | V1.5 授权地图范围确认移至经营回顾末尾 | ✅ 封版 |
 | 2026-06-30 | BugFix: 「新地图范围」tab 中 Math.random() 导致点击卡片时数据变化，改为确定性公式（index * 系数），三处同修（客户分级/渠道分析/团队分析） | V1.6 |
+| 2026-07-31 | F05 授权经营区域：市场潜力与竞品分析卡片新增「区域今年分销额」(万元)，默认1000，纯展示不入录入弹窗 | V1.11 |
 | 2026-07-27 | F01 运营资源投入：仓库面积/资金投入下方新增元气品牌分摊行，格式对齐车辆明细（flex justify-between text-xs），品牌占比取自详细预算 | V1.10 |
