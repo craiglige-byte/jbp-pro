@@ -352,14 +352,8 @@ export const PurchaseBreakdownWizard: React.FC<PurchaseBreakdownWizardProps> = (
                                                 <React.Fragment key={m.id}>
                                                     <tr className="hover:bg-blue-50/30 transition-colors group">
                                                         <td className="px-3 py-2 font-medium text-slate-700 sticky left-0 bg-white group-hover:bg-blue-50/30">{m.shortLabel}</td>
-                                                        <td className="px-3 py-2">
-                                                            <input
-                                                                type="text"
-                                                                className="w-full bg-blue-50 border border-blue-200 rounded px-2 py-1 outline-none focus:border-blue-400 focus:ring-1 focus:ring-blue-200 text-slate-700 placeholder-slate-400 text-xs"
-                                                                placeholder="场景..."
-                                                                value={d.scenario || ''}
-                                                                onChange={(e) => handleScenarioChange(m.id, e.target.value)}
-                                                            />
+                                                        <td className="px-3 py-2 text-slate-500 text-xs">
+                                                            {d.scenario || '-'}
                                                         </td>
                                                         {CATEGORIES.map(c => {
                                                             const catVal = (d.categoryValues[c.id] as number) || 0;
@@ -370,7 +364,7 @@ export const PurchaseBreakdownWizard: React.FC<PurchaseBreakdownWizardProps> = (
                                                                     <div className="flex flex-col items-end">
                                                                         <input
                                                                             type="text" inputMode="decimal"
-                                                                            className="w-20 bg-amber-50 border border-amber-200 rounded px-2 py-1 text-right outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-200 text-slate-700 font-mono text-xs"
+                                                                            className="w-20 bg-blue-50 border border-blue-200 rounded px-2 py-1 text-right outline-none focus:border-blue-400 focus:ring-1 focus:ring-blue-200 text-slate-700 font-mono text-xs"
                                                                             value={toWanInput(catVal)}
                                                                             placeholder="0"
                                                                             onChange={(e) => handleCategoryChange(m.id, c.id, e.target.value)}
@@ -462,7 +456,7 @@ export const PurchaseBreakdownWizard: React.FC<PurchaseBreakdownWizardProps> = (
 
                             {/* Annual Summary Row */}
                             <tr className="bg-emerald-50 font-bold text-emerald-800 border-t-2 border-emerald-200">
-                                <td className="px-3 py-4 sticky left-0 bg-emerald-50">明年计划</td>
+                                <td className="px-3 py-4 sticky left-0 bg-emerald-50">全年计划</td>
                                 <td className="px-3 py-4"></td>
                                 {CATEGORIES.map(c => {
                                     const catVal = annualTotals.catTotals[c.id] || 0;
@@ -524,24 +518,18 @@ export const PurchaseBreakdownWizard: React.FC<PurchaseBreakdownWizardProps> = (
             >
                 取消
             </button>
-            <div className="flex flex-col items-end gap-1">
-                <button
-                    onClick={handleSave}
-                    disabled={!isFullyDecomposed}
-                    className={`px-6 py-2 text-white font-medium rounded-lg transition-all shadow-lg flex items-center ${
-                        isFullyDecomposed
-                            ? 'bg-brand-600 hover:bg-brand-700 shadow-brand-200 cursor-pointer'
-                            : 'bg-slate-300 cursor-not-allowed shadow-slate-100'
-                    }`}
-                >
-                    <Check size={16} className="mr-2" /> 确认生成计划
-                </button>
-                {!isFullyDecomposed && (
-                    <p className="text-xs text-red-500 font-medium">
-                        请将明年计划100%拆解至品类月计划
-                    </p>
-                )}
-            </div>
+            <button
+                onClick={handleSave}
+                disabled={!isFullyDecomposed}
+                className={`px-6 py-2 text-white font-medium rounded-lg transition-all shadow-lg flex items-center ${
+                    isFullyDecomposed
+                        ? 'bg-blue-600 hover:bg-blue-700 shadow-blue-200 cursor-pointer'
+                        : 'bg-slate-300 cursor-not-allowed shadow-slate-100'
+                }`}
+            >
+                <Check size={16} className="mr-2" />
+                {isFullyDecomposed ? '确认生成计划' : '请将明年计划100%拆解至品类月计划'}
+            </button>
         </div>
       </div>
     </div>
