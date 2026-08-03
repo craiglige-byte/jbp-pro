@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { WizardStep } from '../types';
-import { CheckCircle2, Circle, AlertCircle } from 'lucide-react';
+import { CheckCircle2, Circle } from 'lucide-react';
 
 interface StepWizardProps {
   currentStep: WizardStep;
@@ -22,19 +22,6 @@ const ALL_STEPS: { id: WizardStep; label: string; code: string }[] = [
 
 const StepWizard: React.FC<StepWizardProps> = ({ currentStep, setStep, canNavigate, steps }) => {
   const currentIndex = steps.findIndex(s => s.id === currentStep);
-  const [showTooltip, setShowTooltip] = useState<string | null>(null);
-  const strategiesLabel = steps.find(s => s.id === 'strategies')?.label || '拆解策略';
-  const actionsLabel = steps.find(s => s.id === 'actions')?.label || '落实行动';
-
-  const handleStepClick = (stepId: WizardStep, isClickable: boolean) => {
-    if (isClickable) {
-      setStep(stepId);
-    } else {
-      setShowTooltip(stepId);
-      setTimeout(() => setShowTooltip(null), 3000);
-    }
-  };
-
   return (
     <div className="w-full py-2 px-4 bg-white border-b border-slate-200 shadow-sm">
       <div className="max-w-6xl mx-auto">
@@ -48,33 +35,18 @@ const StepWizard: React.FC<StepWizardProps> = ({ currentStep, setStep, canNaviga
                  const isClickable = canNavigate(step.id);
 
                  return (
-                   <div key={step.id} className="relative flex flex-col items-center group bg-white px-2">
-                     <button
-                       onClick={() => handleStepClick(step.id, isClickable)}
-                       className={`${isClickable ? 'cursor-pointer' : 'cursor-not-allowed'}`}
-                     >
-                       <div className={`
-                         w-6 h-6 rounded-full flex items-center justify-center transition-all duration-300 border-2
-                         ${isActive ? 'border-brand-600 bg-brand-50 text-brand-600 scale-110' :
-                           isCompleted ? 'border-brand-600 bg-brand-600 text-white' :
-                           isClickable ? 'border-slate-300 text-slate-300' : 'border-slate-200 text-slate-300 opacity-50'}
-                       `}>
-                         {isCompleted ? <CheckCircle2 size={14} /> : <Circle size={10} fill={isActive ? "currentColor" : "none"} />}
-                       </div>
-                     </button>
+                   <div key={step.id} className="relative flex flex-col items-center bg-white px-2">
+                     <div className={`
+                       w-6 h-6 rounded-full flex items-center justify-center transition-all duration-300 border-2
+                       ${isActive ? 'border-brand-600 bg-brand-50 text-brand-600 scale-110' :
+                         isCompleted ? 'border-brand-600 bg-brand-600 text-white' :
+                         isClickable ? 'border-slate-300 text-slate-300' : 'border-slate-200 text-slate-300 opacity-50'}
+                     `}>
+                       {isCompleted ? <CheckCircle2 size={14} /> : <Circle size={10} fill={isActive ? "currentColor" : "none"} />}
+                     </div>
                      <span className={`mt-1 text-[11px] font-medium transition-colors ${isActive ? 'text-brand-700' : isCompleted ? 'text-slate-700' : isClickable ? 'text-slate-400' : 'text-slate-300'}`}>
                        {step.label}
                      </span>
-                     
-                     {/* 提示信息 */}
-                     {showTooltip === step.id && !isClickable && (
-                       <div className="absolute top-full mt-2 left-1/2 -translate-x-1/2 bg-amber-50 border border-amber-200 text-amber-700 text-xs px-3 py-2 rounded-lg shadow-lg whitespace-nowrap z-50 flex items-center gap-1.5 animate-fade-in">
-                         <AlertCircle size={14} />
-                         {step.id === 'actions' && `请先完成"${strategiesLabel}"步骤`}
-                         {(step.id === 'budget' || step.id === 'review') && !steps.find(s => s.id === 'actions') && `请先完成"${strategiesLabel}"步骤`}
-                         {(step.id === 'budget' || step.id === 'review') && steps.find(s => s.id === 'actions') && `请先完成"${actionsLabel}"步骤`}
-                       </div>
-                     )}
                    </div>
                  );
                })}
