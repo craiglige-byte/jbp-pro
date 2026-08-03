@@ -144,7 +144,7 @@ const PurchaseBreakdown: React.FC<PurchaseBreakdownProps> = ({ objective, update
         }
     });
 
-    const totalRatio = totalTarget > 0 ? parseFloat(((totalAmount / totalTarget) * 100).toFixed(2)) : 0;
+    const totalRatio = currentCatTotal > 0 ? parseFloat(((totalAmount / currentCatTotal) * 100).toFixed(2)) : 0;
 
     return { totalRatio, totalAmount, catTotals, relevantMonths };
   };
@@ -223,7 +223,7 @@ const PurchaseBreakdown: React.FC<PurchaseBreakdownProps> = ({ objective, update
                                 </td>
                                 {CATEGORIES.map(c => {
                                     const catVal = (d.categoryValues[c.id] as number) || 0;
-                                    const catPct = totalAmount > 0 ? ((catVal / totalAmount) * 100).toFixed(2) : '0.00';
+                                    const catPct = d.total > 0 ? ((catVal / d.total) * 100).toFixed(2) : '0.00';
                                     return (
                                         <td key={c.id} className="px-3 py-2 text-right">
                                             <div className="flex flex-col items-end">
@@ -237,7 +237,7 @@ const PurchaseBreakdown: React.FC<PurchaseBreakdownProps> = ({ objective, update
                                     {(d.total / 10000).toFixed(4)}
                                 </td>
                                 <td className="px-3 py-2 text-right text-slate-600 font-mono">
-                                    {d.ratio.toFixed(2)}%
+                                    {currentCatTotal > 0 ? ((d.total / currentCatTotal) * 100).toFixed(2) : '0.00'}%
                                 </td>
                             </tr>
                         );

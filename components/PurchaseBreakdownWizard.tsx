@@ -189,15 +189,13 @@ export const PurchaseBreakdownWizard: React.FC<PurchaseBreakdownWizardProps> = (
 
     // Recalculate month total
     const monthTotal = CATEGORIES.reduce((sum, c) => sum + ((newCatValues[c.id] as number) || 0), 0);
-    const monthRatio = totalTarget > 0 ? parseFloat(((monthTotal / totalTarget) * 100).toFixed(2)) : 0;
 
     monthData.categoryValues = newCatValues;
     monthData.total = parseFloat(monthTotal.toFixed(2));
-    monthData.ratio = monthRatio;
 
     newPlan.monthlyData = { ...newPlan.monthlyData, [monthId]: monthData };
 
-    // Recalculate categorySplit (annual)
+    // Recalculate categorySplit (annual) — compute annual total first
     const newCatSplit: Record<string, number> = {};
     CATEGORIES.forEach(c => newCatSplit[c.id] = 0);
     Object.values(newPlan.monthlyData).forEach((d: any) => {
@@ -206,6 +204,10 @@ export const PurchaseBreakdownWizard: React.FC<PurchaseBreakdownWizardProps> = (
       });
     });
     const annualTotal = CATEGORIES.reduce((sum, c) => sum + newCatSplit[c.id], 0);
+
+    // Month/quarter ratio: relative to annual plan total (not target)
+    monthData.ratio = annualTotal > 0 ? parseFloat(((monthTotal / annualTotal) * 100).toFixed(2)) : 0;
+
     newPlan.categorySplit = CATEGORIES.map(c => ({
       id: c.id,
       name: c.name,
@@ -213,14 +215,14 @@ export const PurchaseBreakdownWizard: React.FC<PurchaseBreakdownWizardProps> = (
       ratio: annualTotal > 0 ? parseFloat(((newCatSplit[c.id] / annualTotal) * 100).toFixed(2)) : 0
     }));
 
-    // Recalculate quarterSplit
+    // Recalculate quarterSplit — ratio also relative to annual plan total
     newPlan.quarterSplit = QUARTERS.map(q => {
       const { totalAmount } = getQuarterTotalsForPlan(newPlan, q.id);
       return {
         id: q.id,
         name: q.name,
         amount: parseFloat(totalAmount.toFixed(2)),
-        ratio: totalTarget > 0 ? parseFloat(((totalAmount / totalTarget) * 100).toFixed(2)) : 0
+        ratio: annualTotal > 0 ? parseFloat(((totalAmount / annualTotal) * 100).toFixed(2)) : 0
       };
     });
 
@@ -373,7 +375,7 @@ export const PurchaseBreakdownWizard: React.FC<PurchaseBreakdownWizardProps> = (
                                                         </td>
                                                         {CATEGORIES.map(c => {
                                                             const catVal = (d.categoryValues[c.id] as number) || 0;
-                                                            const catPct = qTotalAmount > 0 ? ((catVal / qTotalAmount) * 100).toFixed(2) : '0.00';
+                                                            const catPct = mTotal > 0 ? ((catVal / mTotal) * 100).toFixed(2) : '0.00';
 
                                                             return (
                                                                 <td key={c.id} className="px-3 py-2 text-right align-middle">
@@ -444,7 +446,7 @@ export const PurchaseBreakdownWizard: React.FC<PurchaseBreakdownWizardProps> = (
                                                 {toWan(qTotalAmount)}
                                             </td>
                                             <td className="px-3 py-3 text-right">
-                                                {totalTarget > 0 ? ((qTotalAmount / totalTarget) * 100).toFixed(2) : '0.00'}%
+                                                {annualTotals.totalAmount > 0 ? ((qTotalAmount / annualTotals.totalAmount) * 100).toFixed(2) : '0.00'}%
                                             </td>
                                         </tr>
 
@@ -491,8 +493,8 @@ export const PurchaseBreakdownWizard: React.FC<PurchaseBreakdownWizardProps> = (
                                 <td className="px-3 py-4 text-right text-base">
                                     {toWan(annualTotals.totalAmount)}
                                 </td>
-                                <td className={`px-3 py-4 text-right text-base font-bold ${isFullyDecomposed ? 'text-emerald-700' : 'text-red-500'}`}>
-                                    {annualCompletionRatio.toFixed(2)}%
+                                <td className="px-3 py-4 text-right text-base font-bold text-emerald-700">
+                                    {annualTotals.totalAmount > 0 ? '100.00' : '0.00'}%
                                 </td>
                             </tr>
 
