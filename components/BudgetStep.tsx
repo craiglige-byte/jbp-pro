@@ -331,8 +331,19 @@ const BudgetStep: React.FC<BudgetStepProps> = ({ data, updateData, onNext, onBac
     const purchaseAmountWan = useMemo(() => {
         const obj = data.objectives.find(o => o.title === '达成进货承诺');
         if (!obj?.targetValue) return 0;
-        const m = obj.targetValue.match(/总计\s*([\d,.]+)\s*万元/);
-        return m ? parseFloat(m[1].replace(/,/g, '')) : 0;
+        // 新格式：总计 xxx 万元
+        const newMatch = obj.targetValue.match(/总计\s*([\d,.]+)\s*万元/);
+        if (newMatch) return parseFloat(newMatch[1].replace(/,/g, ''));
+        // 旧格式：（xxx万元）
+        const oldMatch = obj.targetValue.match(/（([\d,.]+)万元）/);
+        if (oldMatch) return parseFloat(oldMatch[1].replace(/,/g, ''));
+        // 旧格式：¥xxx
+        const yuanMatch = obj.targetValue.match(/¥([\d,]+)/);
+        if (yuanMatch) {
+            const yuan = parseInt(yuanMatch[1].replace(/,/g, ''), 10);
+            return yuan / 10000;
+        }
+        return 0;
     }, [data.objectives]);
 
     // 实时校验警告
@@ -364,7 +375,9 @@ const BudgetStep: React.FC<BudgetStepProps> = ({ data, updateData, onNext, onBac
             const salesCount = plan.personnel
                 .filter(p => p.role.includes('专职业代') || p.role.includes('厂家业代'))
                 .reduce((s, p) => s + (p.count || 0), 0);
-            if (salesCount > 0) {
+            if (salesCount === 0) {
+                w.personnelSales = `对比明年进货目标${purchaseAmountWan.toLocaleString()}万，请规划专职业代与厂家业代个数`;
+            } else {
                 const perSales = purchaseAmountWan / salesCount;
                 if (perSales < 80) {
                     w.personnelSales = `对比明年进货目标${purchaseAmountWan.toLocaleString()}万，规划专职业代与厂家业代个数过剩`;
