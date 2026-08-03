@@ -490,7 +490,7 @@ export const InventoryBreakdownWizard: React.FC<InventoryBreakdownWizardProps> =
             const isTurnoverValid = avgTurnover <= targetTurnoverDays;
             const isStep0Blocked = currentStep === 0 && (!isRatioValid || !isTurnoverValid);
             const blockReason = !isRatioValid ? '请将各品类销售占比拆解至100%'
-              : !isTurnoverValid ? '合计周转天数需小于等于目标周转天数'
+              : !isTurnoverValid ? '设定明年周转天数需≤目标库存周转天数'
               : '';
 
             return (
