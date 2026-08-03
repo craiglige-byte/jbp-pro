@@ -352,6 +352,8 @@ jbp2027/
 
 ### 目标一致性校验 (PRD-04 V2.17)
 - 拆解策略/规划预算下一步拦截：进货/销售/库存/利润目标变更后需重新拆解
+- **BugFix (08-03)**: `validateTargetConsistency` 库存校验属性名修正 `monthlyInventory` → `monthlyPlan`
+- **BugFix (08-03)**: 利润一致性校验改用 `objectiveTargetMargin`，不再比较计算利润率与目标利润率
 
 ### 库存拆解弹窗 (PRD-04 V2.18)
 - 头部展示「总销售箱数 | 目标周转≤X天」
@@ -359,6 +361,14 @@ jbp2027/
 
 ### 盈利拆解弹窗 (PRD-04 V2.19)
 - Step1 测算运营费用后校验净利润率 ≥ 目标利润率，否则禁用下一步
+
+### 规划预算 — 人员架构校验 (PRD-06 V2.3)
+- **BugFix (08-03)**: `purchaseAmountWan` 提取兼容旧格式（`¥xxx`、`（xxx万元）`）
+- **BugFix (08-03)**: 专职业代+厂家业代个数为 0 时改为红字提示，不再静默跳过
+- 校验公式: 进货承诺 / (专职业代+厂家业代) ∈ [80, 200]万
+
+### 类型定义
+- `JBPProfitabilityPlan` 新增 `objectiveTargetMargin?: number` 字段
 
 ## 最近变更摘要 (2026-07-27)
 
