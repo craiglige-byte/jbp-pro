@@ -96,9 +96,20 @@ export const PurchaseBreakdownWizard: React.FC<PurchaseBreakdownWizardProps> = (
     };
   });
 
-  // Validation helper
+  // Track raw input display strings (prevent toWanInput from overwriting during editing)
+  const [inputDisplays, setInputDisplays] = useState<Record<string, string>>({});
+
+  // Get display value: use tracked raw input if present, otherwise format from stored yuan
+  const getDisplay = (key: string, yuanVal: number): string => {
+    if (key in inputDisplays) return inputDisplays[key];
+    if (yuanVal === 0) return '';
+    return (yuanVal / 10000).toFixed(4);
+  };
+
+  // Validation helper: allow digits, one dot, up to 4 decimal places, or leading dot for ".5"
   const isValidDecimal = (val: string): boolean => {
     if (val === '') return true;
+    if (val === '.') return true;
     return /^\d*\.?\d{0,4}$/.test(val);
   };
 
@@ -161,6 +172,10 @@ export const PurchaseBreakdownWizard: React.FC<PurchaseBreakdownWizardProps> = (
   // Handle category input change for a month
   const handleCategoryChange = (monthId: string, catId: string, rawValue: string) => {
     if (!isValidDecimal(rawValue)) return;
+
+    const key = `${monthId}_${catId}`;
+    // Track the raw display string so toWanInput doesn't overwrite during editing
+    setInputDisplays(prev => ({ ...prev, [key]: rawValue }));
 
     const newPlan = { ...plan };
     const monthData = { ...newPlan.monthlyData[monthId] };
@@ -245,6 +260,7 @@ export const PurchaseBreakdownWizard: React.FC<PurchaseBreakdownWizardProps> = (
 
   // Save handler
   const handleSave = () => {
+    setInputDisplays({}); // Clear raw display tracking
     // Ensure categorySplit and quarterSplit are up to date
     const finalPlan = { ...plan };
 
@@ -365,7 +381,7 @@ export const PurchaseBreakdownWizard: React.FC<PurchaseBreakdownWizardProps> = (
                                                                         <input
                                                                             type="text" inputMode="decimal"
                                                                             className="w-20 bg-blue-50 border border-blue-200 rounded px-2 py-1 text-right outline-none focus:border-blue-400 focus:ring-1 focus:ring-blue-200 text-slate-700 font-mono text-xs"
-                                                                            value={toWanInput(catVal)}
+                                                                            value={getDisplay(`${m.id}_${c.id}`, catVal)}
                                                                             placeholder="0"
                                                                             onChange={(e) => handleCategoryChange(m.id, c.id, e.target.value)}
                                                                         />
