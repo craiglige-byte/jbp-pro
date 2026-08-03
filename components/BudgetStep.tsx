@@ -766,7 +766,8 @@ const BudgetStep: React.FC<BudgetStepProps> = ({ data, updateData, onNext, onBac
             const targetMatch = profitObj.targetValue.match(/提升至\s*([\d,.]+)\s*%/);
             if (targetMatch) {
                 const targetMargin = parseFloat(targetMatch[1]);
-                if (Math.abs(profitObj.profitabilityPlan.targetProfitMargin - targetMargin) > 0.01) {
+                const savedTarget = profitObj.profitabilityPlan.objectiveTargetMargin;
+                if (savedTarget == null || Math.abs(savedTarget - targetMargin) > 0.01) {
                     showToast('目标利润率已变更，请返回拆解策略重新完成利润拆解');
                     return;
                 }
