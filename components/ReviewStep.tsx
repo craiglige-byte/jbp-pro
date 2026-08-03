@@ -210,10 +210,15 @@ const ReviewStep: React.FC<ReviewStepProps> = ({ data, onBack, planVersion = 'la
     }, [data.objectives]);
 
     const budgetWarnings = useMemo(() => {
-        const w: { vehicle?: string; personnelSales?: string; personnelDriver?: string; capitalAdvance?: string; capitalTotal?: string } = {};
+        const w: { warehouse?: string; vehicle?: string; personnelSales?: string; personnelDriver?: string; capitalAdvance?: string; capitalTotal?: string } = {};
         if (!plan) return w;
         const totalVehicles = plan.vehicles.reduce((s: number, v: any) => s + (v.count || 0), 0);
         if (purchaseAmountWan > 0) {
+            const totalBrandArea = plan.warehouse.reduce((s: number, i: any) => s + (i.brandArea || 0), 0);
+            const minArea = purchaseAmountWan * 0.5;
+            if (totalBrandArea < minArea) {
+                w.warehouse = `对比明年进货目标${purchaseAmountWan.toLocaleString()}万，元气专用面积不足`;
+            }
             if (totalVehicles === 0) {
                 w.vehicle = `对比明年进货目标${purchaseAmountWan.toLocaleString()}万，规划车辆数量不足`;
             } else {
@@ -835,6 +840,16 @@ const ReviewStep: React.FC<ReviewStepProps> = ({ data, onBack, planVersion = 'la
                                 </td>
                                 <td className="p-4"></td>
                             </tr>
+                            {budgetWarnings.warehouse && (
+                            <tr>
+                                <td className="px-4 py-2" colSpan={8}>
+                                    <div className="text-xs text-red-500 flex items-center">
+                                        <AlertCircle size={12} className="mr-1 flex-shrink-0" />
+                                        {budgetWarnings.warehouse}
+                                    </div>
+                                </td>
+                            </tr>
+                            )}
                         </tfoot>
                     </table>
                 );

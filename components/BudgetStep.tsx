@@ -337,10 +337,17 @@ const BudgetStep: React.FC<BudgetStepProps> = ({ data, updateData, onNext, onBac
 
     // 实时校验警告
     const validationWarnings = useMemo(() => {
-        const w: { vehicle?: string; personnelSales?: string; personnelDriver?: string; capitalAdvance?: string; capitalTotal?: string } = {};
+        const w: { warehouse?: string; vehicle?: string; personnelSales?: string; personnelDriver?: string; capitalAdvance?: string; capitalTotal?: string } = {};
         const totalVehicles = plan.vehicles.reduce((s, v) => s + v.count, 0);
 
         if (purchaseAmountWan > 0) {
+            // 仓库：元气专用面积 ≥ 进货承诺 × 0.5（每100万需50㎡）
+            const totalBrandArea = plan.warehouse.reduce((s, i) => s + (i.brandArea || 0), 0);
+            const minArea = purchaseAmountWan * 0.5;
+            if (totalBrandArea < minArea) {
+                w.warehouse = `对比明年进货目标${purchaseAmountWan.toLocaleString()}万，元气专用面积不足`;
+            }
+
             // 车辆：进货承诺 / 车辆总数 ∈ [150, 250]万
             if (totalVehicles === 0) {
                 w.vehicle = `对比明年进货目标${purchaseAmountWan.toLocaleString()}万，规划车辆数量不足`;
@@ -891,6 +898,16 @@ const BudgetStep: React.FC<BudgetStepProps> = ({ data, updateData, onNext, onBac
                                     <td className="px-4 py-3"></td>
                                     <td className="px-4 py-3"></td>
                                 </tr>
+                                {validationWarnings.warehouse && (
+                                <tr>
+                                    <td className="px-4 py-2" colSpan={9}>
+                                        <div className="text-xs text-red-500 flex items-center">
+                                            <AlertCircle size={12} className="mr-1.5 flex-shrink-0" />
+                                            {validationWarnings.warehouse}
+                                        </div>
+                                    </td>
+                                </tr>
+                                )}
                             </tbody>
                         </table>
                     </div>
