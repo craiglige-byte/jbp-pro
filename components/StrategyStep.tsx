@@ -1570,6 +1570,7 @@ const StrategyStep: React.FC<StrategyStepProps> = ({ data, updateData, onNext, o
                     }}
                     salesTarget={extractNumericValue(data.objectives.find(o => o.title === '实现销售目标')?.targetValue || '')}
                     purchaseTarget={extractNumericValue(data.objectives.find(o => o.title === '达成进货承诺')?.targetValue || '')}
+                    profitTarget={data.objectives.find(o => o.title === '提升盈利能力')?.targetValue}
                     highlight={currentFocus?.objId === obj.id && currentFocus?.part === 'breakdown' && !isPartComplete(obj, 'breakdown')}
                   />
                 ) : (

@@ -6,6 +6,7 @@ interface ProfitabilityBreakdownWizardProps {
   objective: JBPObjective;
   salesTarget: number;
   purchaseTarget: number;
+  profitTarget?: string;
   onSave: (plan: JBPProfitabilityPlan) => void;
   onCancel: () => void;
 }
@@ -65,6 +66,7 @@ export const ProfitabilityBreakdownWizard: React.FC<ProfitabilityBreakdownWizard
   objective,
   salesTarget,
   purchaseTarget,
+  profitTarget,
   onSave,
   onCancel
 }) => {
@@ -106,9 +108,11 @@ export const ProfitabilityBreakdownWizard: React.FC<ProfitabilityBreakdownWizard
   
   // Parse target profit margin from objective target value
   const defaultProfitMargin = useMemo(() => {
-    const match = objective.targetValue.match(/(\d+(\.\d+)?)%/);
-    return match ? parseFloat(match[1]) : 7.0; // Default to 7% if not found
-  }, [objective.targetValue]);
+    // Use latest target from 设定目标 if available, otherwise fall back to objective
+    const src = profitTarget || objective.targetValue;
+    const match = src?.match(/(\d+(\.\d+)?)%/);
+    return match ? parseFloat(match[1]) : 7.0;
+  }, [profitTarget, objective.targetValue]);
 
   const [plan, setPlan] = useState<JBPProfitabilityPlan>(() => {
     if (objective.profitabilityPlan) {
@@ -691,18 +695,32 @@ export const ProfitabilityBreakdownWizard: React.FC<ProfitabilityBreakdownWizard
           </button>
           
           {step < 3 ? (
-            <button 
-              onClick={() => {
-                if (step === 2 && budgetRemaining < -0.1) {
-                  // Optional: Warning before proceeding if budget exceeded
-                  if (!confirm('当前运营费用超出预算，确定要继续吗？')) return;
-                }
-                setStep(step + 1);
-              }}
-              className="px-6 py-2 bg-brand-600 text-white font-medium rounded-lg hover:bg-brand-700 transition-colors flex items-center shadow-sm hover:shadow-md"
-            >
-              下一步 <ArrowRight size={16} className="ml-2" />
-            </button>
+            (() => {
+              const isProfitInvalid = step === 1 && netProfitMargin < defaultProfitMargin;
+              return (
+                <button
+                  onClick={() => {
+                    if (isProfitInvalid) return;
+                    if (step === 2 && budgetRemaining < -0.1) {
+                      if (!confirm('当前运营费用超出预算，确定要继续吗？')) return;
+                    }
+                    setStep(step + 1);
+                  }}
+                  disabled={isProfitInvalid}
+                  className={`px-6 py-2 font-medium rounded-lg transition-colors flex items-center shadow-sm hover:shadow-md ${
+                    isProfitInvalid
+                      ? 'bg-slate-300 text-slate-500 cursor-not-allowed shadow-none'
+                      : 'bg-brand-600 text-white hover:bg-brand-700'
+                  }`}
+                >
+                  {isProfitInvalid ? (
+                    '明年利润率需大于等于目标利润率'
+                  ) : (
+                    <>下一步 <ArrowRight size={16} className="ml-2" /></>
+                  )}
+                </button>
+              );
+            })()
           ) : (
             <button 
               onClick={() => onSave(plan)}

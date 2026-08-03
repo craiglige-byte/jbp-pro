@@ -8,6 +8,7 @@ interface ProfitabilityBreakdownProps {
   updateObjective: (updates: Partial<JBPObjective>) => void;
   salesTarget: number;
   purchaseTarget: number;
+  profitTarget?: string;
   readOnly?: boolean;
   highlight?: boolean;
 }
@@ -17,6 +18,7 @@ const ProfitabilityBreakdown: React.FC<ProfitabilityBreakdownProps> = ({
   updateObjective,
   salesTarget,
   purchaseTarget,
+  profitTarget,
   readOnly = false,
   highlight = false
 }) => {
@@ -164,6 +166,7 @@ const ProfitabilityBreakdown: React.FC<ProfitabilityBreakdownProps> = ({
           objective={objective}
           salesTarget={salesTarget}
           purchaseTarget={purchaseTarget}
+          profitTarget={profitTarget}
           onSave={(newPlan) => {
             updateObjective({ profitabilityPlan: newPlan });
             setShowWizard(false);
