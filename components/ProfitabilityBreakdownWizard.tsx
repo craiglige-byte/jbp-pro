@@ -722,8 +722,8 @@ export const ProfitabilityBreakdownWizard: React.FC<ProfitabilityBreakdownWizard
               );
             })()
           ) : (
-            <button 
-              onClick={() => onSave(plan)}
+            <button
+              onClick={() => onSave({ ...plan, objectiveTargetMargin: defaultProfitMargin })}
               className="px-6 py-2 bg-emerald-600 text-white font-medium rounded-lg hover:bg-emerald-700 transition-colors flex items-center shadow-sm hover:shadow-md"
             >
               <Check size={16} className="mr-2" /> 确认并保存

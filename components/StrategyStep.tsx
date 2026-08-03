@@ -1325,7 +1325,8 @@ const StrategyStep: React.FC<StrategyStepProps> = ({ data, updateData, onNext, o
       const targetMatch = profitObj.targetValue.match(/提升至\s*([\d,.]+)\s*%/);
       if (targetMatch) {
         const targetMargin = parseFloat(targetMatch[1]);
-        if (Math.abs(profitObj.profitabilityPlan.targetProfitMargin - targetMargin) > 0.01) {
+        const savedTarget = profitObj.profitabilityPlan.objectiveTargetMargin;
+        if (savedTarget == null || Math.abs(savedTarget - targetMargin) > 0.01) {
           return '目标利润率已变更，请重新完成利润拆解';
         }
       }

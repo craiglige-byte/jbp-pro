@@ -319,6 +319,7 @@ export interface JBPProfitabilityPlan {
   maxOperatingExpenses: number;
   expenses: JBPExpenseCategory[];
   totalOperatingExpenses: number;
+  objectiveTargetMargin?: number;
 }
 
 export interface JBPExpenseCategory {
