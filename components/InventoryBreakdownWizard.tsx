@@ -10,6 +10,7 @@ interface InventoryBreakdownWizardProps {
   purchasePlan?: any;
   salesPlan?: any;
   totalSalesVolume: number;
+  targetTurnoverDays?: number;
   months: { id: string; label: string; shortLabel: string }[];
 }
 
@@ -59,6 +60,7 @@ export const InventoryBreakdownWizard: React.FC<InventoryBreakdownWizardProps> =
   purchasePlan,
   salesPlan,
   totalSalesVolume,
+  targetTurnoverDays = 30,
   months
 }) => {
   const [currentStep, setCurrentStep] = useState(0);
@@ -429,7 +431,7 @@ export const InventoryBreakdownWizard: React.FC<InventoryBreakdownWizardProps> =
         <div className="px-6 py-4 border-b border-slate-100 flex justify-between items-center">
           <div>
             <h2 className="text-xl font-bold text-slate-800">库存目标拆解 (Inventory Breakdown)</h2>
-            <p className="text-sm text-slate-500 mt-1">Total Sales Ref: <span className="font-bold text-brand-600">{totalSalesVolume.toLocaleString()}</span> 箱</p>
+            <p className="text-sm text-slate-500 mt-1">Total Sales Ref: <span className="font-bold text-brand-600">{totalSalesVolume.toLocaleString()}</span> 箱 <span className="mx-2">|</span> 目标库存周转: <span className="font-bold text-amber-600">≤{targetTurnoverDays}天</span></p>
           </div>
           <button onClick={onCancel} className="text-slate-400 hover:text-slate-600 transition-colors">
             <X size={24} />
@@ -480,11 +482,16 @@ export const InventoryBreakdownWizard: React.FC<InventoryBreakdownWizardProps> =
             {currentStep === 0 ? '取消' : <><ChevronLeft size={16} className="mr-1" /> 上一步</>}
           </button>
 
-          {/* Step 0 validation: sales ratio must sum to 100% */}
+          {/* Step 0 validation: sales ratio must sum to 100%, avg turnover ≤ target */}
           {(() => {
             const totalRatio = categorySettings.reduce((sum, c) => sum + c.ratio, 0);
             const isRatioValid = Math.abs(totalRatio - 100) < 0.01;
-            const isStep0Blocked = currentStep === 0 && !isRatioValid;
+            const avgTurnover = categorySettings.reduce((sum, c) => sum + c.turnoverDays * c.ratio, 0) / 100;
+            const isTurnoverValid = avgTurnover <= targetTurnoverDays;
+            const isStep0Blocked = currentStep === 0 && (!isRatioValid || !isTurnoverValid);
+            const blockReason = !isRatioValid ? '请将各品类销售占比拆解至100%'
+              : !isTurnoverValid ? '请将周转天数需小于等于目标周转天数'
+              : '';
 
             return (
               <button
@@ -498,7 +505,7 @@ export const InventoryBreakdownWizard: React.FC<InventoryBreakdownWizardProps> =
               >
                 {isStep0Blocked ? (
                   <>
-                    请将各品类销售占比拆解至100%
+                    {blockReason}
                   </>
                 ) : currentStep === STEPS.length - 1 ? (
                   <>

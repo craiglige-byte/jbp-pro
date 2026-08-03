@@ -10,6 +10,7 @@ interface InventoryBreakdownProps {
   purchasePlan?: any;
   salesPlan?: any;
   salesTarget?: string;
+  inventoryTarget?: string;
   months: { id: string; label: string; shortLabel: string }[];
   readOnly?: boolean;
   highlight?: boolean;
@@ -22,6 +23,7 @@ const InventoryBreakdown: React.FC<InventoryBreakdownProps> = ({
   purchasePlan,
   salesPlan,
   salesTarget,
+  inventoryTarget,
   months,
   readOnly = false,
   highlight = false
@@ -29,22 +31,26 @@ const InventoryBreakdown: React.FC<InventoryBreakdownProps> = ({
   const [showWizard, setShowWizard] = useState(false);
   const inventoryPlan = objective.inventoryPlan;
 
-  // Extract total sales target from string like "... 145,000 箱 ..."
+  // Extract total sales target in 箱 from new format: "销售目标 xxx 万元（约合 xxx 箱）"
   const totalSalesVolume = React.useMemo(() => {
-    if (!salesTarget) return 100000; // Default fallback
-    const match = salesTarget.match(/([\d,]+)\s*箱/);
-    if (match && match[1]) {
-      return parseInt(match[1].replace(/,/g, ''), 10);
+    if (!salesTarget) return 100000;
+    const newMatch = salesTarget.match(/约合\s*([\d,]+)\s*箱/);
+    if (newMatch && newMatch[1]) {
+      return parseInt(newMatch[1].replace(/,/g, ''), 10);
     }
-    const firstNum = salesTarget.match(/([\d,]+)/);
-    return firstNum ? parseInt(firstNum[1].replace(/,/g, ''), 10) : 100000;
+    const oldMatch = salesTarget.match(/([\d,]+)\s*箱/);
+    if (oldMatch && oldMatch[1]) {
+      return parseInt(oldMatch[1].replace(/,/g, ''), 10);
+    }
+    return 100000;
   }, [salesTarget]);
 
-  // Extract target turnover days from objective string if possible
-  const targetDays = React.useMemo(() => {
-    const match = objective.targetValue.match(/([\d,]+)\s*天/);
-    return match ? match[1] : 'XX';
-  }, [objective.targetValue]);
+  // Extract target turnover days from 设定目标 守住库存健康
+  const targetTurnoverDays = React.useMemo(() => {
+    const src = inventoryTarget || objective.targetValue;
+    const match = src?.match(/≤\s*(\d+)\s*天/);
+    return match ? parseInt(match[1], 10) : 30;
+  }, [inventoryTarget, objective.targetValue]);
 
   // Live lookup: resolve each month's sales estimate from latest salesPlan
   const getLiveSalesForMonth = (monthId: string): number => {
@@ -89,7 +95,7 @@ const InventoryBreakdown: React.FC<InventoryBreakdownProps> = ({
                 <div className="text-lg font-bold text-slate-800 flex items-center">
                     年度库存规划表
                     <span className="ml-3 text-xs font-normal text-slate-500 bg-slate-100 px-2 py-0.5 rounded-full">
-                        Target: ≤{targetDays}天
+                        Target: ≤{targetTurnoverDays}天
                     </span>
                 </div>
               )}
@@ -172,6 +178,7 @@ const InventoryBreakdown: React.FC<InventoryBreakdownProps> = ({
             purchasePlan={purchasePlan}
             salesPlan={salesPlan}
             totalSalesVolume={totalSalesVolume}
+            targetTurnoverDays={targetTurnoverDays}
             months={months}
         />
       )}

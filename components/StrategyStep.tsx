@@ -1557,6 +1557,7 @@ const StrategyStep: React.FC<StrategyStepProps> = ({ data, updateData, onNext, o
                     purchasePlan={data.objectives.find(o => o.title === '达成进货承诺')?.purchasePlan}
                     salesPlan={data.objectives.find(o => o.title === '实现销售目标')?.salesPlan}
                     salesTarget={data.objectives.find(o => o.title === '实现销售目标')?.targetValue}
+                    inventoryTarget={data.objectives.find(o => o.title === '守住库存健康')?.targetValue}
                     months={months}
                     highlight={currentFocus?.objId === obj.id && currentFocus?.part === 'breakdown' && !isPartComplete(obj, 'breakdown')}
                   />
