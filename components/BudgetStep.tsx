@@ -720,6 +720,46 @@ const BudgetStep: React.FC<BudgetStepProps> = ({ data, updateData, onNext, onBac
             return;
         }
 
+        // 检查拆解目标是否与设定目标一致（目标变更后需重新拆解）
+        const purchaseObj = data.objectives.find(o => o.title === '达成进货承诺');
+        if (purchaseObj?.targetValue && purchaseObj.purchasePlan?.monthlyData) {
+            const targetMatch = purchaseObj.targetValue.match(/总计\s*([\d,.]+)\s*万元/);
+            if (targetMatch) {
+                const targetWan = parseFloat(targetMatch[1].replace(/,/g, ''));
+                const planTotalYuan = Object.values(purchaseObj.purchasePlan.monthlyData).reduce((s: number, d: any) => s + (d.total || 0), 0);
+                if (Math.abs(planTotalYuan / 10000 - targetWan) > 0.01) {
+                    showToast('进货目标已变更，请返回拆解策略重新完成进货目标拆解');
+                    return;
+                }
+            }
+        }
+        const salesObj = data.objectives.find(o => o.title === '实现销售目标');
+        if (salesObj?.targetValue && salesObj.salesPlan?.timeBreakdown) {
+            const targetMatch = salesObj.targetValue.match(/销售目标\s*([\d,.]+)\s*万元/);
+            if (targetMatch) {
+                const targetWan = parseFloat(targetMatch[1].replace(/,/g, ''));
+                const targetCases = Math.floor(targetWan * 10000 / 45);
+                const planTotalCases = salesObj.salesPlan.timeBreakdown
+                    .filter((t: any) => t.type === 'month')
+                    .reduce((s: number, t: any) => s + (t.thisYearTarget || 0), 0);
+                if (Math.abs(planTotalCases - targetCases) > 1) {
+                    showToast('销售目标箱数已变更，请返回拆解策略重新完成销售拆解');
+                    return;
+                }
+            }
+        }
+        const profitObj = data.objectives.find(o => o.title === '提升盈利能力');
+        if (profitObj?.targetValue && profitObj.profitabilityPlan) {
+            const targetMatch = profitObj.targetValue.match(/提升至\s*([\d,.]+)\s*%/);
+            if (targetMatch) {
+                const targetMargin = parseFloat(targetMatch[1]);
+                if (Math.abs(profitObj.profitabilityPlan.targetProfitMargin - targetMargin) > 0.01) {
+                    showToast('目标利润率已变更，请返回拆解策略重新完成利润拆解');
+                    return;
+                }
+            }
+        }
+
         // Save current state
         updateData({ detailedBudgetPlan: plan });
         onNext();

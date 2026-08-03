@@ -1273,16 +1273,83 @@ const StrategyStep: React.FC<StrategyStepProps> = ({ data, updateData, onNext, o
     };
   };
 
+  // 检查拆解目标是否与设定目标一致
+  const validateTargetConsistency = (): string | null => {
+    // 1. 达成进货承诺：计划总金额(万元) == 设定目标进货金额(万元)
+    const purchaseObj = data.objectives.find(o => o.title === '达成进货承诺');
+    if (purchaseObj?.targetValue && purchaseObj.purchasePlan?.monthlyData) {
+      const targetMatch = purchaseObj.targetValue.match(/总计\s*([\d,.]+)\s*万元/);
+      if (targetMatch) {
+        const targetWan = parseFloat(targetMatch[1].replace(/,/g, ''));
+        const planTotalYuan = Object.values(purchaseObj.purchasePlan.monthlyData).reduce((s: number, d: any) => s + (d.total || 0), 0);
+        const planTotalWan = parseFloat((planTotalYuan / 10000).toFixed(4));
+        if (Math.abs(planTotalWan - targetWan) > 0.01) {
+          return '进货目标已变更，请重新完成进货目标拆解';
+        }
+      }
+    }
+
+    // 2. 实现销售目标：计划箱数 == 设定目标箱数
+    const salesObj = data.objectives.find(o => o.title === '实现销售目标');
+    if (salesObj?.targetValue && salesObj.salesPlan?.timeBreakdown) {
+      const targetMatch = salesObj.targetValue.match(/销售目标\s*([\d,.]+)\s*万元/);
+      if (targetMatch) {
+        const targetWan = parseFloat(targetMatch[1].replace(/,/g, ''));
+        const targetCases = Math.floor(targetWan * 10000 / 45);
+        const planTotalCases = salesObj.salesPlan.timeBreakdown
+          .filter((t: any) => t.type === 'month')
+          .reduce((s: number, t: any) => s + (t.thisYearTarget || 0), 0);
+        if (Math.abs(planTotalCases - targetCases) > 1) {
+          return '销售目标箱数已变更，请重新完成销售拆解';
+        }
+      }
+    }
+
+    // 3. 守住库存健康：库存周转天数
+    const inventoryObj = data.objectives.find(o => o.title === '守住库存健康');
+    if (inventoryObj?.targetValue && inventoryObj.inventoryPlan) {
+      const targetMatch = inventoryObj.targetValue.match(/≤\s*(\d+)\s*天/);
+      if (targetMatch) {
+        const targetDays = parseInt(targetMatch[1], 10);
+        // Check if inventory plan has been recalculated for this target
+        // We check if the plan exists — if target changed, plan should be null
+        if (!inventoryObj.inventoryPlan.monthlyInventory) {
+          return '目标库存周转天数变更，请重新完成库存目标拆解';
+        }
+      }
+    }
+
+    // 4. 提升盈利能力：利润率
+    const profitObj = data.objectives.find(o => o.title === '提升盈利能力');
+    if (profitObj?.targetValue && profitObj.profitabilityPlan) {
+      const targetMatch = profitObj.targetValue.match(/提升至\s*([\d,.]+)\s*%/);
+      if (targetMatch) {
+        const targetMargin = parseFloat(targetMatch[1]);
+        if (Math.abs(profitObj.profitabilityPlan.targetProfitMargin - targetMargin) > 0.01) {
+          return '目标利润率已变更，请重新完成利润拆解';
+        }
+      }
+    }
+
+    return null;
+  };
+
   // 处理下一步点击 - 逐步引导式验证
   const handleNextClick = () => {
     // 直接找第一个未完成的部分
     const next = getNextIncompletePart();
     if (!next) {
-      // 所有部分都完成，直接提交
+      // 所有部分都完成，检查目标一致性
+      const consistencyError = validateTargetConsistency();
+      if (consistencyError) {
+        setToast({ show: true, message: consistencyError });
+        setTimeout(() => setToast({ show: false, message: '' }), 4000);
+        return;
+      }
       onNext();
       return;
     }
-    
+
     // 设置聚焦并显示错误
     setCurrentFocus(next);
     showFocusError(next);
