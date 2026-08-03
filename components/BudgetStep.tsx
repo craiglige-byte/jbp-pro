@@ -1543,7 +1543,7 @@ const BudgetStep: React.FC<BudgetStepProps> = ({ data, updateData, onNext, onBac
             </div>
 
             {/* Footer */}
-            <div className="flex justify-between pt-6 border-t border-slate-100">
+            <div className="sticky bottom-0 flex justify-between pt-4 pb-4 px-6 bg-white/95 backdrop-blur-sm border-t border-slate-200 shadow-[0_-4px_20px_-4px_rgba(0,0,0,0.08)] z-20 -mx-4 md:-mx-8 rounded-b-2xl">
                 <button onClick={handleBack} className="px-6 py-2 text-slate-600 font-medium hover:bg-slate-100 rounded-lg transition-colors flex items-center">
                     <ArrowLeft size={18} className="mr-2" /> 上一步
                 </button>
