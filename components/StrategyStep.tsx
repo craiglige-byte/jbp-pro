@@ -1313,7 +1313,7 @@ const StrategyStep: React.FC<StrategyStepProps> = ({ data, updateData, onNext, o
         const targetDays = parseInt(targetMatch[1], 10);
         // Check if inventory plan has been recalculated for this target
         // We check if the plan exists — if target changed, plan should be null
-        if (!inventoryObj.inventoryPlan.monthlyInventory) {
+        if (!inventoryObj.inventoryPlan.monthlyPlan) {
           return '目标库存周转天数变更，请重新完成库存目标拆解';
         }
       }
