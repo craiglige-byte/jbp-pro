@@ -293,7 +293,7 @@ export const InventoryBreakdownWizard: React.FC<InventoryBreakdownWizardProps> =
                     <tr>
                         <th className="px-4 py-3">品类名称</th>
                         <th className="px-4 py-3 text-right w-32">销售占比(%)</th>
-                        <th className="px-4 py-3 text-right w-32">目标周转(天)</th>
+                        <th className="px-4 py-3 text-right w-32">设定明年周转(天)</th>
                         <th className="px-4 py-3">策略备注 (如：新品铺货、核心保供)</th>
                     </tr>
                 </thead>
@@ -490,7 +490,7 @@ export const InventoryBreakdownWizard: React.FC<InventoryBreakdownWizardProps> =
             const isTurnoverValid = avgTurnover <= targetTurnoverDays;
             const isStep0Blocked = currentStep === 0 && (!isRatioValid || !isTurnoverValid);
             const blockReason = !isRatioValid ? '请将各品类销售占比拆解至100%'
-              : !isTurnoverValid ? '请将周转天数需小于等于目标周转天数'
+              : !isTurnoverValid ? '合计周转天数需小于等于目标周转天数'
               : '';
 
             return (
