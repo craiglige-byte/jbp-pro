@@ -1359,22 +1359,18 @@ const StrategyStep: React.FC<StrategyStepProps> = ({ data, updateData, onNext, o
     
     // 1. 达成进货承诺
     if (title === '达成进货承诺') {
-        // 新格式: （xxx万元）
-        const newMatch = fullText.match(/（([\d,.]+)万元）/);
-        if (newMatch) return `完成${newMatch[1]}万元进货目标`;
+        // 新格式: 总计 xxx 万元
+        const newMatch = fullText.match(/总计\s*([\d,.]+)\s*万元/);
+        if (newMatch) return `进货目标${newMatch[1]}万元`;
+        // 旧格式: （xxx万元）
+        const oldMatch = fullText.match(/（([\d,.]+)万元）/);
+        if (oldMatch) return `进货目标${oldMatch[1]}万元`;
         // 旧格式: ¥xxx
-        const oldMatch = fullText.match(/¥([\d,]+)/);
-        if (oldMatch) {
-          const yuan = parseInt(oldMatch[1].replace(/,/g, ''), 10);
-          const wan = (yuan / 10000).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2 });
-          return `完成${wan}万元进货目标`;
-        }
-        // 旧格式: xxx元
-        const yuanMatch = fullText.match(/([\d,]+)元/);
+        const yuanMatch = fullText.match(/¥([\d,]+)/);
         if (yuanMatch) {
           const yuan = parseInt(yuanMatch[1].replace(/,/g, ''), 10);
           const wan = (yuan / 10000).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2 });
-          return `完成${wan}万元进货目标`;
+          return `进货目标${wan}万元`;
         }
     }
     

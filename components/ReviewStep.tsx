@@ -287,14 +287,14 @@ const ReviewStep: React.FC<ReviewStepProps> = ({ data, onBack, planVersion = 'la
     const getShortTarget = (obj: any) => {
         const text = obj.targetValue;
         if (obj.title === '达成进货承诺') {
-            const match = text.match(/人民币(.*?)（¥(.*?)）/);
-            if (match) return `完成 ${match[2]} 进货额`;
-            const fallback = text.match(/完成总计\s*(.*?)\s*的/);
-            return fallback ? `完成 ${fallback[1]} 进货额` : text;
+            const match = text.match(/总计\s*([\d,.]+)\s*万元/);
+            if (match) return `进货目标${match[1]}万元`;
+            const oldMatch = text.match(/（([\d,.]+)万元）/);
+            return oldMatch ? `进货目标${oldMatch[1]}万元` : text;
         }
         if (obj.title === '实现销售目标') {
-            const match = text.match(/销售目标\s*(.*?)\s*箱/);
-            return match ? `完成 ${match[1]} 箱销售量` : text;
+            const match = text.match(/销售目标\s*([\d,.]+)\s*万元/);
+            return match ? `销售目标${match[1]}万元` : text;
         }
         if (obj.title === '守住库存健康') {
             const match = text.match(/优化至\s*(.*?)\s*天/);
