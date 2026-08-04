@@ -22,10 +22,10 @@ function detectPlanVersion(): PlanVersion {
   if ((window as any).JBP_PLAN_VERSION) {
     return (window as any).JBP_PLAN_VERSION === 'small' ? 'small' : 'large';
   }
-  // 2. Check URL path: /small → small, /large → large
+  // 2. Check URL path: /small → small, /large → large (supports /jbp-pro/small etc.)
   const path = window.location.pathname.replace(/\/+$/, ''); // strip trailing slash
-  if (path === '/small') return 'small';
-  if (path === '/large') return 'large';
+  if (path.endsWith('/small')) return 'small';
+  if (path.endsWith('/large')) return 'large';
   // 3. Check URL query parameter (backward compatible)
   const params = new URLSearchParams(window.location.search);
   if (params.get('version') === 'small') return 'small';
