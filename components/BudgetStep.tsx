@@ -377,7 +377,7 @@ const BudgetStep: React.FC<BudgetStepProps> = ({ data, updateData, onNext, onBac
                 .reduce((s, p) => s + (p.count || 0), 0);
             const purchaseStr = purchaseAmountWan.toLocaleString();
             if (salesCount === 0) {
-                w.personnelSales = `对比明年进货目标<${purchaseStr}万>，专职业代与厂家业代个数<请规划>`;
+                w.personnelSales = `对比明年进货目标<${purchaseStr}万>，专职业代与厂家业代个数<不足>`;
             } else {
                 const perSales = purchaseAmountWan / salesCount;
                 if (perSales < 80) {
