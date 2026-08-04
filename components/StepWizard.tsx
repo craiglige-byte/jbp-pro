@@ -35,16 +35,21 @@ const StepWizard: React.FC<StepWizardProps> = ({ currentStep, setStep, canNaviga
                  const isClickable = canNavigate(step.id);
 
                  return (
-                   <div key={step.id} className="relative flex flex-col items-center bg-white px-2">
+                   <div
+                     key={step.id}
+                     className={`relative flex flex-col items-center bg-white px-2 ${isClickable ? 'cursor-pointer group' : 'cursor-default'}`}
+                     onClick={() => { if (isClickable) setStep(step.id); }}
+                     title={isClickable ? `跳转到: ${step.label}` : ''}
+                   >
                      <div className={`
                        w-6 h-6 rounded-full flex items-center justify-center transition-all duration-300 border-2
                        ${isActive ? 'border-brand-600 bg-brand-50 text-brand-600 scale-110' :
                          isCompleted ? 'border-brand-600 bg-brand-600 text-white' :
-                         isClickable ? 'border-slate-300 text-slate-300' : 'border-slate-200 text-slate-300 opacity-50'}
+                         isClickable ? 'border-slate-300 text-slate-300 group-hover:border-brand-400 group-hover:text-brand-400' : 'border-slate-200 text-slate-300 opacity-50'}
                      `}>
                        {isCompleted ? <CheckCircle2 size={14} /> : <Circle size={10} fill={isActive ? "currentColor" : "none"} />}
                      </div>
-                     <span className={`mt-1 text-[11px] font-medium transition-colors ${isActive ? 'text-brand-700' : isCompleted ? 'text-slate-700' : isClickable ? 'text-slate-400' : 'text-slate-300'}`}>
+                     <span className={`mt-1 text-[11px] font-medium transition-colors ${isActive ? 'text-brand-700' : isCompleted ? 'text-slate-700' : isClickable ? 'text-slate-400 group-hover:text-brand-500' : 'text-slate-300'}`}>
                        {step.label}
                      </span>
                    </div>

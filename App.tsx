@@ -443,7 +443,7 @@ const App: React.FC = () => {
     return true;
   };
 
-  // Logic to determine if a step is accessible
+  // Logic to determine if a step is accessible via step bar click
   const canNavigate = (target: WizardStep): boolean => {
     const targetIdx = steps.indexOf(target);
     const currentIdx = steps.indexOf(currentStep);
@@ -451,20 +451,12 @@ const App: React.FC = () => {
     // Can always go back
     if (targetIdx < currentIdx) return true;
 
-    // Validate forward navigation (same for both versions)
+    // Free navigation: first 3 steps can be clicked directly (info / business_review / objectives)
     if (target === 'info') return true;
     if (target === 'business_review') return data.distributorName !== '' && data.managerName !== '';
     if (target === 'objectives') return data.distributorName !== '' && data.managerName !== '';
-    if (target === 'strategies') return data.objectives.length > 0;
-    // Small version: no actions step, strategies → budget directly
-    if (target === 'actions') return isStrategyStepComplete();
-    if (target === 'budget') {
-      return planVersion === 'small' ? isStrategyStepComplete() : isActionStepComplete();
-    }
-    if (target === 'review') {
-      return planVersion === 'small' ? isStrategyStepComplete() : isActionStepComplete();
-    }
 
+    // strategies / actions / budget / review: no direct step-bar click — must use prev/next buttons
     return false;
   };
 
