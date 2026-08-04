@@ -353,7 +353,7 @@ jbp2027/
 ### 目标一致性校验 (PRD-04 V2.17)
 - 拆解策略/规划预算下一步拦截：进货/销售/库存/利润目标变更后需重新拆解
 - **BugFix (08-03)**: `validateTargetConsistency` 库存校验属性名修正 `monthlyInventory` → `monthlyPlan`
-- **BugFix (08-03)**: 利润一致性校验改用 `objectiveTargetMargin`，不再比较计算利润率与目标利润率
+- **BugFix (08-03)**: 利润一致性校验改用 `objectiveTargetMargin`，不再比较计算利润率与目标利润率（StrategyStep + BudgetStep 两份代码同步修复）
 
 ### 库存拆解弹窗 (PRD-04 V2.18)
 - 头部展示「总销售箱数 | 目标周转≤X天」
