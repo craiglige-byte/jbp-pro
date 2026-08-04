@@ -375,14 +375,15 @@ const BudgetStep: React.FC<BudgetStepProps> = ({ data, updateData, onNext, onBac
             const salesCount = plan.personnel
                 .filter(p => p.role.includes('专职业代') || p.role.includes('厂家业代'))
                 .reduce((s, p) => s + (p.count || 0), 0);
+            const purchaseStr = purchaseAmountWan.toLocaleString();
             if (salesCount === 0) {
-                w.personnelSales = `对比明年进货目标${purchaseAmountWan.toLocaleString()}万，请规划专职业代与厂家业代个数`;
+                w.personnelSales = `对比明年进货目标<${purchaseStr}万>，专职业代与厂家业代个数<请规划>`;
             } else {
                 const perSales = purchaseAmountWan / salesCount;
                 if (perSales < 80) {
-                    w.personnelSales = `对比明年进货目标${purchaseAmountWan.toLocaleString()}万，规划专职业代与厂家业代个数过剩`;
+                    w.personnelSales = `对比明年进货目标<${purchaseStr}万>，专职业代与厂家业代个数<过剩>`;
                 } else if (perSales > 200) {
-                    w.personnelSales = `对比明年进货目标${purchaseAmountWan.toLocaleString()}万，规划专职业代与厂家业代个数不足`;
+                    w.personnelSales = `对比明年进货目标<${purchaseStr}万>，专职业代与厂家业代个数<不足>`;
                 }
             }
         }

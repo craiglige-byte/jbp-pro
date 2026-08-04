@@ -877,38 +877,16 @@ const ObjectiveStep: React.FC<ObjectiveStepProps> = ({ data, updateData, onNext,
   // 检查四个目标是否都已填写（用于按钮样式）
   const checkAllObjectivesFilled = (): boolean => {
     const objectiveNames = ['达成进货承诺', '实现销售目标', '守住库存健康', '提升盈利能力'];
-    
+
     for (let i = 0; i < objectiveNames.length; i++) {
       const objective = data.objectives.find(o => o.title === objectiveNames[i]);
-      
+
       // 检查目标是否存在或targetValue为空
       if (!objective || !objective.targetValue || objective.targetValue.trim() === '') {
         return false;
       }
-      
-      // 针对特定目标进行额外验证
-      if (objectiveNames[i] === '守住库存健康') {
-        const match = objective.targetValue.match(/≤\s*(\d+)\s*天/);
-        if (!match || !match[1]) {
-          return false;
-        }
-      }
-      
-      if (objectiveNames[i] === '提升盈利能力') {
-        const match = objective.targetValue.match(/提升至\s*(.*?)\s*%/);
-        if (!match || !match[1] || match[1].trim() === '') {
-          return false;
-        }
-      }
-      
-      if (objectiveNames[i] === '实现销售目标') {
-        const match = objective.targetValue.match(/销售目标\s*([\d,]+)\s*箱/);
-        if (!match || !match[1] || match[1] === '0') {
-          return false;
-        }
-      }
     }
-    
+
     return true;
   };
 
