@@ -135,55 +135,6 @@ const DEMO_DATA: JBPData = {
           ]
         }
       ],
-      "purchasePlan": {
-        "categorySplit": [
-          { "id": "cat1", "name": "气泡水", "ratio": 23, "amount": 149.5 },
-          { "id": "cat2", "name": "电解质水", "ratio": 35, "amount": 227.5 },
-          { "id": "cat3", "name": "冰茶", "ratio": 16, "amount": 104 },
-          { "id": "cat4", "name": "维生素水", "ratio": 10, "amount": 65 },
-          { "id": "cat5", "name": "好自在", "ratio": 10, "amount": 65 },
-          { "id": "cat6", "name": "本榨", "ratio": 3, "amount": 19.5 },
-          { "id": "cat7", "name": "其他", "ratio": 3, "amount": 19.5 }
-        ],
-        "quarterSplit": [
-          { "id": "Q1", "name": "Q1季度 (12-2月)", "amount": 159.6, "ratio": 24.5 },
-          { "id": "Q2", "name": "Q2季度 (3-5月)", "amount": 213.3, "ratio": 32.8 },
-          { "id": "Q3", "name": "Q3季度 (6-8月)", "amount": 183.2, "ratio": 28.2 },
-          { "id": "Q4", "name": "Q4季度 (9-11月)", "amount": 94.3, "ratio": 14.5 }
-        ],
-        "monthlyData": {
-          "2026-12": { "scenario": "元旦备货", "logic": "", "ratio": 7.4, "total": 47.9, "categoryValues": { "cat1": 8.1, "cat2": 17.1, "cat3": 5.9, "cat4": 4.9, "cat5": 4.9, "cat6": 3.5, "cat7": 3.5 } },
-          "2027-01": { "scenario": "春节高峰", "logic": "", "ratio": 11.0, "total": 71.8, "categoryValues": { "cat1": 12.1, "cat2": 25.6, "cat3": 8.9, "cat4": 7.3, "cat5": 7.3, "cat6": 5.3, "cat7": 5.3 } },
-          "2027-02": { "scenario": "节后淡季", "logic": "", "ratio": 6.1, "total": 39.9, "categoryValues": { "cat1": 6.7, "cat2": 14.2, "cat3": 4.9, "cat4": 4.1, "cat5": 4.1, "cat6": 2.9, "cat7": 2.9 } },
-          "2027-03": { "scenario": "压水头启动", "logic": "", "ratio": 9.8, "total": 64.0, "categoryValues": { "cat1": 16.6, "cat2": 20.5, "cat3": 10.9, "cat4": 5.9, "cat5": 5.5, "cat6": 2.3, "cat7": 2.3 } },
-          "2027-04": { "scenario": "压水头高峰", "logic": "", "ratio": 13.1, "total": 85.3, "categoryValues": { "cat1": 22.1, "cat2": 27.3, "cat3": 14.6, "cat4": 7.8, "cat5": 7.3, "cat6": 3.1, "cat7": 3.1 } },
-          "2027-05": { "scenario": "五一升温", "logic": "", "ratio": 9.8, "total": 64.0, "categoryValues": { "cat1": 16.6, "cat2": 20.5, "cat3": 10.9, "cat4": 5.9, "cat5": 5.5, "cat6": 2.3, "cat7": 2.3 } },
-          "2027-06": { "scenario": "高温旺季", "logic": "", "ratio": 9.0, "total": 58.6, "categoryValues": { "cat1": 16.7, "cat2": 20.4, "cat3": 10.7, "cat4": 5.6, "cat5": 5.2, "cat6": 0, "cat7": 0 } },
-          "2027-07": { "scenario": "最热旺季", "logic": "", "ratio": 10.1, "total": 66.0, "categoryValues": { "cat1": 18.8, "cat2": 23.0, "cat3": 12.0, "cat4": 6.3, "cat5": 5.9, "cat6": 0, "cat7": 0 } },
-          "2027-08": { "scenario": "高温延续", "logic": "", "ratio": 9.0, "total": 58.6, "categoryValues": { "cat1": 16.7, "cat2": 20.4, "cat3": 10.7, "cat4": 5.6, "cat5": 5.2, "cat6": 0, "cat7": 0 } },
-          "2027-09": { "scenario": "开学军训", "logic": "", "ratio": 5.1, "total": 33.0, "categoryValues": { "cat1": 5.2, "cat2": 13.6, "cat3": 5.1, "cat4": 4.1, "cat5": 5.0, "cat6": 0, "cat7": 0 } },
-          "2027-10": { "scenario": "国庆降温", "logic": "", "ratio": 5.1, "total": 33.0, "categoryValues": { "cat1": 5.2, "cat2": 13.6, "cat3": 5.1, "cat4": 4.1, "cat5": 5.0, "cat6": 0, "cat7": 0 } },
-          "2027-11": { "scenario": "财年末冲刺", "logic": "", "ratio": 4.4, "total": 28.3, "categoryValues": { "cat1": 4.5, "cat2": 11.6, "cat3": 4.4, "cat4": 3.5, "cat5": 4.3, "cat6": 0, "cat7": 0 } }
-        }
-      }
-    },
-    {
-      "id": "obj_2", "title": "达成进货承诺",
-      "targetValue": "为保障市场供应并深化战略协作，我司承诺在元气森林2027财年（2026年12月1日至2027年11月30日）内，根据双方共同确认的滚动预测，完成总计 650 万元 的 Sell-in进货。该目标旨在确保核心产品对渠道的充足供应，为终端销售增长奠定基础。",
-      "strategies": [
-        {
-          "id": "s2_1", "text": "人效提升与激励绑定：优化人员片区匹配，设计高激励提成方案，将个人收入与销售目标强挂钩。", "measure": "人均销售额提升15%", "tag": "团队", "contribution": "", "actions": [
-            { "id": "a2_1_1", "title": "人与片区匹配优化", "text": "盘点现有业务员负责的片区，分析各片区终端数量、潜力、现有业绩，重新分配片区（如有必要），确保人区匹配。", "owners": ["销售主管"], "deadline": "2027年1月", "status": "pending" },
-            { "id": "a2_1_2", "title": "绩效奖金方案设计", "text": "制定详细的月度绩效奖金方案：完成80%以下无提成；80%-100%按比例线性发放；超过100%部分给予坎级超额提成。", "owners": ["经销商老板"], "deadline": "2026年12月", "status": "pending" }
-          ]
-        },
-        {
-          "id": "s2_2", "text": "终端分级与单店产出提升：实施终端分级管理（A/B/C类），对高产出A类店进行资源倾斜与精细化服务。", "measure": "A类店单店产出提升10%", "tag": "渠道", "contribution": "", "actions": [
-            { "id": "a2_2_1", "title": "终端分级标准制定", "text": "根据门店销量、位置、合作意愿、潜力等维度，制定A/B/C类终端分级标准，完成所有终端门店的分类建档。", "owners": ["销售主管"], "deadline": "2026年12月", "status": "pending" },
-            { "id": "a2_2_2", "title": "分级服务政策与资源配置", "text": "针对A/B/C类门店制定差异化服务政策：A类店高频拜访、陈列奖励、冰柜投放、优先促销。", "owners": ["销售主管"], "deadline": "2027年1月", "status": "pending" }
-          ]
-        }
-      ],
       "salesPlan": {
         "timeBreakdown": [
           { "id": "12", "label": "12月", "type": "month", "lastYearActuals": 8500, "lastYearRatio": 5.9, "scenario": "元旦备货启动", "thisYearRatio": 7.5, "thisYearTarget": 10876 },
@@ -222,6 +173,55 @@ const DEMO_DATA: JBPData = {
           "09": { "east": 3553, "west": 3045, "south": 2538, "self": 1015 },
           "10": { "east": 3553, "west": 3045, "south": 2538, "self": 1015 },
           "11": { "east": 2791, "west": 2393, "south": 1994, "self": 798 }
+        }
+      }
+    },
+    {
+      "id": "obj_2", "title": "达成进货承诺",
+      "targetValue": "为保障市场供应并深化战略协作，我司承诺在元气森林2027财年（2026年12月1日至2027年11月30日）内，根据双方共同确认的滚动预测，完成总计 650 万元 的 Sell-in进货。该目标旨在确保核心产品对渠道的充足供应，为终端销售增长奠定基础。",
+      "strategies": [
+        {
+          "id": "s2_1", "text": "人效提升与激励绑定：优化人员片区匹配，设计高激励提成方案，将个人收入与销售目标强挂钩。", "measure": "人均销售额提升15%", "tag": "团队", "contribution": "", "actions": [
+            { "id": "a2_1_1", "title": "人与片区匹配优化", "text": "盘点现有业务员负责的片区，分析各片区终端数量、潜力、现有业绩，重新分配片区（如有必要），确保人区匹配。", "owners": ["销售主管"], "deadline": "2027年1月", "status": "pending" },
+            { "id": "a2_1_2", "title": "绩效奖金方案设计", "text": "制定详细的月度绩效奖金方案：完成80%以下无提成；80%-100%按比例线性发放；超过100%部分给予坎级超额提成。", "owners": ["经销商老板"], "deadline": "2026年12月", "status": "pending" }
+          ]
+        },
+        {
+          "id": "s2_2", "text": "终端分级与单店产出提升：实施终端分级管理（A/B/C类），对高产出A类店进行资源倾斜与精细化服务。", "measure": "A类店单店产出提升10%", "tag": "渠道", "contribution": "", "actions": [
+            { "id": "a2_2_1", "title": "终端分级标准制定", "text": "根据门店销量、位置、合作意愿、潜力等维度，制定A/B/C类终端分级标准，完成所有终端门店的分类建档。", "owners": ["销售主管"], "deadline": "2026年12月", "status": "pending" },
+            { "id": "a2_2_2", "title": "分级服务政策与资源配置", "text": "针对A/B/C类门店制定差异化服务政策：A类店高频拜访、陈列奖励、冰柜投放、优先促销。", "owners": ["销售主管"], "deadline": "2027年1月", "status": "pending" }
+          ]
+        }
+      ],
+      "purchasePlan": {
+        "categorySplit": [
+          { "id": "cat1", "name": "气泡水", "ratio": 23, "amount": 149.5 },
+          { "id": "cat2", "name": "电解质水", "ratio": 35, "amount": 227.5 },
+          { "id": "cat3", "name": "冰茶", "ratio": 16, "amount": 104 },
+          { "id": "cat4", "name": "维生素水", "ratio": 10, "amount": 65 },
+          { "id": "cat5", "name": "好自在", "ratio": 10, "amount": 65 },
+          { "id": "cat6", "name": "本榨", "ratio": 3, "amount": 19.5 },
+          { "id": "cat7", "name": "其他", "ratio": 3, "amount": 19.5 }
+        ],
+        "quarterSplit": [
+          { "id": "Q1", "name": "Q1季度 (12-2月)", "amount": 159.6, "ratio": 24.5 },
+          { "id": "Q2", "name": "Q2季度 (3-5月)", "amount": 213.3, "ratio": 32.8 },
+          { "id": "Q3", "name": "Q3季度 (6-8月)", "amount": 183.2, "ratio": 28.2 },
+          { "id": "Q4", "name": "Q4季度 (9-11月)", "amount": 94.3, "ratio": 14.5 }
+        ],
+        "monthlyData": {
+          "2026-12": { "scenario": "元旦备货", "logic": "", "ratio": 7.4, "total": 47.9, "categoryValues": { "cat1": 8.1, "cat2": 17.1, "cat3": 5.9, "cat4": 4.9, "cat5": 4.9, "cat6": 3.5, "cat7": 3.5 } },
+          "2027-01": { "scenario": "春节高峰", "logic": "", "ratio": 11.0, "total": 71.8, "categoryValues": { "cat1": 12.1, "cat2": 25.6, "cat3": 8.9, "cat4": 7.3, "cat5": 7.3, "cat6": 5.3, "cat7": 5.3 } },
+          "2027-02": { "scenario": "节后淡季", "logic": "", "ratio": 6.1, "total": 39.9, "categoryValues": { "cat1": 6.7, "cat2": 14.2, "cat3": 4.9, "cat4": 4.1, "cat5": 4.1, "cat6": 2.9, "cat7": 2.9 } },
+          "2027-03": { "scenario": "压水头启动", "logic": "", "ratio": 9.8, "total": 64.0, "categoryValues": { "cat1": 16.6, "cat2": 20.5, "cat3": 10.9, "cat4": 5.9, "cat5": 5.5, "cat6": 2.3, "cat7": 2.3 } },
+          "2027-04": { "scenario": "压水头高峰", "logic": "", "ratio": 13.1, "total": 85.3, "categoryValues": { "cat1": 22.1, "cat2": 27.3, "cat3": 14.6, "cat4": 7.8, "cat5": 7.3, "cat6": 3.1, "cat7": 3.1 } },
+          "2027-05": { "scenario": "五一升温", "logic": "", "ratio": 9.8, "total": 64.0, "categoryValues": { "cat1": 16.6, "cat2": 20.5, "cat3": 10.9, "cat4": 5.9, "cat5": 5.5, "cat6": 2.3, "cat7": 2.3 } },
+          "2027-06": { "scenario": "高温旺季", "logic": "", "ratio": 9.0, "total": 58.6, "categoryValues": { "cat1": 16.7, "cat2": 20.4, "cat3": 10.7, "cat4": 5.6, "cat5": 5.2, "cat6": 0, "cat7": 0 } },
+          "2027-07": { "scenario": "最热旺季", "logic": "", "ratio": 10.1, "total": 66.0, "categoryValues": { "cat1": 18.8, "cat2": 23.0, "cat3": 12.0, "cat4": 6.3, "cat5": 5.9, "cat6": 0, "cat7": 0 } },
+          "2027-08": { "scenario": "高温延续", "logic": "", "ratio": 9.0, "total": 58.6, "categoryValues": { "cat1": 16.7, "cat2": 20.4, "cat3": 10.7, "cat4": 5.6, "cat5": 5.2, "cat6": 0, "cat7": 0 } },
+          "2027-09": { "scenario": "开学军训", "logic": "", "ratio": 5.1, "total": 33.0, "categoryValues": { "cat1": 5.2, "cat2": 13.6, "cat3": 5.1, "cat4": 4.1, "cat5": 5.0, "cat6": 0, "cat7": 0 } },
+          "2027-10": { "scenario": "国庆降温", "logic": "", "ratio": 5.1, "total": 33.0, "categoryValues": { "cat1": 5.2, "cat2": 13.6, "cat3": 5.1, "cat4": 4.1, "cat5": 5.0, "cat6": 0, "cat7": 0 } },
+          "2027-11": { "scenario": "财年末冲刺", "logic": "", "ratio": 4.4, "total": 28.3, "categoryValues": { "cat1": 4.5, "cat2": 11.6, "cat3": 4.4, "cat4": 3.5, "cat5": 4.3, "cat6": 0, "cat7": 0 } }
         }
       }
     },
