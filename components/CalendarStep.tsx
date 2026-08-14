@@ -15,9 +15,13 @@ interface DraggableActionProps {
   isContinuation?: boolean;
 }
 
+// Helper: get primary owner from owners[] array for display/color
+const getPrimaryOwner = (action: JBPAction): string => action.owners?.[0] || '';
+
 const DraggableAction: React.FC<DraggableActionProps> = ({ action, compact = false, onDragStart, isContinuation = false }) => {
-  // Get color styles for this owner
-  const colors = OWNER_COLORS[action.owner] || { bg: 'bg-white', border: 'border-slate-200', text: 'text-slate-700', badge: 'bg-slate-100 text-slate-500' };
+  // Get color styles for primary owner
+  const owner = getPrimaryOwner(action);
+  const colors = OWNER_COLORS[owner] || { bg: 'bg-white', border: 'border-slate-200', text: 'text-slate-700', badge: 'bg-slate-100 text-slate-500' };
 
   return (
     <div
@@ -48,7 +52,7 @@ const DraggableAction: React.FC<DraggableActionProps> = ({ action, compact = fal
                {/* Owner Badge - Only show in sidebar or if we decide to ungroup later. In grouped view, the header handles this. */}
                {!compact && (
                  <span className={`text-[10px] px-1.5 py-0.5 rounded ${colors.badge}`}>
-                   {action.owner}
+                   {owner}
                  </span>
                )}
                {action.estimatedCost && (
@@ -213,7 +217,7 @@ const CalendarStep: React.FC<CalendarStepProps> = ({ data, updateData }) => {
             {data.objectives.map(obj => {
               const hasUnscheduled = obj.strategies.some(s => s.actions.some(a => 
                   (!a.startMonth) && 
-                  (filterOwner === 'all' || a.owner === filterOwner)
+                  (filterOwner === 'all' || a.owners?.includes(filterOwner))
               ));
               if (!hasUnscheduled) return null;
 
@@ -225,7 +229,7 @@ const CalendarStep: React.FC<CalendarStepProps> = ({ data, updateData }) => {
                   {obj.strategies.map(strat => {
                     const actions = strat.actions.filter(a => 
                         (!a.startMonth) && 
-                        (filterOwner === 'all' || a.owner === filterOwner)
+                        (filterOwner === 'all' || a.owners?.includes(filterOwner))
                     );
                     if (actions.length === 0) return null;
                     return (
@@ -243,7 +247,7 @@ const CalendarStep: React.FC<CalendarStepProps> = ({ data, updateData }) => {
              
             {!data.objectives.some(o => o.strategies.some(s => s.actions.some(a => 
                 (!a.startMonth) && 
-                (filterOwner === 'all' || a.owner === filterOwner)
+                (filterOwner === 'all' || a.owners?.includes(filterOwner))
             ))) && (
                 <div className="text-center py-10 text-slate-400">
                     <CheckCircle2 size={32} className="mx-auto mb-2 text-emerald-400" />
@@ -299,13 +303,13 @@ const CalendarStep: React.FC<CalendarStepProps> = ({ data, updateData }) => {
                                           // FILTER: Only show actions that match the month AND the selected filter owner
                                           const actions = strat.actions.filter(a => 
                                               isActionInMonth(a, m.id) && 
-                                              (filterOwner === 'all' || a.owner === filterOwner)
+                                              (filterOwner === 'all' || a.owners?.includes(filterOwner))
                                           );
                                           
                                           // Group actions by owner (Visual Grouping)
                                           const groupedActions: Record<string, JBPAction[]> = {};
                                           ACTION_OWNERS.forEach(owner => {
-                                              const ownerActions = actions.filter(a => a.owner === owner);
+                                              const ownerActions = actions.filter(a => a.owners?.includes(owner));
                                               if (ownerActions.length > 0) {
                                                   groupedActions[owner] = ownerActions;
                                               }

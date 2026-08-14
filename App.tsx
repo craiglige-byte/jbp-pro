@@ -168,7 +168,7 @@ const INITIAL_DATA: JBPData = {
     { id: '2', name: '气泡水', color: '#10b981', sales: 320, growth: 12, profitMargin: 12 },
     { id: '3', name: '冰茶', color: '#f59e0b', sales: 280, growth: 8, profitMargin: 10 },
     { id: '4', name: '维生素水', color: '#8b5cf6', sales: 180, growth: 25, profitMargin: 18 },
-    { id: '5', name: '好自在水', color: '#64748b', sales: 120, growth: 35, profitMargin: 20 },
+    { id: '5', name: '好自在', color: '#ec4899', sales: 120, growth: 35, profitMargin: 20 },
     { id: '6', name: '其他', color: '#9ca3af', sales: 50, growth: 5, profitMargin: 8 },
   ],
   customerAnalysis: {
