@@ -948,6 +948,7 @@ const ReviewStep: React.FC<ReviewStepProps> = ({ data, onBack, planVersion = 'la
                         <thead className="bg-slate-50 text-slate-500 font-medium sticky top-0 z-10">
                             <tr>
                                 <th className="p-4 border-b border-slate-100">岗位</th>
+                                <th className="p-4 border-b border-slate-100 text-right">人数</th>
                                 <th className="p-4 border-b border-slate-100 text-right">年总成本(万)</th>
                                 <th className="p-4 border-b border-slate-100 text-right">品牌占比</th>
                                 <th className="p-4 border-b border-slate-100 text-right">元气分摊成本(万)</th>
@@ -958,6 +959,7 @@ const ReviewStep: React.FC<ReviewStepProps> = ({ data, onBack, planVersion = 'la
                             {plan.personnel.map(item => (
                                 <tr key={item.id} className="hover:bg-slate-50/50 transition-colors">
                                     <td className="p-4 font-medium text-slate-800">{item.role}</td>
+                                    <td className="p-4 text-right text-slate-700">{item.count}</td>
                                     <td className="p-4 text-right text-slate-700">{item.yearlyTotalCost?.toFixed(2) || '0'}</td>
                                     <td className="p-4 text-right text-slate-500">{item.brandRatio}%</td>
                                     <td className="p-4 text-right font-bold text-brand-600">{item.brandYearlyCost.toFixed(2)}</td>
@@ -968,6 +970,7 @@ const ReviewStep: React.FC<ReviewStepProps> = ({ data, onBack, planVersion = 'la
                         <tfoot className="bg-slate-50/80 font-bold border-t border-slate-200">
                             <tr>
                                 <td className="p-4">合计</td>
+                                <td className="p-4 text-right">{plan.personnel.reduce((s, i) => s + (i.count || 0), 0)}</td>
                                 <td className="p-4 text-right">{plan.personnel.reduce((s, i) => s + (i.yearlyTotalCost || 0), 0).toFixed(2)}</td>
                                 <td className="p-4"></td>
                                 <td className="p-4 text-right text-brand-600">{plan.personnel.reduce((s, i) => s + i.brandYearlyCost, 0).toFixed(2)}</td>
@@ -975,7 +978,7 @@ const ReviewStep: React.FC<ReviewStepProps> = ({ data, onBack, planVersion = 'la
                             </tr>
                             <tr className="bg-white border-t border-slate-200">
                                 <td className="p-4 font-medium text-slate-600">预算上限</td>
-                                <td className="p-4" colSpan={2}></td>
+                                <td className="p-4" colSpan={3}></td>
                                 <td className="p-4 text-right font-medium text-slate-700">
                                     {budgetLimits.personnel > 0 ? budgetLimits.personnel.toLocaleString() : '--'}
                                 </td>
@@ -983,7 +986,7 @@ const ReviewStep: React.FC<ReviewStepProps> = ({ data, onBack, planVersion = 'la
                             </tr>
                             <tr className="bg-white border-t border-slate-200">
                                 <td className="p-4 font-medium text-slate-600">预算对比</td>
-                                <td className="p-4" colSpan={2}></td>
+                                <td className="p-4" colSpan={3}></td>
                                 <td className={`p-4 text-right text-sm font-bold ${budgetLimits.personnel > 0
                                     ? (budgetLimits.personnel - currentTotals.personnel < 0 ? 'text-red-500' : 'text-emerald-600')
                                     : 'text-slate-500'
@@ -998,7 +1001,7 @@ const ReviewStep: React.FC<ReviewStepProps> = ({ data, onBack, planVersion = 'la
                             </tr>
                             {(budgetWarnings.personnelSales || budgetWarnings.personnelDriver) && (
                             <tr>
-                                <td className="px-4 py-2" colSpan={5}>
+                                <td className="px-4 py-2" colSpan={6}>
                                     {budgetWarnings.personnelSales && (
                                         <div className="text-xs text-red-500 flex items-center">
                                             <AlertCircle size={12} className="mr-1 flex-shrink-0" />
