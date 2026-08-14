@@ -137,10 +137,10 @@ const DEMO_DATA: JBPData = {
       ],
       "purchasePlan": {
         "categorySplit": [
-          { "id": "cat1", "name": "元气森林气泡水", "ratio": 23, "amount": 149.5 },
-          { "id": "cat2", "name": "外星人电解质水", "ratio": 35, "amount": 227.5 },
+          { "id": "cat1", "name": "气泡水", "ratio": 23, "amount": 149.5 },
+          { "id": "cat2", "name": "电解质水", "ratio": 35, "amount": 227.5 },
           { "id": "cat3", "name": "冰茶", "ratio": 16, "amount": 104 },
-          { "id": "cat4", "name": "外星人维生素水", "ratio": 10, "amount": 65 },
+          { "id": "cat4", "name": "维生素水", "ratio": 10, "amount": 65 },
           { "id": "cat5", "name": "好自在", "ratio": 10, "amount": 65 },
           { "id": "cat6", "name": "本榨", "ratio": 3, "amount": 19.5 },
           { "id": "cat7", "name": "其他", "ratio": 3, "amount": 19.5 }
@@ -238,10 +238,10 @@ const DEMO_DATA: JBPData = {
       ],
       "inventoryPlan": {
         "categorySettings": [
-          { "categoryId": "cat1", "categoryName": "元气森林气泡水", "turnoverDays": 31, "ratio": 23, "reason": "多口味备货，维持安全水位" },
-          { "categoryId": "cat2", "categoryName": "外星人电解质水", "turnoverDays": 25, "ratio": 35, "reason": "核心大单品，高周转保鲜度" },
+          { "categoryId": "cat1", "categoryName": "气泡水", "turnoverDays": 31, "ratio": 23, "reason": "多口味备货，维持安全水位" },
+          { "categoryId": "cat2", "categoryName": "电解质水", "turnoverDays": 25, "ratio": 35, "reason": "核心大单品，高周转保鲜度" },
           { "categoryId": "cat3", "categoryName": "冰茶", "turnoverDays": 30, "ratio": 16, "reason": "季节性波动，均衡备货" },
-          { "categoryId": "cat4", "categoryName": "外星人维生素水", "turnoverDays": 30, "ratio": 10, "reason": "稳定动销，常规周转" },
+          { "categoryId": "cat4", "categoryName": "维生素水", "turnoverDays": 30, "ratio": 10, "reason": "稳定动销，常规周转" },
           { "categoryId": "cat5", "categoryName": "好自在", "turnoverDays": 30, "ratio": 10, "reason": "新品培育期，保障陈列" },
           { "categoryId": "cat6", "categoryName": "本榨", "turnoverDays": 45, "ratio": 3, "reason": "果汁新品培育，逐步铺货" },
           { "categoryId": "cat7", "categoryName": "其他", "turnoverDays": 45, "ratio": 3, "reason": "长尾产品，低频补货" }

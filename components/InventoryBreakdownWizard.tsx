@@ -20,10 +20,10 @@ const STEPS = [
 ];
 
 const DEFAULT_PURCHASE_CATEGORIES = [
-  { id: 'cat1', name: '元气森林气泡水', ratio: 23 },
-  { id: 'cat2', name: '外星人电解质水', ratio: 38 },
+  { id: 'cat1', name: '气泡水', ratio: 23 },
+  { id: 'cat2', name: '电解质水', ratio: 38 },
   { id: 'cat3', name: '冰茶', ratio: 16 },
-  { id: 'cat4', name: '外星人维生素水', ratio: 10 },
+  { id: 'cat4', name: '维生素水', ratio: 10 },
   { id: 'cat5', name: '好自在', ratio: 10 },
   { id: 'cat6', name: '本榨', ratio: 3 },
   { id: 'cat7', name: '其他', ratio: 3 }
