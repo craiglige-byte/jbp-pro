@@ -13,12 +13,13 @@ interface PurchaseBreakdownWizardProps {
 }
 
 const CATEGORIES = [
-  { id: 'cat1', name: '电解质水', color: '#3b82f6' },
-  { id: 'cat2', name: '气泡水', color: '#10b981' },
+  { id: 'cat1', name: '元气森林气泡水', color: '#10b981' },
+  { id: 'cat2', name: '外星人电解质水', color: '#3b82f6' },
   { id: 'cat3', name: '冰茶', color: '#f59e0b' },
-  { id: 'cat4', name: '维生素水', color: '#8b5cf6' },
+  { id: 'cat4', name: '外星人维生素水', color: '#8b5cf6' },
   { id: 'cat5', name: '好自在', color: '#ec4899' },
-  { id: 'cat6', name: '其他', color: '#64748b' }
+  { id: 'cat6', name: '本榨', color: '#14b8a6' },
+  { id: 'cat7', name: '其他', color: '#64748b' }
 ];
 
 const QUARTERS = [

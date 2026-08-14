@@ -137,32 +137,33 @@ const DEMO_DATA: JBPData = {
       ],
       "purchasePlan": {
         "categorySplit": [
-          { "id": "cat1", "name": "电解质水", "ratio": 38, "amount": 247 },
-          { "id": "cat2", "name": "气泡水", "ratio": 23, "amount": 149.5 },
+          { "id": "cat1", "name": "元气森林气泡水", "ratio": 23, "amount": 149.5 },
+          { "id": "cat2", "name": "外星人电解质水", "ratio": 38, "amount": 247 },
           { "id": "cat3", "name": "冰茶", "ratio": 16, "amount": 104 },
-          { "id": "cat4", "name": "维生素水", "ratio": 10, "amount": 65 },
+          { "id": "cat4", "name": "外星人维生素水", "ratio": 10, "amount": 65 },
           { "id": "cat5", "name": "好自在", "ratio": 10, "amount": 65 },
-          { "id": "cat6", "name": "其他", "ratio": 3, "amount": 19.5 }
+          { "id": "cat6", "name": "本榨", "ratio": 3, "amount": 19.5 },
+          { "id": "cat7", "name": "其他", "ratio": 3, "amount": 19.5 }
         ],
         "quarterSplit": [
-          { "id": "Q1", "name": "Q1季度 (12-2月)", "amount": 152.6, "ratio": 23.5 },
-          { "id": "Q2", "name": "Q2季度 (3-5月)", "amount": 211.3, "ratio": 32.6 },
-          { "id": "Q3", "name": "Q3季度 (6-8月)", "amount": 188.6, "ratio": 29 },
-          { "id": "Q4", "name": "Q4季度 (9-11月)", "amount": 97.5, "ratio": 14.9 }
+          { "id": "Q1", "name": "Q1季度 (12-2月)", "amount": 164.4, "ratio": 24.6 },
+          { "id": "Q2", "name": "Q2季度 (3-5月)", "amount": 219.0, "ratio": 32.7 },
+          { "id": "Q3", "name": "Q3季度 (6-8月)", "amount": 188.5, "ratio": 28.2 },
+          { "id": "Q4", "name": "Q4季度 (9-11月)", "amount": 97.5, "ratio": 14.6 }
         ],
         "monthlyData": {
-          "2026-12": { "scenario": "元旦备货", "logic": "", "ratio": 7.0, "total": 45.8, "categoryValues": { "cat1": 18.5, "cat2": 8.1, "cat3": 5.9, "cat4": 4.9, "cat5": 4.9, "cat6": 3.5 } },
-          "2027-01": { "scenario": "春节高峰", "logic": "", "ratio": 10.6, "total": 68.7, "categoryValues": { "cat1": 27.8, "cat2": 12.1, "cat3": 8.9, "cat4": 7.3, "cat5": 7.3, "cat6": 5.3 } },
-          "2027-02": { "scenario": "节后淡季", "logic": "", "ratio": 5.9, "total": 38.2, "categoryValues": { "cat1": 15.4, "cat2": 6.7, "cat3": 4.9, "cat4": 4.1, "cat5": 4.1, "cat6": 2.9 } },
-          "2027-03": { "scenario": "压水头启动", "logic": "", "ratio": 9.8, "total": 63.4, "categoryValues": { "cat1": 22.2, "cat2": 16.6, "cat3": 10.9, "cat4": 5.9, "cat5": 5.5, "cat6": 2.3 } },
-          "2027-04": { "scenario": "压水头高峰", "logic": "", "ratio": 13.0, "total": 84.5, "categoryValues": { "cat1": 29.6, "cat2": 22.1, "cat3": 14.6, "cat4": 7.8, "cat5": 7.3, "cat6": 3.1 } },
-          "2027-05": { "scenario": "五一升温", "logic": "", "ratio": 9.8, "total": 63.4, "categoryValues": { "cat1": 22.2, "cat2": 16.6, "cat3": 10.9, "cat4": 5.9, "cat5": 5.5, "cat6": 2.3 } },
-          "2027-06": { "scenario": "高温旺季", "logic": "", "ratio": 9.3, "total": 60.3, "categoryValues": { "cat1": 22.1, "cat2": 16.7, "cat3": 10.7, "cat4": 5.6, "cat5": 5.2, "cat6": 0 } },
-          "2027-07": { "scenario": "最热旺季", "logic": "", "ratio": 10.4, "total": 67.9, "categoryValues": { "cat1": 24.9, "cat2": 18.8, "cat3": 12.0, "cat4": 6.3, "cat5": 5.9, "cat6": 0 } },
-          "2027-08": { "scenario": "高温延续", "logic": "", "ratio": 9.3, "total": 60.3, "categoryValues": { "cat1": 22.1, "cat2": 16.7, "cat3": 10.7, "cat4": 5.6, "cat5": 5.2, "cat6": 0 } },
-          "2027-09": { "scenario": "开学军训", "logic": "", "ratio": 5.2, "total": 34.1, "categoryValues": { "cat1": 14.7, "cat2": 5.2, "cat3": 5.1, "cat4": 4.1, "cat5": 5.0, "cat6": 0 } },
-          "2027-10": { "scenario": "国庆降温", "logic": "", "ratio": 5.2, "total": 34.1, "categoryValues": { "cat1": 14.7, "cat2": 5.2, "cat3": 5.1, "cat4": 4.1, "cat5": 5.0, "cat6": 0 } },
-          "2027-11": { "scenario": "财年末冲刺", "logic": "", "ratio": 4.5, "total": 29.3, "categoryValues": { "cat1": 12.6, "cat2": 4.5, "cat3": 4.4, "cat4": 3.5, "cat5": 4.3, "cat6": 0 } }
+          "2026-12": { "scenario": "元旦备货", "logic": "", "ratio": 7.4, "total": 49.3, "categoryValues": { "cat1": 8.1, "cat2": 18.5, "cat3": 5.9, "cat4": 4.9, "cat5": 4.9, "cat6": 3.5, "cat7": 3.5 } },
+          "2027-01": { "scenario": "春节高峰", "logic": "", "ratio": 11.1, "total": 74.0, "categoryValues": { "cat1": 12.1, "cat2": 27.8, "cat3": 8.9, "cat4": 7.3, "cat5": 7.3, "cat6": 5.3, "cat7": 5.3 } },
+          "2027-02": { "scenario": "节后淡季", "logic": "", "ratio": 6.1, "total": 41.1, "categoryValues": { "cat1": 6.7, "cat2": 15.4, "cat3": 4.9, "cat4": 4.1, "cat5": 4.1, "cat6": 2.9, "cat7": 2.9 } },
+          "2027-03": { "scenario": "压水头启动", "logic": "", "ratio": 9.8, "total": 65.7, "categoryValues": { "cat1": 16.6, "cat2": 22.2, "cat3": 10.9, "cat4": 5.9, "cat5": 5.5, "cat6": 2.3, "cat7": 2.3 } },
+          "2027-04": { "scenario": "压水头高峰", "logic": "", "ratio": 13.1, "total": 87.6, "categoryValues": { "cat1": 22.1, "cat2": 29.6, "cat3": 14.6, "cat4": 7.8, "cat5": 7.3, "cat6": 3.1, "cat7": 3.1 } },
+          "2027-05": { "scenario": "五一升温", "logic": "", "ratio": 9.8, "total": 65.7, "categoryValues": { "cat1": 16.6, "cat2": 22.2, "cat3": 10.9, "cat4": 5.9, "cat5": 5.5, "cat6": 2.3, "cat7": 2.3 } },
+          "2027-06": { "scenario": "高温旺季", "logic": "", "ratio": 9.0, "total": 60.3, "categoryValues": { "cat1": 16.7, "cat2": 22.1, "cat3": 10.7, "cat4": 5.6, "cat5": 5.2, "cat6": 0, "cat7": 0 } },
+          "2027-07": { "scenario": "最热旺季", "logic": "", "ratio": 10.1, "total": 67.9, "categoryValues": { "cat1": 18.8, "cat2": 24.9, "cat3": 12.0, "cat4": 6.3, "cat5": 5.9, "cat6": 0, "cat7": 0 } },
+          "2027-08": { "scenario": "高温延续", "logic": "", "ratio": 9.0, "total": 60.3, "categoryValues": { "cat1": 16.7, "cat2": 22.1, "cat3": 10.7, "cat4": 5.6, "cat5": 5.2, "cat6": 0, "cat7": 0 } },
+          "2027-09": { "scenario": "开学军训", "logic": "", "ratio": 5.1, "total": 34.1, "categoryValues": { "cat1": 5.2, "cat2": 14.7, "cat3": 5.1, "cat4": 4.1, "cat5": 5.0, "cat6": 0, "cat7": 0 } },
+          "2027-10": { "scenario": "国庆降温", "logic": "", "ratio": 5.1, "total": 34.1, "categoryValues": { "cat1": 5.2, "cat2": 14.7, "cat3": 5.1, "cat4": 4.1, "cat5": 5.0, "cat6": 0, "cat7": 0 } },
+          "2027-11": { "scenario": "财年末冲刺", "logic": "", "ratio": 4.4, "total": 29.3, "categoryValues": { "cat1": 4.5, "cat2": 12.6, "cat3": 4.4, "cat4": 3.5, "cat5": 4.3, "cat6": 0, "cat7": 0 } }
         }
       }
     },
@@ -237,12 +238,13 @@ const DEMO_DATA: JBPData = {
       ],
       "inventoryPlan": {
         "categorySettings": [
-          { "categoryId": "cat1", "categoryName": "电解质水", "turnoverDays": 25, "ratio": 38, "reason": "核心大单品，高周转保鲜度" },
-          { "categoryId": "cat2", "categoryName": "气泡水", "turnoverDays": 31, "ratio": 23, "reason": "多口味备货，维持安全水位" },
+          { "categoryId": "cat1", "categoryName": "元气森林气泡水", "turnoverDays": 31, "ratio": 23, "reason": "多口味备货，维持安全水位" },
+          { "categoryId": "cat2", "categoryName": "外星人电解质水", "turnoverDays": 25, "ratio": 38, "reason": "核心大单品，高周转保鲜度" },
           { "categoryId": "cat3", "categoryName": "冰茶", "turnoverDays": 30, "ratio": 16, "reason": "季节性波动，均衡备货" },
-          { "categoryId": "cat4", "categoryName": "维生素水", "turnoverDays": 30, "ratio": 10, "reason": "稳定动销，常规周转" },
+          { "categoryId": "cat4", "categoryName": "外星人维生素水", "turnoverDays": 30, "ratio": 10, "reason": "稳定动销，常规周转" },
           { "categoryId": "cat5", "categoryName": "好自在", "turnoverDays": 30, "ratio": 10, "reason": "新品培育期，保障陈列" },
-          { "categoryId": "cat6", "categoryName": "其他", "turnoverDays": 45, "ratio": 3, "reason": "长尾产品，低频补货" }
+          { "categoryId": "cat6", "categoryName": "本榨", "turnoverDays": 45, "ratio": 3, "reason": "果汁新品培育，逐步铺货" },
+          { "categoryId": "cat7", "categoryName": "其他", "turnoverDays": 45, "ratio": 3, "reason": "长尾产品，低频补货" }
         ],
         "monthlyPlan": [
           { "monthId": "2026-12", "scenario": "为1月春节备货，月末库存高位", "salesRatio": 10.5, "nextMonthSalesTarget": 15226, "categoryValues": {}, "total": 0 },

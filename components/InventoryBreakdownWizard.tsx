@@ -20,21 +20,23 @@ const STEPS = [
 ];
 
 const DEFAULT_PURCHASE_CATEGORIES = [
-  { id: 'cat1', name: '电解质水', ratio: 38 },
-  { id: 'cat2', name: '气泡水', ratio: 23 },
+  { id: 'cat1', name: '元气森林气泡水', ratio: 23 },
+  { id: 'cat2', name: '外星人电解质水', ratio: 38 },
   { id: 'cat3', name: '冰茶', ratio: 16 },
-  { id: 'cat4', name: '维生素水', ratio: 10 },
+  { id: 'cat4', name: '外星人维生素水', ratio: 10 },
   { id: 'cat5', name: '好自在', ratio: 10 },
-  { id: 'cat6', name: '其他', ratio: 3 }
+  { id: 'cat6', name: '本榨', ratio: 3 },
+  { id: 'cat7', name: '其他', ratio: 3 }
 ];
 
 const DEFAULT_CATEGORY_CONFIG: Record<string, { days: number, reason: string }> = {
-  'cat1': { days: 25, reason: '核心大单品，高周转保鲜度' },
-  'cat2': { days: 31, reason: '多口味备货，维持安全水位' },
+  'cat1': { days: 31, reason: '多口味备货，维持安全水位' },
+  'cat2': { days: 25, reason: '核心大单品，高周转保鲜度' },
   'cat3': { days: 30, reason: '季节性波动，均衡备货' },
   'cat4': { days: 30, reason: '稳定动销，常规周转' },
   'cat5': { days: 30, reason: '新品培育期，保障陈列' },
-  'cat6': { days: 45, reason: '长尾产品，低频补货' }
+  'cat6': { days: 45, reason: '果汁新品培育，逐步铺货' },
+  'cat7': { days: 45, reason: '长尾产品，低频补货' }
 };
 
 const INVENTORY_SCENARIOS: Record<string, string> = {
